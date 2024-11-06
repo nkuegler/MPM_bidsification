@@ -221,20 +221,20 @@ def SessionEP(scan: BidsSession) -> int:
     current_sessionID = scan.session
 
     if scan.session in ses_id_df['sesID'].values:
-        scan.session = ses_id_df.loc[ses_id_df['sesID'] == scan.session, 'bids_subjID'].iloc[0]
+        scan.session = ses_id_df.loc[ses_id_df['sesID'] == scan.session, 'bids_sesID'].iloc[0]
     else: 
         print(f"Session ID not present in '{csv_ses_file}'. Adding and indexing the subject.")
         if ses_id_df.empty:
             current_bids_sesID = '1'
         else:
-            current_bids_sesID = int(ses_id_df['bids_subjID'].iat[-1]) + 1
+            current_bids_sesID = int(ses_id_df['bids_sesID'].iat[-1]) + 1
         print(f"Current session: {current_sessionID} -> {current_bids_sesID}")
 
-        new_row = pd.DataFrame({'sesID': [scan.session], 'bids_subjID': [str(current_bids_sesID)]})
+        new_row = pd.DataFrame({'sesID': [scan.session], 'bids_sesID': [str(current_bids_sesID)]})
         # display(new_row)
         ses_id_df = pd.concat([ses_id_df, new_row], ignore_index=True)
 
-        scan.session = new_row['bids_subjID'].iloc[0]
+        scan.session = new_row['bids_sesID'].iloc[0]
 
     # display(ses_id_df)
 
@@ -421,7 +421,7 @@ def SessionEndEP(scan: BidsSession) -> int:
             warnings.warn("The bval and bvec files do not have the same name. Please check manually.")
 
     else:
-        warnings.warn("No bval or bvec files found.")
+        print(f"No bval or bvec files found in the directories of '{scan.subject}' '{scan.session}'.")
     
     return 0
 

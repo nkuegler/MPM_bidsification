@@ -15,7 +15,7 @@
 # In the `example1/` folder there are four subfolders:
 
 # - `source`, containing the raw, unbidsified dataset
-# - `renamed`, an empty folder that will contain the prepared dataset
+# - `prepared`, an empty folder that will contain the prepared dataset
 # - `bids`, an empty folder that will contain the bidsified dataset
 # - `resources`, containing all needed configurations and plugins needed to bidfify this dataset
 # 
@@ -57,7 +57,7 @@ import os
 
 
 SOURCE_PATH = os.path.join(DATASET_PATH, "source")
-PREPARED_PATH = os.path.join(DATASET_PATH, "renamed")
+PREPARED_PATH = os.path.join(DATASET_PATH, "prepared")
 BIDSIFIED_PATH = os.path.join(DATASET_PATH, "bids")
 # RESOURCES_PATH = os.path.join(DATASET_PATH, "example1", "resources")
 

@@ -7,14 +7,12 @@ This pipeline is meant to be used as a start-to-finish data processing and analy
 ## Pipeline steps
 1. DICOM to NIfTI conversion
 2. Bidsification of the NIfTI data
-
-**--- not yet implemented ---**
-3. SPM
+3. SPM **--- not yet implemented ---**
     + hMRI toolbox denoising module *(alternatively nighres denoising?)*
     + SPM segmentation
     + hMRI toolbox processing module (maps creation) *(account for pTX mapping if available)*
-4. MASSP parcellation module
-5. Data extraction  
+4. MASSP parcellation module **--- not yet implemented ---**
+5. Data extraction **--- not yet implemented ---**
 
 
 It is planned to run the pipeline by calling a single script after specifying the necessary paths, parameters, and which steps to be run in the settings file (or better config file).
@@ -72,4 +70,4 @@ The pipeline re-uses software from several different researchers.
 - Mikhail Zubkov
 - Ilona Lipp
 
-This list will be updated.
+This list will be extended.

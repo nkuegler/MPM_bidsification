@@ -39,7 +39,8 @@ logger = logging.getLogger(__name__)
 rawfolder = ""
 bidsfolder = ""
 dry_run = False
-id_files_dir = f"id_info"
+id_files_dir_name = f"id_info"
+id_files_dir = ""
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -106,7 +107,9 @@ def InitEP(source: str, destination: str,
     rawfolder = source
     bidsfolder = destination
     dry_run = dry
+    global id_files_dir_name
     global id_files_dir
+    id_files_dir = f"{bidsfolder}/{id_files_dir_name}"
 
     if not os.path.exists(id_files_dir):
         os.makedirs(id_files_dir)

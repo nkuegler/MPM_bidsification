@@ -30,7 +30,7 @@ import logging
 
 from bidsme.tools.tools import check_type
 
-from . import exceptions
+from .. import exceptions
 from .entry_points import entry_points
 
 logger = logging.getLogger(__name__)

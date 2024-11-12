@@ -1,6 +1,6 @@
 # Bidsification + Analysis of IronSleep Sessions
 
-**currently under development**
+<mark>**--- currently under development ---**<mark>
 
 This pipeline is meant to be used as a start-to-finish data processing and analysis tool. It was originally created for the IronSleep project but can be adjusted to work on similar data that need to be processed the same way.
 

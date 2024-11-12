@@ -27,6 +27,6 @@ function call_dicom_conversion(input_dir, output_dir, excl_str)
     convert_dicoms_to_nifti(input_dir, output_dir, 0, true, excl_str)
     
     %%% speeded up version due to no checks
-    % convert_dicoms_to_nifti(input_dir, output_dir, true, excl_str) %
+    % convert_dicoms_to_nifti_no_check(input_dir, output_dir, true, excl_str) 
     exit
 

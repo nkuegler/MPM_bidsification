@@ -15,7 +15,14 @@ This pipeline is meant to be used as a start-to-finish data processing and analy
 5. Data extraction **--- not yet implemented ---**
 
 
-It is planned to run the pipeline by calling a single script after specifying the necessary paths, parameters, and which steps to be run in the settings file (or better config file).
+**Additional functionalities that are planned to be included**
+- $T_2$ data analysis *(?)*
+- LORAKS reconstruction of MPMs *(probably as optional step 0)*
+- generation of QSM maps from combined MPM phase data
+
+<br>
+
+> It is planned to run the pipeline by calling a single script after specifying the necessary paths, parameters, and which steps to be run in the settings file (or better config file).
 
 
 ## Requirements
@@ -26,7 +33,7 @@ The hMRI toolbox is part of SPM. Therefore the SPM repository and the hMRI toolb
 Bidsification is done using [Bidsme](https://github.com/CyclotronResearchCentre/bidsme) (curtesy of Nikita Beliy). For using this package, you need to install it via pip. Check out Nikita's Github for more information on this. I added my (cluttered) mamba `bidsme_environment.yaml` in the supplementary directory of this repository.
 
 
-## Use the scripts 
+## Using the scripts 
 Before running the main script, it is necessary to adjust the `settings.py` file to fit your needs. 
 
 ### Step 1: DICOM to NIfTI
@@ -62,6 +69,9 @@ The creation of the `bidsmap.yaml` in step **(4)** is presumably the most tediou
 
 Now you can run step **(5)** of the notebook, which is the bidsification of the data. There should be no warnings or errors raised during the bidsification (I still get warnings due to a missing `README.md` and `dataset_description.json` that need to be included in a BIDS-conform dataset. Creating those should not be too difficult, I just haven't done it yet). 
 
+
+## Visualization of current script structure
+![image](docs/status_repo_2024-11-12.png)
 
 
 ## Acknowledgements

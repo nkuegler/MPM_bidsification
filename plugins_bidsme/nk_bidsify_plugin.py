@@ -388,7 +388,7 @@ def SessionEndEP(scan: BidsSession) -> int:
         
         if bval_filename == bvec_filename:
             bval_path_source = os.path.dirname(bval_file_source)
-            print(f"Found matching bval and bvec files in {bval_path_source}.")
+            print(f"Found matching bval and bvec files in {bval_path_source}")
 
             # Extract the file's parent folder from the full path
             bval_folder_source = os.path.basename(bval_path_source)
@@ -416,7 +416,7 @@ def SessionEndEP(scan: BidsSession) -> int:
             else:
                 warnings.warn(f"No matching line found containing the sequence number {sequence_number_3digit}. Please copy the bvec and bval files manually.")
             
-            print(f"Copying bval and bvec files to {bval_path_prepared}.")
+            print(f"Copying bval and bvec files to {bval_path_prepared}")
             os.system(f"cp {bval_file_source} {bval_path_prepared}")
             os.system(f"cp {bvec_file_source} {bval_path_prepared}")
 

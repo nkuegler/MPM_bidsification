@@ -19,7 +19,7 @@ function convert_dicoms_to_nifti(dicom_data_dir, nifti_data_dir, omit_check, avo
         if ischar(avoid_criterium)
             rows_to_delete = [];
             for i = 1:length(foldernames)
-                if contains(foldernames(i).name, avoid_criterium)
+                if contains(foldernames(i).name, avoid_criterium, 'IgnoreCase', true)
                     rows_to_delete = [rows_to_delete, i];
                 end
             end
@@ -38,13 +38,26 @@ function convert_dicoms_to_nifti(dicom_data_dir, nifti_data_dir, omit_check, avo
         
         %%% check whether has already been done
         str_to_check = foldernames(folder).name;
+
+        if str_to_check(1) == '_'  % avoid errors due to empty array elements after splitting at '_'
+            str_to_check = str_to_check(2:end); 
+        end
+
         str_to_check_2 = strsplit(str_to_check, '_');
+
+        %% Leipzig data directory naming convention: 'S<sequence_number>_<sequence_name>'
         if strcmp(str_to_check_2{1}(1),'S')
             str_to_check_3 = strsplit(str_to_check_2{1}, 'S');
             sequence_number = str2num(str_to_check_3{2});
         else
             sequence_number = str2num(str_to_check_2{1});
         end
+
+        %% Liege data directory naming convention: '<sequence_name>_<sequence_number>'
+        if isempty(sequence_number)
+            sequence_number = str2num(str_to_check_2{end});
+        end
+
         nifti_files_there = dir([nifti_data_dir,'/*',sprintf('%04d',sequence_number),'/*.nii']);
         
 
@@ -57,8 +70,13 @@ function convert_dicoms_to_nifti(dicom_data_dir, nifti_data_dir, omit_check, avo
             if length(filenames) == 0
                 filenames = dir([foldernames(folder).folder,'/',foldernames(folder).name,'/MR*']);
             end
+            %%% check for files with .dcm extension (DICOM data), e.g. Leipzig scanner
             if length(filenames) == 0
                 filenames = dir([foldernames(folder).folder,'/',foldernames(folder).name,'/*.dcm']);
+            end
+            %%% check for files with .IMA extension, as for Liege scanner
+            if length(filenames) == 0
+                filenames = dir([foldernames(folder).folder,'/',foldernames(folder).name,'/*.IMA']);
             end
 
             if length(filenames) > 0

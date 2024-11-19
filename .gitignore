@@ -4,3 +4,4 @@ id_info/
 tmp/
 excl_dirs*.txt
 .ipynb_checkpoints/
+plugins_bidsme/backup_plugin_nk.py

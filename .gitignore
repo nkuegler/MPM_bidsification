@@ -3,3 +3,4 @@ settings_galatea.py
 id_info/
 tmp/
 excl_dirs*.txt
+.ipynb_checkpoints/

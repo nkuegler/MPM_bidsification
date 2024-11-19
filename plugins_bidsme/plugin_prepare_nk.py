@@ -27,20 +27,30 @@
 from bidsme.plugins import exceptions
 from bidsme.bidsMeta import BidsSession
 import pandas as pd
+import numpy as np
 import os
 import re
 import warnings
 
 # Will integrate plugin into logging
 import logging
+
 logger = logging.getLogger(__name__)
 
+# code_path = os.path.dirname(__file__)
+# base_path = os.path.join(code_path, "..")
+
 # global variables
-rawfolder = ""
-bidsfolder = ""
+nifti_dir = ""
+prep_dir = ""
 dry_run = False
 id_files_dir_name = f"id_info"
 id_files_dir = ""
+base_dir = ""
+
+def remove_trailing_slash(path):
+    ## making sure that there is no trailing slash
+    return path[:-1] if path.endswith('/') else path
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -101,15 +111,23 @@ def InitEP(source: str, destination: str,
     Error.InitEPerror
         code 100
     """
-    global rawfolder
-    global bidsfolder
+    global nifti_dir
+    global prep_dir
     global dry_run
-    rawfolder = source
-    bidsfolder = destination
+    nifti_dir = source
+    prep_dir = destination
     dry_run = dry
+
     global id_files_dir_name
     global id_files_dir
-    id_files_dir = f"{bidsfolder}/{id_files_dir_name}"
+
+    nifti_dir = remove_trailing_slash(nifti_dir) # to ensure correct functioning of os.path.dirname
+    prep_dir = remove_trailing_slash(prep_dir) # to ensure correct functioning of os.path.dirname
+
+    global base_dir
+    base_dir = os.path.dirname(prep_dir)
+
+    id_files_dir = f"{base_dir}/{id_files_dir_name}"
 
     if not os.path.exists(id_files_dir):
         os.makedirs(id_files_dir)
@@ -147,42 +165,39 @@ def SubjectEP(scan: BidsSession) -> int:
         code 120
     """
 
-
     csv_sub_file = f"{id_files_dir}/subject_ids.csv"
 
     if not os.path.isfile(csv_sub_file):
         subIDs_dict = {'subjID': [], 
                 'bids_subjID': []
                 }
-        sub_id_df = pd.DataFrame(subIDs_dict)
+        sub_id_df = pd.DataFrame(subIDs_dict, dtype=str)
     else:
-        sub_id_df = pd.read_csv(csv_sub_file).astype(str)
+        sub_id_df = pd.read_csv(csv_sub_file, dtype={'subjID': str, 'bids_subjID': str})
 
     global current_subjectID
     current_subjectID = scan.subject
 
     if scan.subject in sub_id_df['subjID'].values:
-        scan.subject = sub_id_df.loc[sub_id_df['subjID'] == scan.subject, 'bids_subjID'].iloc[0]
+        scan.subject = f"{int(sub_id_df.loc[sub_id_df['subjID'] == scan.subject, 'bids_subjID'].iloc[0]):03}"
     else:
         print(f"Subject ID not present in '{csv_sub_file}'. Adding and indexing the subject.")
         if sub_id_df.empty:
-            current_bids_subjID = '1'
+            current_bids_subjID = '001'
         else:
-            # current_bids_subjID = int(ID_DIR['bids_subjID'].iloc[-1]) + 1
-            current_bids_subjID = int(sub_id_df['bids_subjID'].iat[-1]) + 1
-        print(f"Current subject: {current_subjectID} -> {current_bids_subjID}")
+            # current_bids_subjID = int(sub_id_df['bids_subjID'].iat[-1]) + 1
+            current_bids_subjID = int(np.max(sub_id_df['bids_subjID'].astype(int))) + 1
+        print(f"Current subject: {current_subjectID} -> {int(current_bids_subjID):03}")
 
-        new_row = pd.DataFrame({'subjID': [scan.subject], 'bids_subjID': [str(current_bids_subjID)]})
+        new_row = pd.DataFrame({'subjID': [scan.subject], 'bids_subjID': [f"{int(current_bids_subjID):03}"]})
         # display(new_row)
         sub_id_df = pd.concat([sub_id_df, new_row], ignore_index=True)
         
-        scan.subject = new_row['bids_subjID'].iloc[0]
+        scan.subject = f"{int(new_row['bids_subjID'].iloc[0]):03}"
 
     # display(sub_id_df)
-
     sub_id_df.to_csv(csv_sub_file, index=False)
 
-    return 0
 
 def SessionEP(scan: BidsSession) -> int:
     """
@@ -210,40 +225,41 @@ def SessionEP(scan: BidsSession) -> int:
     Error.SessionEPerror
         code 130
     """
+
     csv_ses_file = f"{id_files_dir}/{scan.subject}_sessions.csv"
 
     if not os.path.isfile(csv_ses_file):
         sesIDs_dict = {'sesID': [],
                     'bids_sesID': []
                     }
-        ses_id_df = pd.DataFrame(sesIDs_dict)
+        ses_id_df = pd.DataFrame(sesIDs_dict, dtype=str)
     else:
-        ses_id_df = pd.read_csv(csv_ses_file).astype(str)
+        ses_id_df = pd.read_csv(csv_ses_file, dtype={'sesID': str, 'bids_sesID': str})
 
     global current_sessionID
     current_sessionID = scan.session
 
     if scan.session in ses_id_df['sesID'].values:
-        scan.session = ses_id_df.loc[ses_id_df['sesID'] == scan.session, 'bids_sesID'].iloc[0]
+        scan.session = f"{int(ses_id_df.loc[ses_id_df['sesID'] == scan.session, 'bids_sesID'].iloc[0]):02}"
     else: 
         print(f"Session ID not present in '{csv_ses_file}'. Adding and indexing the subject.")
         if ses_id_df.empty:
-            current_bids_sesID = '1'
+            current_bids_sesID = '01'
         else:
-            current_bids_sesID = int(ses_id_df['bids_sesID'].iat[-1]) + 1
-        print(f"Current session: {current_sessionID} -> {current_bids_sesID}")
+            # current_bids_sesID = int(ses_id_df['bids_sesID'].iat[-1]) + 1
+            current_bids_sesID = int(np.max(ses_id_df['bids_sesID'].astype(int))) + 1
+        print(f"Current session: {current_sessionID} -> {int(current_bids_sesID):02}")
 
-        new_row = pd.DataFrame({'sesID': [scan.session], 'bids_sesID': [str(current_bids_sesID)]})
+        new_row = pd.DataFrame({'sesID': [scan.session], 'bids_sesID': [f"{int(current_bids_sesID):02}"]})
         # display(new_row)
         ses_id_df = pd.concat([ses_id_df, new_row], ignore_index=True)
 
-        scan.session = new_row['bids_sesID'].iloc[0]
+        scan.session = f"{int(new_row['bids_sesID'].iloc[0]):02}"
 
     # display(ses_id_df)
 
     ses_id_df.to_csv(csv_ses_file, index=False)
 
-    return 0
 
 def SequenceEP(recording: object) -> int:
     """
@@ -271,6 +287,7 @@ def SequenceEP(recording: object) -> int:
     Error.SequenceEPerror
         code 140
     """
+
     return 0
 
 
@@ -298,6 +315,7 @@ def RecordingEP(recording: object) -> int:
     Error.RecordingEPerror
         code 150
     """
+
     return 0
 
 
@@ -375,10 +393,17 @@ def SessionEndEP(scan: BidsSession) -> int:
     Error.SessionEndEPerror
         code 180
     """
-    
+
+    # other option to copy bvec and bval files is to define it in FileEP and use 
+    # the recording and path objects to determine the according directories 
+
+    if dry_run:
+        # Skip if in dry run mode
+        return
+
     # Run the find command to search for bvec and bval files in the source directory of the current subject and session
-    bval_file_source = os.popen(f"find {rawfolder}/{current_subjectID}/{current_sessionID} -name '*.bval'").read().strip()
-    bvec_file_source = os.popen(f"find {rawfolder}/{current_subjectID}/{current_sessionID} -name '*.bvec'").read().strip()
+    bval_file_source = os.popen(f"find {nifti_dir}/{current_subjectID}/{current_sessionID} -name '*.bval'").read().strip()
+    bvec_file_source = os.popen(f"find {nifti_dir}/{current_subjectID}/{current_sessionID} -name '*.bvec'").read().strip()
     
     if bval_file_source and bvec_file_source:
 
@@ -400,7 +425,7 @@ def SessionEndEP(scan: BidsSession) -> int:
                 sequence_number_3digit = sequence_number_4digit[1:] # 3-digit number (as in prepared data)
 
             # Run the find command to search for the according files in the prepared data
-            files_avail_prepared = os.popen(f"find {bidsfolder}/{scan.subject}/{scan.session} -name '*{bvec_filename}*'").read().strip()
+            files_avail_prepared = os.popen(f"find {prep_dir}/{scan.subject}/{scan.session} -name '*{bvec_filename}*'").read().strip()
             
             # The output will have multiple lines. 
             # Split the output into lines and search for the first line that contains the three-digit number
@@ -424,9 +449,8 @@ def SessionEndEP(scan: BidsSession) -> int:
             warnings.warn("The bval and bvec files do not have the same name. Please check manually.")
 
     else:
-        print(f"No bval or bvec files found in the directories of '{scan.subject}' '{scan.session}'.")
+        print(f"No bval or bvec files found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
     
-    return 0
 
 
 def SubjectEndEP(scan: BidsSession) -> int:

@@ -60,7 +60,7 @@ if [[ $run_dicom_conv = "1" ]]; then
         fi
 
         ### converting DICOMs to Niftis using hMRI toolbox (excluding data in folders containing the exclusion string)
-        MATLAB matlab -nodesktop -nosplash -r "call_dicom_conversion('$curr_path_to_dcm','$curr_path_to_nii','$hMRI_dcmConv_excl')";exit
+        MATLAB matlab -nodesktop -nosplash -r "call_dicom_conversion('$curr_path_to_dcm','$curr_path_to_nii','$hMRI_dcmConv_excl', false)";exit
         echo ">>> hMRI DICOM Import done!"
 
         ### converting "excluded" data using dcm2niix

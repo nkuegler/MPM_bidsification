@@ -1,4 +1,4 @@
-function call_dicom_conversion(input_dir, output_dir, excl_str, check_criterium)
+function call_dicom_conversion(input_dir, output_dir, excl_str, check_results)
     %% function calling Ilona Lipps function to convert DICOMs to Niftis 
     %% using the hMRI toolbox DICOM import
 
@@ -24,7 +24,7 @@ function call_dicom_conversion(input_dir, output_dir, excl_str, check_criterium)
 
     disp("Retrieving DICOMs from " + input_dir)
 
-    if check_criterium
+    if check_results
         convert_dicoms_to_nifti(input_dir, output_dir, 0, true, excl_str)
     else
         %%% speeded up version due to no checks

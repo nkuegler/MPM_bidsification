@@ -31,7 +31,7 @@ function convert_dicoms_to_nifti(dicom_data_dir, nifti_data_dir, omit_check, avo
     else
         disp("Including all folders in the input directory!")
     end
-            
+
     %%% hMRI toolbox for dicom conversion
     %%% raw data are .ima images; convert dicoms in all folders to nifti files 
     for folder = 1:length(foldernames)
@@ -60,7 +60,6 @@ function convert_dicoms_to_nifti(dicom_data_dir, nifti_data_dir, omit_check, avo
 
         nifti_files_there = dir([nifti_data_dir,'/*',sprintf('%04d',sequence_number),'/*.nii']);
         
-
         if length(nifti_files_there) == 0 && sequence_number ~= 99 && ~contains(str_to_check,'[') % changed to <100 because these are not so releant; ~= 99 %%% only do conversion if no nifti files are in the folder and if is not the stupid phoenix report sequence
 
             %%% check for files with .ima extension, as for Leipzig scanner

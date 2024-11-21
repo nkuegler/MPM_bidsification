@@ -32,7 +32,10 @@ function convert_dicoms_to_nifti(dicom_data_dir, nifti_data_dir, omit_check, avo
         disp("Including all folders in the input directory!")
     end
 
+<<<<<<< HEAD
             
+=======
+>>>>>>> 05f41967a5dfb9d8482d71e31e02557f904e3e71
     %%% hMRI toolbox for dicom conversion
     %%% raw data are .ima images; convert dicoms in all folders to nifti files 
     for folder = 1:length(foldernames)

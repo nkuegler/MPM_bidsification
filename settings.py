@@ -11,8 +11,8 @@ number_of_paths=1
 
 # start the index at 1
 # subject 1
-path_to_dcm1="/data/pt_02262/bids_test/alinadata/source/dcm"
-path_to_nii1="/data/pt_02262/bids_test/alinadata/source/nii"
+path_to_dcm1="/data/pt_02262/bids_test/alinadata/source/NRO-271/20241105/dcm"
+path_to_nii1="/data/pt_02262/bids_test/alinadata/source/NRO-271/20241105/nii2"
 
 # defining data to be converted using dcm2niix instead of hMRI Dicom Convert (recommendation: diffusion data)
 hMRI_dcmConv_excl='noddi' # case invariant comparison

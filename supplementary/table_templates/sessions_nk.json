@@ -1,0 +1,29 @@
+{
+  "session_id": {
+    "LongName": "Session Id",
+    "Description": "A session identifier of the form ses-<label>, matching a session found in the dataset. There MUST be exactly one row for each session. Values in session_id MUST be unique."
+  },
+  "original_session_id": {
+    "LongName": "Original Session Id",
+    "Description": "Label of the session assigned by the scanning institution (non-BIDS format)"
+  },
+  "acq_time": {
+    "LongName": "Acquisition Time",
+    "Description": "Acquisition time refers to when the first data point of the first run was acquired.",
+    "Units": "ISO 8601",
+    "Format": "YYYY-MM-DDThh:mm:ss.sssZ"
+  },
+  "scanning_institution": {
+    "LongName": "Scanning Institution",
+    "Description": "Name of the institution where the participant was scanned"
+  },
+  "field_strength": {
+    "LongName": "Field Strength",
+    "Description": "Magnetic field strength of the MRI scanner",
+    "Units": "T",
+    "Levels": {
+      "3": "3 Tesla",
+      "7": "7 Tesla"
+    }
+  }
+}

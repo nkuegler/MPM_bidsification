@@ -31,6 +31,7 @@ import numpy as np
 import os
 import re
 import warnings
+import shutil
 
 # Will integrate plugin into logging
 import logging
@@ -44,6 +45,8 @@ logger = logging.getLogger(__name__)
 prep_dir = ""
 bids_dir = ""
 dry_run = False
+tfl_multiMTC_MT_ON_counter = 0
+tfl_multiMTC_MT_OFF_counter = 0
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -110,7 +113,6 @@ def InitEP(source: str, destination: str,
     prep_dir = source
     bids_dir = destination
     dry_run = dry
-
 
     return 0
 
@@ -206,12 +208,81 @@ def SequenceEP(recording: object) -> int:
     ### adapted from Nikita Beliy's plugin
     rec_id = recording.recId()
     if recording.Module() == "MRI":
+
+        ### AFIB1 repetition times
         if rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1g_4mm_PA"):
             # Getting repetition times
             alTR = "CSASeriesHeaderInfo/MrPhoenixProtocol/alTR"
             alTR = recording.getAttribute(alTR)
             recording.custom["alTR"] = alTR
             recording.custom["alTR_sorted"] = sorted(alTR)
+
+        ### tfl_multiMTC
+        if rec_id.startswith("tfl_multiMTC"): 
+            if "mt_on" in rec_id.casefold() or "mton" in rec_id.casefold():
+                global tfl_multiMTC_MT_ON_counter
+                tfl_multiMTC_MT_ON_counter += 1
+                recording.custom["tfl_multiMTC_MT_ON_counter"] = tfl_multiMTC_MT_ON_counter
+        
+            if "mt_off" in rec_id.casefold() or "mtoff" in rec_id.casefold():
+                global tfl_multiMTC_MT_OFF_counter
+                tfl_multiMTC_MT_OFF_counter += 1
+                recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
+    
+    
+        ### Partial Fourier logic 
+        ### adapted from https://gitlab.gwdg.de/cbs-neurophy/image-reconstruction/-/blob/main/core/MriDataMapVBVDImpl.m
+
+        original_level = logging.getLogger().getEffectiveLevel()
+        
+        try:
+            # Temporarily increase logging level to ERROR to suppress warnings
+            # otherwise "Could not parse" warnings are raised every time a jsonNIFTI file is processed
+            logging.getLogger().setLevel(logging.ERROR)
+
+            ucPhasePartialFourier = "CSASeriesHeaderInfo/MrPhoenixProtocol/sKSpace/ucPhasePartialFourier"
+            ucPhasePartialFourier = recording.getAttribute(ucPhasePartialFourier)
+            if ucPhasePartialFourier == 1: # 4/8
+                phasePartialFourier = 0.5
+            elif ucPhasePartialFourier == 2: # 5/8
+                phasePartialFourier = 0.625
+            elif ucPhasePartialFourier == 4: # 6/8
+                phasePartialFourier = 0.75
+            elif ucPhasePartialFourier == 8: # 7/8
+                phasePartialFourier = 0.875
+            else:
+                phasePartialFourier = 1
+
+
+            ucSlicePartialFourier = "CSASeriesHeaderInfo/MrPhoenixProtocol/sKSpace/ucSlicePartialFourier"
+            ucSlicePartialFourier = recording.getAttribute(ucSlicePartialFourier)
+            if ucSlicePartialFourier == 1: # 4/8
+                slicePartialFourier = 0.5
+            elif ucSlicePartialFourier == 2: # 5/8
+                slicePartialFourier = 0.625
+            elif ucSlicePartialFourier == 4: # 6/8
+                slicePartialFourier = 0.75
+            elif ucSlicePartialFourier == 8: # 7/8
+                slicePartialFourier = 0.875
+            else:
+                slicePartialFourier = 1
+        
+
+            recording.custom["PartialFourier"] = slicePartialFourier * phasePartialFourier
+
+
+            if phasePartialFourier < 1 and slicePartialFourier < 1:
+                recording.custom["PartialFourierDirection"] = "COMBINATION"
+            elif phasePartialFourier < 1:
+                recording.custom["PartialFourierDirection"] = "PHASE"
+            elif slicePartialFourier < 1:
+                recording.custom["PartialFourierDirection"] = "SLICE_SELECT"
+            else:
+                recording.custom["PartialFourierDirection"] = ""
+        
+        finally:
+            # Restore original logging level
+            logging.getLogger().setLevel(original_level)
 
 
 def RecordingEP(recording: object) -> int:
@@ -327,7 +398,12 @@ def SessionEndEP(scan: BidsSession) -> int:
     Error.SessionEndEPerror
         code 180
     """
-    
+    global tfl_multiMTC_MT_ON_counter
+    global tfl_multiMTC_MT_OFF_counter
+
+    tfl_multiMTC_MT_ON_counter = 0
+    tfl_multiMTC_MT_OFF_counter = 0
+
     return 0
 
 
@@ -346,8 +422,15 @@ def SubjectEndEP(scan: BidsSession) -> int:
     Error.SubjectEndEPerror
         code 180
     """
-    return 0
 
+    ## copy sessions tsv and json files for each subject
+    subject_sessions_pattern = f"{scan.subject}_sessions"
+    for file_name in os.listdir(scan.in_path):
+        if re.match(subject_sessions_pattern, file_name):
+            prep_file = os.path.join(scan.in_path, file_name)
+            bids_file = os.path.join(f"{bids_dir}/{scan.subject}", file_name)
+            shutil.copy(prep_file, bids_file)
+            # print(f"Copying {prep_file} to {bids_file}")
 
 def FinaliseEP() -> int:
     """

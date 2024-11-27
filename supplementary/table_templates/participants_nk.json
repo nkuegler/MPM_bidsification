@@ -1,0 +1,10 @@
+{
+  "participant_id": {
+    "LongName": "Participant Id",
+    "Description": "A participant identifier of the form sub-<label>, matching a participant entity found in the dataset. There MUST be exactly one row for each participant. Values in participant_id MUST be unique."
+  },
+  "original_id": {
+    "LongName": "Original Id",
+    "Description": "Id of the participant assigned by the scanning institution (non-BIDS format)"
+  }
+}

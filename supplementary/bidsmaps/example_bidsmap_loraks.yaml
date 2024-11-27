@@ -70,10 +70,10 @@ MRI:
           - CoilCombinationMethod: <CoilCombinationMethod>
       - provenance: 
           /data/pt_02262/bids_test/loraks_test/prep2/sub-001/ses-01/MRI/005-ernst_kp_mtflash3d_v1s_0p5_sag_loraks/meas_MID00068_FID17044_ernst_kp_mtflash3d_v1s_0p5_sag_rec-loraks_echo-01_mt-off_part-mag.nii
-        example: anat/sub-001_ses-01_acq-ernst_rec-loraks_echo-01_part-mag_T1w
+        example: anat/sub-001_ses-01_acq-ernst_rec-loraks_echo-01_part-mag_MEGRE
         checked: true
-        model: anat:T1w
-        suffix: 'T1w'
+        model: anat:MEGRE
+        suffix: 'MEGRE'
         attributes:
           ProtocolName: ernst_kp_mtflash3d_v1s_0p5_sag
         bids: !!omap

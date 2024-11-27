@@ -31,14 +31,17 @@ import numpy as np
 import os
 import re
 import warnings
+import json
+from datetime import datetime
+import shutil
 
 # Will integrate plugin into logging
 import logging
 
 logger = logging.getLogger(__name__)
 
-# code_path = os.path.dirname(__file__)
-# base_path = os.path.join(code_path, "..")
+plugin_path = os.path.dirname(__file__)
+repo_path = os.path.dirname(plugin_path)
 
 # global variables
 nifti_dir = ""
@@ -47,6 +50,9 @@ dry_run = False
 id_files_dir_name = f"id_info"
 id_files_dir = ""
 base_dir = ""
+sessions_tsv_template = f"{repo_path}/supplementary/table_templates/sessions_nk.json"
+subN_sessions_dict = {}
+ses_dict_populated_for_this_ses = False
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -132,6 +138,11 @@ def InitEP(source: str, destination: str,
     if not os.path.exists(id_files_dir):
         os.makedirs(id_files_dir)
 
+    print(f"""Loading sessions_nk.json from {sessions_tsv_template}.
+          This functionality is not part of Bidsme, but implemented in a plugin. 
+          It only works for processing all sessions of a subjects. Problems may 
+          arise if the plugin is used for single sessions.""")
+
     return 0
 
 
@@ -199,6 +210,25 @@ def SubjectEP(scan: BidsSession) -> int:
     sub_id_df.to_csv(csv_sub_file, index=False)
 
 
+    #### populating the participant.tsv file passed in the --part-template flag
+    scan.sub_values["original_id"] = current_subjectID
+
+
+    ### initialize the dataframe for the  sub-<label>_sessions.tsv 
+    ### file for this subject
+    # Load the JSON file to get the column names
+    with open(sessions_tsv_template, 'r') as f:
+        sessions_json = json.load(f)
+    
+    # Extract the column names from the JSON keys
+    columns_ses_json = list(sessions_json.keys())
+
+    global subN_sessions_dict
+    for col in columns_ses_json:
+        subN_sessions_dict[col] = []
+    # print(subN_sessions_dict.keys())
+
+
 def SessionEP(scan: BidsSession) -> int:
     """
     This function is called after entering directory of session
@@ -261,6 +291,23 @@ def SessionEP(scan: BidsSession) -> int:
     ses_id_df.to_csv(csv_ses_file, index=False)
 
 
+    ### populating the sub-<label>_sessions.tsv file
+    global subN_sessions_dict
+    column_ses_dict = list(subN_sessions_dict.keys())
+
+    ## pre-filling all columns with 'n/a' to avoid missing values
+    for col in column_ses_dict:
+        subN_sessions_dict[col].append('n/a')
+
+    if 'session_id' in column_ses_dict:
+        subN_sessions_dict['session_id'][-1] = f"ses-{scan.session}"
+
+    if 'original_session_id' in column_ses_dict:
+        if current_sessionID:
+            subN_sessions_dict['original_session_id'][-1] = current_sessionID
+    # more population of the dictionary in SequenceEP to access a recording object
+
+
 def SequenceEP(recording: object) -> int:
     """
     This function is called after loading first file of
@@ -288,7 +335,50 @@ def SequenceEP(recording: object) -> int:
         code 140
     """
 
-    return 0
+    def extract_datetime(string):
+        # Pattern 1: sYYYY-MM-DD_HH-MM
+        pattern1 = r's(\d{4}-\d{2}-\d{2}_\d{2}-\d{2})'
+        match = re.match(pattern1, string)
+        if match:
+            return match.group(1)
+        
+        # Pattern 2: sYYYYMMDDHHMM
+        pattern2 = r's(\d{12})'
+        match = re.match(pattern2, string)
+        if match:
+            datetime_str = match.group(1)
+            dt = datetime.strptime(datetime_str, '%Y%m%d%H%M')
+            return dt.strftime('%Y-%m-%d_%H-%M')
+        
+        return None  # No match found
+
+
+    ### populating the sub-<label>_sessions.tsv file
+    ### performing this in SequenceEP to access the recording object
+    ### only add the parameters once per session (ses_dict_populated_for_this_ses)
+    global ses_dict_populated_for_this_ses
+    if not ses_dict_populated_for_this_ses:
+        global subN_sessions_dict
+        column_ses_dict = list(subN_sessions_dict.keys())
+
+        if 'acq_time' in column_ses_dict:
+            acq_time = extract_datetime(recording.currentFile(True)) # acq_time is ususally stored in the filename
+            if acq_time:
+                subN_sessions_dict['acq_time'][-1] = acq_time
+
+        if 'scanning_institution' in column_ses_dict:
+            scan_institution = recording.getAttribute("InstitutionName")
+            if scan_institution:
+                subN_sessions_dict['scanning_institution'][-1] = scan_institution
+
+        if 'field_strength' in column_ses_dict:
+            field_strength = recording.getAttribute("MagneticFieldStrength")
+            if field_strength:
+                subN_sessions_dict['field_strength'][-1] = field_strength
+
+        ## restrict following sequences from populating the sessions.tsv file
+        ## this is reset in SessionEndEP
+        ses_dict_populated_for_this_ses = True
 
 
 def RecordingEP(recording: object) -> int:
@@ -402,8 +492,8 @@ def SessionEndEP(scan: BidsSession) -> int:
         return
 
     # Run the find command to search for bvec and bval files in the source directory of the current subject and session
-    bval_file_source = os.popen(f"find {nifti_dir}/{current_subjectID}/{current_sessionID} -name '*.bval'").read().strip()
-    bvec_file_source = os.popen(f"find {nifti_dir}/{current_subjectID}/{current_sessionID} -name '*.bvec'").read().strip()
+    bval_file_source = os.popen(f"find {scan.in_path} -name '*.bval'").read().strip()
+    bvec_file_source = os.popen(f"find {scan.in_path} -name '*.bvec'").read().strip()
     
     if bval_file_source and bvec_file_source:
 
@@ -425,25 +515,30 @@ def SessionEndEP(scan: BidsSession) -> int:
                 sequence_number_3digit = sequence_number_4digit[1:] # 3-digit number (as in prepared data)
 
             # Run the find command to search for the according files in the prepared data
-            files_avail_prepared = os.popen(f"find {prep_dir}/{scan.subject}/{scan.session} -name '*{bvec_filename}*'").read().strip()
+            files_avail_prepared = os.popen(f"find {prep_dir}/{scan.subject}/{scan.session} -name '*{bval_filename}*'").read().strip()
             
             # The output will have multiple lines. 
             # Split the output into lines and search for the first line that contains the three-digit number
             output_paths = files_avail_prepared.split('\n')
             correct_path = None
             for p in output_paths:
-                if sequence_number_3digit in p:
-                    correct_path = p
-                    break
+                if p:  # Check if path is not empty
+                    # Get just the filename and its parent directory
+                    path_parts = p.split(os.sep)
+                    if len(path_parts) >= 2:
+                        dir_and_file = os.path.join(path_parts[-2], path_parts[-1])
+                        if sequence_number_3digit in path_parts[-2]:  # sequence number must be present in the sequence name
+                            correct_path = p
+                            break
 
             if correct_path:
                 bval_path_prepared = os.path.dirname(correct_path)
+
+                print(f"Copying bval and bvec files to {bval_path_prepared}")
+                shutil.copy(bval_file_source, bval_path_prepared)
+                shutil.copy(bvec_file_source, bval_path_prepared)
             else:
                 warnings.warn(f"No matching line found containing the sequence number {sequence_number_3digit}. Please copy the bvec and bval files manually.")
-            
-            print(f"Copying bval and bvec files to {bval_path_prepared}")
-            os.system(f"cp {bval_file_source} {bval_path_prepared}")
-            os.system(f"cp {bvec_file_source} {bval_path_prepared}")
 
         else:
             warnings.warn("The bval and bvec files do not have the same name. Please check manually.")
@@ -451,6 +546,9 @@ def SessionEndEP(scan: BidsSession) -> int:
     else:
         print(f"No bval or bvec files found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
     
+    ## allow the next session to populate the dictionary
+    global ses_dict_populated_for_this_ses
+    ses_dict_populated_for_this_ses = False
 
 
 def SubjectEndEP(scan: BidsSession) -> int:
@@ -468,8 +566,24 @@ def SubjectEndEP(scan: BidsSession) -> int:
     Error.SubjectEndEPerror
         code 180
     """
-    return 0
 
+    ### saving dictionary to sub-<label>_sessions.tsv file 
+    ### for this subject
+    global subN_sessions_dict
+
+    print(f"""{scan.subject}_sessions.tsv:
+          {subN_sessions_dict}""")
+          
+    df_sessions = pd.DataFrame(subN_sessions_dict)
+    output_filename_tsv = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.tsv"
+    df_sessions.to_csv(output_filename_tsv, sep='\t', index=False)
+
+    # reset the dictionary for the next subject
+    subN_sessions_dict = {}
+
+    ouptput_filename_json = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.json"
+    shutil.copy(sessions_tsv_template, ouptput_filename_json)
+    
 
 def FinaliseEP() -> int:
     """

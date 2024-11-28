@@ -17,6 +17,14 @@
     "LongName": "Scanning Institution",
     "Description": "Name of the institution where the participant was scanned"
   },
+  "manufacturer": {
+    "LongName": "Manufacturer",
+    "Description": "Name of the manufacturer of the MRI scanner"
+  },
+  "scanner_model": {
+    "LongName": "Scanner Model",
+    "Description": "Model name of the MRI scanner"
+  },
   "field_strength": {
     "LongName": "Field Strength",
     "Description": "Magnetic field strength of the MRI scanner",

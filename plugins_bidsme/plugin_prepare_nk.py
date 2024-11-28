@@ -371,6 +371,19 @@ def SequenceEP(recording: object) -> int:
             if scan_institution:
                 subN_sessions_dict['scanning_institution'][-1] = scan_institution
 
+        if 'manufacturer' in column_ses_dict:
+            manufacturer = recording.getAttribute("Manufacturer")
+            if manufacturer:
+                subN_sessions_dict['manufacturer'][-1] = manufacturer
+
+        if 'scanner_model' in column_ses_dict:
+            model = recording.getAttribute("ManufacturersModelName") # dcm2niix
+            if not model:
+                model = recording.getAttribute("ManufacturerModelName") # SMP / hMRI toolbox DICOM import
+
+            if model:
+                subN_sessions_dict['scanner_model'][-1] = model
+
         if 'field_strength' in column_ses_dict:
             field_strength = recording.getAttribute("MagneticFieldStrength")
             if field_strength:

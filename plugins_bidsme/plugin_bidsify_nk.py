@@ -284,6 +284,26 @@ def SequenceEP(recording: object) -> int:
             # Restore original logging level
             logging.getLogger().setLevel(original_level)
 
+        try:
+            # only for dcm2niix, stored as list
+            image_type = recording.getAttribute("ImageTypeText")
+        except:
+            # for hMRI toolbox DICOM import, stored as string like "ORIGINAL\\PRIMARY\\M\\ND "
+            image_type = recording.getAttribute("ImageType")
+            image_type = [item.strip() for item in image_type.split('\\')]
+        finally:
+            if "ND" in image_type:
+                recording.custom["NonlinearGradientCorrection"] = False
+                recording.custom["acq_suffix"] = "-ND"
+            else:
+                recording.custom["NonlinearGradientCorrection"] = True
+                recording.custom["acq_suffix"] = ""
+            
+            if "M" in image_type:
+                recording.custom["part"] = "mag"
+            if "P" in image_type:
+                recording.custom["part"] = "phase"
+
 
 def RecordingEP(recording: object) -> int:
     """
@@ -322,6 +342,18 @@ def RecordingEP(recording: object) -> int:
             recording.custom["index"] = index
             recording.custom["tr_index"] = \
                 recording.custom["alTR_sorted"].index(TR) + 1
+        
+        ### t1_mp2rage_sag_p3
+        if rec_id.startswith("t1_mp2rage_sag_p3"):
+            if "INV1".casefold() in rec_id.casefold():
+                recording.custom["inversion_number"] = "1"
+            if "INV2".casefold() in rec_id.casefold():
+                recording.custom["inversion_number"] = "2"
+            # differentiate between two UNI T1 images
+            if "UNI_Images".casefold() in rec_id.casefold():
+                recording.custom["UniT1_descr"] = "IMG"
+            if "UNI-DEN".casefold() in rec_id.casefold():
+                recording.custom["UniT1_descr"] = "DEN"
 
 
 def FileEP(path: str, recording: object) -> int:

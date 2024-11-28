@@ -41,7 +41,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 plugin_path = os.path.dirname(__file__)
-repo_path = os.path.dirname(plugin_path)
+resources_path = os.path.dirname(plugin_path)
 
 # global variables
 nifti_dir = ""
@@ -50,7 +50,7 @@ dry_run = False
 id_files_dir_name = f"id_info"
 id_files_dir = ""
 base_dir = ""
-sessions_tsv_template = f"{repo_path}/supplementary/table_templates/sessions_nk.json"
+sessions_tsv_template = f"{resources_path}/table_templates/sessions_nk.json"
 subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 

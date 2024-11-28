@@ -209,14 +209,6 @@ def SequenceEP(recording: object) -> int:
     rec_id = recording.recId()
     if recording.Module() == "MRI":
 
-        ### AFIB1 repetition times
-        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1g_4mm_PA"):
-            # Getting repetition times
-            alTR = "CSASeriesHeaderInfo/MrPhoenixProtocol/alTR"
-            alTR = recording.getAttribute(alTR)
-            recording.custom["alTR"] = alTR
-            recording.custom["alTR_sorted"] = sorted(alTR)
-
         ### tfl_multiMTC
         if rec_id.startswith("tfl_multiMTC"): 
             if "mt_on" in rec_id.casefold() or "mton" in rec_id.casefold():
@@ -332,16 +324,16 @@ def RecordingEP(recording: object) -> int:
     ### adapted from Nikita Beliy's plugin
     rec_id = recording.recId()
     if recording.Module() == "MRI":
-        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1g_4mm_PA"):
-            index = recording.getAttribute("EchoNumbers")
 
-            TR = recording.custom["alTR"][index - 1]
-            # Need to be sure about units!
-            recording.custom["RepetitionTime"] = round(TR * 1e-6, 10)
+        ### AFIB1 repetition times
+        if rec_id.startswith("kp_afib1_v1g"):       ## for dcm2niix
+            tr_index = recording.getAttribute("EchoNumber")
 
-            recording.custom["index"] = index
-            recording.custom["tr_index"] = \
-                recording.custom["alTR_sorted"].index(TR) + 1
+            recording.custom["tr_index"] = tr_index
+
+            tr_list = [25,125] # ms
+
+            recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
         
         ### t1_mp2rage_sag_p3
         if rec_id.startswith("t1_mp2rage_sag_p3"):
@@ -412,6 +404,7 @@ def SequenceEndEP(path: str, recording: object) -> int:
     Error.SequenceEndEPerror
         code 170
     """
+
     return 0
 
 

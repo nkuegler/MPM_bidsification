@@ -1,0 +1,209 @@
+__bids__: 1.10.0
+MRI:
+  jsonNIFTI:
+    __ignore__:
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/001-localizer/s20241105120250-1.nii
+        checked: true
+        model: __unknown__
+        suffix: ''
+        attributes:
+          ProtocolName: ['localizer', 'ThreeDream_5mm_40deg', 'smap_kp_mtflash3d_v1s_4p0']
+        bids: !!omap []
+        json: !!omap []
+    anat:
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/010-t1w_kp_mtflash3d_v1s_0p6_ND/s20241105120250-1.nii
+        example: anat/sub-001_ses-01_acq-T1wND_echo-1_flip-1_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: t1w_kp_mtflash3d_v1s_0p6
+        bids: !!omap
+          - task: ~
+          - acq: T1w<<custom:acq_suffix>>
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: <EchoNumber>
+          - flip: '1'
+          - mt: off
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/018-pdw_kp_mtflash3d_v1s_0p6_ND/s20241105120250-1.nii
+        example: anat/sub-001_ses-01_acq-PDwND_echo-1_flip-2_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: pdw_kp_mtflash3d_v1s_0p6
+        bids: !!omap
+          - task: ~
+          - acq: PDw<<custom:acq_suffix>>
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: <EchoNumber>
+          - flip: '2'
+          - mt: off
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/026-mtw_kp_mtflash3d_v1s_0p6_ND/s20241105120250-1.nii
+        example: anat/sub-001_ses-01_acq-MTwND_echo-1_flip-2_mt-on_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: mtw_kp_mtflash3d_v1s_0p6
+        bids: !!omap
+          - task: ~
+          - acq: MTw<<custom:acq_suffix>>
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: <EchoNumber>
+          - flip: '2'
+          - mt: on
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - SequenceName: <PulseSequenceName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/032-t1_mp2rage_sag_p3_0.75mm_INV1/s20241105120250-1.nii
+        example: anat/sub-001_ses-01_inv-1_MP2RAGE
+        checked: true
+        model: anat:MP2RAGE
+        suffix: MP2RAGE
+        attributes:
+          ProtocolName: ['t1_mp2rage_sag_p3_0.75mm']
+          SeriesDescription: ['t1_mp2rage_sag_p3_0.75mm_INV1', 't1_mp2rage_sag_p3_0.75mm_INV2']
+        bids: !!omap
+          - task: ~
+          - acq: ~
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: ~
+          - flip: ~
+          - inv: <<custom:inversion_number>>
+          - part: ~
+          - chunk: ~
+        json: !!omap
+          - InversionTime: <InversionTime>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/034-t1_mp2rage_sag_p3_0.75mm_T1_Images/s20241105120250-1.nii
+        example: anat/sub-001_ses-01_T1map
+        checked: true
+        model: anat:MP2RAGE
+        suffix: T1map
+        attributes:
+          ProtocolName: t1_mp2rage_sag_p3_0.75mm
+          SeriesDescription: t1_mp2rage_sag_p3_0.75mm_T1_Images
+        bids: !!omap
+          - task: ~
+          - acq: ~
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - chunk: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - SequenceName: <PulseSequenceName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/036-t1_mp2rage_sag_p3_0.75mm_UNI_Images/s20241105120250-1.nii
+        example: anat/sub-001_ses-01_acq-IMG_UNIT1
+        checked: true
+        model: anat:MP2RAGE
+        suffix: UNIT1
+        attributes:
+          ProtocolName: t1_mp2rage_sag_p3_0.75mm
+          SeriesDescription: ['t1_mp2rage_sag_p3_0.75mm_UNI_Images', 't1_mp2rage_sag_p3_0.75mm_UNI-DEN']
+        bids: !!omap
+          - acq: <<custom:UniT1_descr>>
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - SequenceName: <PulseSequenceName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+    fmap:
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/030-kp_afib1_v1g_ND/s20241105120250-1.nii
+        example: fmap/sub-001_ses-01_acq-tr1-ND_echo-1_TB1AFI
+        checked: true
+        model: fmap:TB1AFI
+        suffix: TB1AFI
+        attributes:
+          ProtocolName: kp_afib1_v1g
+        bids: !!omap
+          - acq: tr<<custom:tr_index>><<custom:acq_suffix>>
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: <EchoNumber>
+          - flip: ~
+          - inv: ~
+          - part: ~
+          - chunk: ~
+        json: !!omap
+          - RepetitionTime: <custom:RepetitionTime>
+          - EchoTime: <EchoTime>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - DwellTime: <DwellTime>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - IntendedFor: ~

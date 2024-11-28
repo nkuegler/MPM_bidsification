@@ -331,7 +331,7 @@ def RecordingEP(recording: object) -> int:
 
             recording.custom["tr_index"] = tr_index
 
-            tr_list = [25,125] # ms
+            tr_list = [0.025,0.125] # in s
 
             recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
         

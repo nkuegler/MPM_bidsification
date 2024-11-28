@@ -279,6 +279,19 @@ def SequenceEP(recording: object) -> int:
                 recording.custom["PartialFourierDirection"] = "SLICE_SELECT"
             else:
                 recording.custom["PartialFourierDirection"] = ""
+
+
+            ### Parallel Acquisition Technique
+            ucPATMode = "CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/ucPATMode"
+            ucPATMode = recording.getAttribute(ucPATMode)
+
+            if ucPATMode == 2:
+                recording.custom["ParallelAcquisitionTechnique"] = "GRAPPA"
+            elif ucPATMode == 16:
+                recording.custom["ParallelAcquisitionTechnique"] = "CAIPIRINHA"
+            else:
+                recording.custom["ParallelAcquisitionTechnique"] = "n/a"
+        
         
         finally:
             # Restore original logging level

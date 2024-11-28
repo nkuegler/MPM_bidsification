@@ -39,6 +39,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
@@ -72,6 +73,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
@@ -109,6 +111,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
@@ -140,6 +143,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -170,13 +174,13 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
-          - ParallelAcquisitionTechnique: 'GRAPPA'
       - provenance: 
           /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/022-tfl_multiMTC_ss_centric_MT_ON_2AVG/s2023-11-21_14-24-163059-00001-00001-1.nii
         example: anat/sub-003_ses-01_acq-001_run-1_mt-on_MTR
@@ -189,7 +193,7 @@ MRI:
           ImageType: ORIGINAL\\PRIMARY\\M\\ND
         bids: !!omap
           - task: ~
-          - acq: InstanceNo<format03d:InstanceNumber>
+          - acq: Instance<format03d:InstanceNumber>
           - ce: ~
           - rec: ~
           - run: <<custom:tfl_multiMTC_MT_ON_counter>>
@@ -202,6 +206,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -219,7 +224,7 @@ MRI:
           ImageType: ORIGINAL\\PRIMARY\\M\\ND
         bids: !!omap
           - task: ~
-          - acq: InstanceNo<format03d:InstanceNumber>
+          - acq: Instance<format03d:InstanceNumber>
           - ce: ~
           - rec: ~
           - run: <<custom:tfl_multiMTC_MT_OFF_counter>>
@@ -232,6 +237,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -263,6 +269,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -295,6 +302,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -330,6 +338,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>

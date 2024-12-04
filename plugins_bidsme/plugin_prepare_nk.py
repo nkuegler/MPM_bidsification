@@ -53,6 +53,9 @@ base_dir = ""
 sessions_tsv_template = f"{repo_path}/supplementary/table_templates/sessions_nk.json"
 subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
+data_avail_in_dir = False
+session_shim_currents = None
+session_shim_current_warning_counter = 0
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -353,6 +356,10 @@ def SequenceEP(recording: object) -> int:
         return None  # No match found
 
 
+    ### flag to ensure that there are files in the session directory
+    global data_avail_in_dir
+    data_avail_in_dir = True
+
     ### populating the sub-<label>_sessions.tsv file
     ### performing this in SequenceEP to access the recording object
     ### only add the parameters once per session (ses_dict_populated_for_this_ses)
@@ -419,7 +426,30 @@ def RecordingEP(recording: object) -> int:
         code 150
     """
 
-    return 0
+    rec_id = recording.recId()
+    if recording.Module() == "MRI":
+
+        ### check that the shim currents are the same for all T1w, PDw, MTw, and (pTx) AFI scans
+        global session_shim_currents
+        global session_shim_current_warning_counter
+
+        if rec_id.startswith("t1w_kp_mtflash3d_v1s") or \
+                rec_id.startswith("pdw_kp_mtflash3d_v1s") or \
+                rec_id.startswith("mtw_kp_mtflash3d_v1s") or \
+                rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
+                rec_id.startswith("kp_afib1_v1g_4mm_PA"):
+            alShimCurrent = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
+            shim_currents = recording.getAttribute(alShimCurrent)
+            if session_shim_currents is None:
+                session_shim_currents = shim_currents
+            else:
+                if session_shim_currents != shim_currents:
+                    logger.warning(f"""Shim currents vary in 
+                                  {recording.currentFile(False)} 
+                                  from the rest of the session. 
+                                  Bidsification step will not produce the data.""")
+                    session_shim_current_warning_counter += 1
+
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -551,17 +581,48 @@ def SessionEndEP(scan: BidsSession) -> int:
                 shutil.copy(bval_file_source, bval_path_prepared)
                 shutil.copy(bvec_file_source, bval_path_prepared)
             else:
-                warnings.warn(f"No matching line found containing the sequence number {sequence_number_3digit}. Please copy the bvec and bval files manually.")
+                logger.warning(f"No matching line found containing the sequence number {sequence_number_3digit}. Please copy the bvec and bval files manually.")
 
         else:
-            warnings.warn("The bval and bvec files do not have the same name. Please check manually.")
+            logger.warning("The bval and bvec files do not have the same name. Please check manually.")
 
     else:
         print(f"No bval or bvec files found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
     
+
+    ### populating the sub-<label>_sessions.tsv file with shim current information
+    global data_avail_in_dir
+    
+    if data_avail_in_dir:
+        global session_shim_current_warning_counter
+        global subN_sessions_dict
+        column_ses_dict = list(subN_sessions_dict.keys())
+        
+        if session_shim_current_warning_counter == 0:
+            print("No shim current inconsistencies present in this session!")
+            if 'shim_curr_cons' in column_ses_dict:
+                subN_sessions_dict['shim_curr_cons'][-1] = 'consistent'
+        else:
+            print("Shim currents are INCONSISTENT in this session! Bidsification step will not produce results.")
+            if 'shim_curr_cons' in column_ses_dict:
+                subN_sessions_dict['shim_curr_cons'][-1] = 'inconsistent'
+    else:
+        print(f"No NIfTI data found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
+
+
+    ## reset shim currents for next session
+    global session_shim_currents
+    session_shim_currents = None
+
+    ## reset the warning counter for shim currents
+    session_shim_current_warning_counter = 0
+
     ## allow the next session to populate the dictionary
     global ses_dict_populated_for_this_ses
     ses_dict_populated_for_this_ses = False
+
+    ## reset data availability flag
+    data_avail_in_dir = False
 
 
 def SubjectEndEP(scan: BidsSession) -> int:
@@ -596,7 +657,7 @@ def SubjectEndEP(scan: BidsSession) -> int:
 
     ouptput_filename_json = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.json"
     shutil.copy(sessions_tsv_template, ouptput_filename_json)
-    
+
 
 def FinaliseEP() -> int:
     """

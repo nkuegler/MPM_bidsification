@@ -47,6 +47,8 @@ bids_dir = ""
 dry_run = False
 tfl_multiMTC_MT_ON_counter = 0
 tfl_multiMTC_MT_OFF_counter = 0
+session_shim_currents = None
+session_shim_current_warning_counter = 0
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -229,7 +231,47 @@ def SequenceEP(recording: object) -> int:
                 tfl_multiMTC_MT_OFF_counter += 1
                 recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
     
-    
+
+
+def RecordingEP(recording: object) -> int:
+    """
+    This function is called after loading each file of
+    a sequence and meant to perform actions on recordings,
+    like quality checks, and metafields corrections.
+
+    Parameters
+    ----------
+    recording: Modules.base.baseModule
+        A recording with loaded file
+
+    Returns
+    -------
+    int or None
+        return code, if 0 (or None) RecordingEP is
+        succesful. Non 0 if there some error, where
+        code should indicate the problem. The code
+        must be in range [0-9]
+
+    Raises
+    ------
+    Error.RecordingEPerror
+        code 150
+    """
+    ### adapted from Nikita Beliy's plugin
+    rec_id = recording.recId()
+    if recording.Module() == "MRI":
+        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1g_4mm_PA"):
+            index = recording.getAttribute("EchoNumbers")
+
+            TR = recording.custom["alTR"][index - 1]
+            # Need to be sure about units!
+            recording.custom["RepetitionTime"] = round(TR * 1e-6, 10)
+
+            recording.custom["index"] = index
+            recording.custom["tr_index"] = \
+                recording.custom["alTR_sorted"].index(TR) + 1
+
+
         ### Partial Fourier logic 
         ### adapted from https://gitlab.gwdg.de/cbs-neurophy/image-reconstruction/-/blob/main/core/MriDataMapVBVDImpl.m
 
@@ -298,43 +340,27 @@ def SequenceEP(recording: object) -> int:
             logging.getLogger().setLevel(original_level)
 
 
-def RecordingEP(recording: object) -> int:
-    """
-    This function is called after loading each file of
-    a sequence and meant to perform actions on recordings,
-    like quality checks, and metafields corrections.
+        ### check that the shim currents are the same for all T1w, PDw, MTw, and (pTx) AFI scans
+        global session_shim_currents
+        global session_shim_current_warning_counter
 
-    Parameters
-    ----------
-    recording: Modules.base.baseModule
-        A recording with loaded file
-
-    Returns
-    -------
-    int or None
-        return code, if 0 (or None) RecordingEP is
-        succesful. Non 0 if there some error, where
-        code should indicate the problem. The code
-        must be in range [0-9]
-
-    Raises
-    ------
-    Error.RecordingEPerror
-        code 150
-    """
-    ### adapted from Nikita Beliy's plugin
-    rec_id = recording.recId()
-    if recording.Module() == "MRI":
-        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1g_4mm_PA"):
-            index = recording.getAttribute("EchoNumbers")
-
-            TR = recording.custom["alTR"][index - 1]
-            # Need to be sure about units!
-            recording.custom["RepetitionTime"] = round(TR * 1e-6, 10)
-
-            recording.custom["index"] = index
-            recording.custom["tr_index"] = \
-                recording.custom["alTR_sorted"].index(TR) + 1
+        if rec_id.startswith("t1w_kp_mtflash3d_v1s") or \
+                rec_id.startswith("pdw_kp_mtflash3d_v1s") or \
+                rec_id.startswith("mtw_kp_mtflash3d_v1s") or \
+                rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
+                rec_id.startswith("kp_afib1_v1g_4mm_PA"):
+            alShimCurrent = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
+            shim_currents = recording.getAttribute(alShimCurrent)
+            if session_shim_currents is None:
+                session_shim_currents = shim_currents
+            else:
+                if session_shim_currents != shim_currents:
+                    logger.warning(f"""Shim currents vary in 
+                                  {recording.currentFile(False)} 
+                                  from the rest of the session. 
+                                  This renders the data useless!
+                                  {session_shim_currents} vs. {shim_currents}""")
+                    session_shim_current_warning_counter += 1
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -417,8 +443,32 @@ def SessionEndEP(scan: BidsSession) -> int:
     tfl_multiMTC_MT_ON_counter = 0
     tfl_multiMTC_MT_OFF_counter = 0
 
-    return 0
 
+    # reset shim currents for next session
+    global session_shim_currents
+    session_shim_currents = None
+
+    # reset the warning counter for shim currents
+    global session_shim_current_warning_counter
+    if session_shim_current_warning_counter == 0:
+        print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
+    else:
+        logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! Data is USELESS and will now be DELETED!""")
+        del_path = f"{bids_dir}/{scan.subject}/{scan.session}"
+
+        try:
+            # List all contents
+            for item in os.listdir(del_path):
+                item_path = os.path.join(del_path, item)
+                if os.path.isfile(item_path):
+                    os.remove(item_path)
+                elif os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+        except Exception as e:
+            print(f"Error while cleaning directory: {e}")
+    
+
+    session_shim_current_warning_counter = 0
 
 def SubjectEndEP(scan: BidsSession) -> int:
     """

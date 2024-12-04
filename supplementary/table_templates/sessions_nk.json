@@ -33,5 +33,13 @@
       "3": "3 Tesla",
       "7": "7 Tesla"
     }
+  },
+  "shim_curr_cons": {
+    "LongName": "Shim Currents Consistency",
+    "Description": "Currents used for shimming the MRI scanner. This property states if the shim currents are consistent across T1w, PDw, MTW (if available), and (pTx) AFI scans. Mismatches result in immediate data deletion.",
+    "Levels": {
+      "consistent": "Shim currents are consistent",
+      "inconsistent": "Shim currents are inconsistent"
+    }
   }
 }

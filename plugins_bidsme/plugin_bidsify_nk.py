@@ -444,11 +444,7 @@ def SessionEndEP(scan: BidsSession) -> int:
     tfl_multiMTC_MT_OFF_counter = 0
 
 
-    # reset shim currents for next session
-    global session_shim_currents
-    session_shim_currents = None
-
-    # reset the warning counter for shim currents
+    ## warn if shim currents are inconsistent + delete the bidsified data of the corresponding session
     global session_shim_current_warning_counter
     if session_shim_current_warning_counter == 0:
         print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
@@ -467,8 +463,14 @@ def SessionEndEP(scan: BidsSession) -> int:
         except Exception as e:
             print(f"Error while cleaning directory: {e}")
     
+    
+    ## reset shim currents for next session
+    global session_shim_currents
+    session_shim_currents = None
 
+    ## reset the warning counter for shim currents
     session_shim_current_warning_counter = 0
+
 
 def SubjectEndEP(scan: BidsSession) -> int:
     """

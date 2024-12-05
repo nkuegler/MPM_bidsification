@@ -447,7 +447,7 @@ def RecordingEP(recording: object) -> int:
                     logger.warning(f"""Shim currents vary in 
                                   {recording.currentFile(False)} 
                                   from the rest of the session. 
-                                  Bidsification step will not produce the data.""")
+                                  The data may be unusable.""")
                     session_shim_current_warning_counter += 1
 
 
@@ -603,7 +603,7 @@ def SessionEndEP(scan: BidsSession) -> int:
             if 'shim_curr_cons' in column_ses_dict:
                 subN_sessions_dict['shim_curr_cons'][-1] = 'consistent'
         else:
-            print("Shim currents are INCONSISTENT in this session! Bidsification step will not produce results.")
+            print("Shim currents are INCONSISTENT in this session! The data may be unusable.")
             if 'shim_curr_cons' in column_ses_dict:
                 subN_sessions_dict['shim_curr_cons'][-1] = 'inconsistent'
     else:

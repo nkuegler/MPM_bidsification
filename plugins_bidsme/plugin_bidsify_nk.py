@@ -444,26 +444,35 @@ def SessionEndEP(scan: BidsSession) -> int:
     tfl_multiMTC_MT_OFF_counter = 0
 
 
-    ## warn if shim currents are inconsistent + delete the bidsified data of the corresponding session
+    ## warn if shim currents are inconsistent + delete the bidsified data or create warning file for the corresponding session
     global session_shim_current_warning_counter
     if session_shim_current_warning_counter == 0:
         print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
     else:
-        logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! Data is USELESS and will now be DELETED!""")
-        del_path = f"{bids_dir}/{scan.subject}/{scan.session}"
+        logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! This may render the data USELESS!""")
+        incons_path = f"{bids_dir}/{scan.subject}/{scan.session}"
 
-        try:
-            # List all contents
-            for item in os.listdir(del_path):
-                item_path = os.path.join(del_path, item)
-                if os.path.isfile(item_path):
-                    os.remove(item_path)
-                elif os.path.isdir(item_path):
-                    shutil.rmtree(item_path)
-        except Exception as e:
-            print(f"Error while cleaning directory: {e}")
+        # ## delete the bidsified data of the corresponding session
+        # try:
+        #     # List all contents
+        #     for item in os.listdir(incons_path):
+        #         item_path = os.path.join(incons_path, item)
+        #         if os.path.isfile(item_path):
+        #             os.remove(item_path)
+        #         elif os.path.isdir(item_path):
+        #             shutil.rmtree(item_path)
+        # except Exception as e:
+        #     print(f"Error while cleaning directory: {e}")
+
+        ## Create a txt file indicating shim current inconsistencies
+        inconsistency_file = os.path.join(incons_path, "WARNING_INCONS_SHIMCURR.txt")
+        with open(inconsistency_file, "w") as f:
+            f.write(f"""WARNING: 
+                    Shim currents are inconsistent for T1w, PDw, MTw, and (pTx) AFI in {scan.subject} {scan.session}. 
+                    This may render the data unusable!
+                    """)
     
-    
+
     ## reset shim currents for next session
     global session_shim_currents
     session_shim_currents = None

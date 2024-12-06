@@ -47,6 +47,8 @@ bids_dir = ""
 dry_run = False
 tfl_multiMTC_MT_ON_counter = 0
 tfl_multiMTC_MT_OFF_counter = 0
+session_shim_currents = None
+session_shim_current_warning_counter = 0
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -221,80 +223,6 @@ def SequenceEP(recording: object) -> int:
                 tfl_multiMTC_MT_OFF_counter += 1
                 recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
     
-    
-        ### Partial Fourier logic 
-        ### adapted from https://gitlab.gwdg.de/cbs-neurophy/image-reconstruction/-/blob/main/core/MriDataMapVBVDImpl.m
-
-        original_level = logging.getLogger().getEffectiveLevel()
-        
-        try:
-            # Temporarily increase logging level to ERROR to suppress warnings
-            # otherwise "Could not parse" warnings are raised every time a jsonNIFTI file is processed
-            logging.getLogger().setLevel(logging.ERROR)
-
-            ucPhasePartialFourier = "CSASeriesHeaderInfo/MrPhoenixProtocol/sKSpace/ucPhasePartialFourier"
-            ucPhasePartialFourier = recording.getAttribute(ucPhasePartialFourier)
-            if ucPhasePartialFourier == 1: # 4/8
-                phasePartialFourier = 0.5
-            elif ucPhasePartialFourier == 2: # 5/8
-                phasePartialFourier = 0.625
-            elif ucPhasePartialFourier == 4: # 6/8
-                phasePartialFourier = 0.75
-            elif ucPhasePartialFourier == 8: # 7/8
-                phasePartialFourier = 0.875
-            else:
-                phasePartialFourier = 1
-
-
-            ucSlicePartialFourier = "CSASeriesHeaderInfo/MrPhoenixProtocol/sKSpace/ucSlicePartialFourier"
-            ucSlicePartialFourier = recording.getAttribute(ucSlicePartialFourier)
-            if ucSlicePartialFourier == 1: # 4/8
-                slicePartialFourier = 0.5
-            elif ucSlicePartialFourier == 2: # 5/8
-                slicePartialFourier = 0.625
-            elif ucSlicePartialFourier == 4: # 6/8
-                slicePartialFourier = 0.75
-            elif ucSlicePartialFourier == 8: # 7/8
-                slicePartialFourier = 0.875
-            else:
-                slicePartialFourier = 1
-        
-
-            recording.custom["PartialFourier"] = slicePartialFourier * phasePartialFourier
-
-
-            if phasePartialFourier < 1 and slicePartialFourier < 1:
-                recording.custom["PartialFourierDirection"] = "COMBINATION"
-            elif phasePartialFourier < 1:
-                recording.custom["PartialFourierDirection"] = "PHASE"
-            elif slicePartialFourier < 1:
-                recording.custom["PartialFourierDirection"] = "SLICE_SELECT"
-            else:
-                recording.custom["PartialFourierDirection"] = ""
-        
-        finally:
-            # Restore original logging level
-            logging.getLogger().setLevel(original_level)
-
-        try:
-            # only for dcm2niix, stored as list
-            image_type = recording.getAttribute("ImageTypeText")
-        except:
-            # for hMRI toolbox DICOM import, stored as string like "ORIGINAL\\PRIMARY\\M\\ND "
-            image_type = recording.getAttribute("ImageType")
-            image_type = [item.strip() for item in image_type.split('\\')]
-        finally:
-            if "ND" in image_type:
-                recording.custom["NonlinearGradientCorrection"] = False
-                recording.custom["acq_suffix"] = "-ND"
-            else:
-                recording.custom["NonlinearGradientCorrection"] = True
-                recording.custom["acq_suffix"] = ""
-            
-            if "M" in image_type:
-                recording.custom["part"] = "mag"
-            if "P" in image_type:
-                recording.custom["part"] = "phase"
 
 
 def RecordingEP(recording: object) -> int:
@@ -335,6 +263,7 @@ def RecordingEP(recording: object) -> int:
 
             recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
         
+
         ### t1_mp2rage_sag_p3
         if rec_id.startswith("t1_mp2rage_sag_p3"):
             if "INV1".casefold() in rec_id.casefold():
@@ -346,6 +275,49 @@ def RecordingEP(recording: object) -> int:
                 recording.custom["UniT1_descr"] = "IMG"
             if "UNI-DEN".casefold() in rec_id.casefold():
                 recording.custom["UniT1_descr"] = "DEN"
+
+
+        try:
+            # only for dcm2niix, stored as list
+            image_type = recording.getAttribute("ImageTypeText")
+        except:
+            # for hMRI toolbox DICOM import, stored as string like "ORIGINAL\\PRIMARY\\M\\ND "
+            image_type = recording.getAttribute("ImageType")
+            image_type = [item.strip() for item in image_type.split('\\')]
+        finally:
+            if "ND" in image_type:
+                recording.custom["NonlinearGradientCorrection"] = False
+                recording.custom["acq_suffix"] = "-ND"
+            else:
+                recording.custom["NonlinearGradientCorrection"] = True
+                recording.custom["acq_suffix"] = ""
+            
+            if "M" in image_type:
+                recording.custom["part"] = "mag"
+            if "P" in image_type:
+                recording.custom["part"] = "phase"
+
+
+        ### check that the shim currents are the same for all T1w, PDw, MTw, and (pTx) AFI scans
+        global session_shim_currents
+        global session_shim_current_warning_counter
+
+        if rec_id.startswith("t1w_kp_mtflash3d_v1s") or \
+                rec_id.startswith("pdw_kp_mtflash3d_v1s") or \
+                rec_id.startswith("mtw_kp_mtflash3d_v1s") or \
+                rec_id.startswith("kp_afib1_v1g"):
+            ShimCurrAttr = "ShimSetting"
+            shim_currents = recording.getAttribute(ShimCurrAttr)
+            if session_shim_currents is None:
+                session_shim_currents = shim_currents
+            else:
+                if session_shim_currents != shim_currents:
+                    logger.warning(f"""Shim currents vary in 
+                                  {recording.currentFile(False)} 
+                                  from the rest of the session. 
+                                  This renders the data useless!
+                                  {session_shim_currents} vs. {shim_currents}""")
+                    session_shim_current_warning_counter += 1
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -429,7 +401,42 @@ def SessionEndEP(scan: BidsSession) -> int:
     tfl_multiMTC_MT_ON_counter = 0
     tfl_multiMTC_MT_OFF_counter = 0
 
-    return 0
+
+    ## warn if shim currents are inconsistent + delete the bidsified data or create warning file for the corresponding session
+    global session_shim_current_warning_counter
+    if session_shim_current_warning_counter == 0:
+        print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
+    else:
+        logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! This may render the data USELESS!""")
+        incons_path = f"{bids_dir}/{scan.subject}/{scan.session}"
+
+        # ## delete the bidsified data of the corresponding session
+        # try:
+        #     # List all contents
+        #     for item in os.listdir(incons_path):
+        #         item_path = os.path.join(incons_path, item)
+        #         if os.path.isfile(item_path):
+        #             os.remove(item_path)
+        #         elif os.path.isdir(item_path):
+        #             shutil.rmtree(item_path)
+        # except Exception as e:
+        #     print(f"Error while cleaning directory: {e}")
+
+        ## Create a txt file indicating shim current inconsistencies
+        inconsistency_file = os.path.join(incons_path, "WARNING_INCONS_SHIMCURR.txt")
+        with open(inconsistency_file, "w") as f:
+            f.write(f"""WARNING: 
+                    Shim currents are inconsistent for T1w, PDw, MTw, and (pTx) AFI in {scan.subject} {scan.session}. 
+                    This may render the data unusable!
+                    """)
+    
+
+    ## reset shim currents for next session
+    global session_shim_currents
+    session_shim_currents = None
+
+    ## reset the warning counter for shim currents
+    session_shim_current_warning_counter = 0
 
 
 def SubjectEndEP(scan: BidsSession) -> int:

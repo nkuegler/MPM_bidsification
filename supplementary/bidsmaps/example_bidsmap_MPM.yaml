@@ -39,6 +39,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
@@ -72,6 +73,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
@@ -109,6 +111,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
@@ -140,6 +143,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -170,13 +174,13 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
-          - ParallelAcquisitionTechnique: 'GRAPPA'
       - provenance: 
           /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/022-tfl_multiMTC_ss_centric_MT_ON_2AVG/s2023-11-21_14-24-163059-00001-00001-1.nii
         example: anat/sub-003_ses-01_acq-001_run-1_mt-on_MTR
@@ -189,7 +193,7 @@ MRI:
           ImageType: ORIGINAL\\PRIMARY\\M\\ND
         bids: !!omap
           - task: ~
-          - acq: InstanceNo<format03d:InstanceNumber>
+          - acq: Instance<format03d:InstanceNumber>
           - ce: ~
           - rec: ~
           - run: <<custom:tfl_multiMTC_MT_ON_counter>>
@@ -202,6 +206,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -219,7 +224,7 @@ MRI:
           ImageType: ORIGINAL\\PRIMARY\\M\\ND
         bids: !!omap
           - task: ~
-          - acq: InstanceNo<format03d:InstanceNumber>
+          - acq: Instance<format03d:InstanceNumber>
           - ce: ~
           - rec: ~
           - run: <<custom:tfl_multiMTC_MT_OFF_counter>>
@@ -232,6 +237,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -263,6 +269,7 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
@@ -274,47 +281,14 @@ MRI:
               - "<<session>>/anat/<<subject>>_<<session>>_acq-MTw_echo-*_flip-2_mt-on_MPM.nii"
       - provenance: 
           /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/017-kp_afib1_v1f_4mm_PA_forT2/s2023-11-21_14-24-161653-00001-00048-1.nii
-        example: fmap/sub-003_ses-01_acq-forT2_echo-1_TB1AFI
+        example: fmap/sub-001_ses-01_acq-tr1forT2_echo-1_TB1AFI
         checked: true
         model: fmap:TB1AFI
         suffix: TB1AFI
         attributes:
-          ProtocolName: kp_afib1_v1f_4mm_PA_forT2
+          ProtocolName: ['kp_afib1_v1f_4mm_PA_forT2', 'kp_afib1_v1g_4mm_PA_trueform']
         bids: !!omap
-          - acq: 'forT2'
-          - ce: ~
-          - rec: ~
-          - run: ~
-          - echo: <EchoNumbers>
-          - flip: ~
-          - inv: ~
-          - part: ~
-          - chunk: ~
-        json: !!omap
-          - NonlinearGradientCorrection: false
-          - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - PartialFourier: <<custom:PartialFourier>>
-          - PartialFourierDirection: <<custom:PartialFourierDirection>>
-          - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
-          - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
-          - IntendedFor:
-              - "<<session>>/anat/<<subject>>_<<session>>_acq-T1w_echo-*_flip-1_mt-off_MPM.nii"
-              - "<<session>>/anat/<<subject>>_<<session>>_acq-PDw_echo-*_flip-2_mt-off_MPM.nii"
-              - "<<session>>/anat/<<subject>>_<<session>>_acq-MTw_echo-*_flip-2_mt-on_MPM.nii"
-              - "<<session>>/anat/<<subject>>_<<session>>_acq-semc_echo-*_MESE.nii"
-      - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-001/ses-02/MRI/016-kp_afib1_v1g_4mm_PA_trueform/s2023-05-12_12-17-132525-00001-00048-1.nii
-        example: fmap/sub-001_ses-01_acq-tr1stx_echo-1_TB1AFI
-        checked: true
-        model: fmap:TB1AFI
-        suffix: TB1AFI
-        attributes:
-          ProtocolName: kp_afib1_v1g_4mm_PA_trueform
-        bids: !!omap
-          - acq: tr<<custom:tr_index>>stx
+          - acq: tr<<custom:tr_index>>forT2
           - ce: ~
           - rec: ~
           - run: ~
@@ -330,12 +304,17 @@ MRI:
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
-          - IntendedFor: ~
+          - IntendedFor:
+              - "<<session>>/anat/<<subject>>_<<session>>_acq-T1w_echo-*_flip-1_mt-off_MPM.nii"
+              - "<<session>>/anat/<<subject>>_<<session>>_acq-PDw_echo-*_flip-2_mt-off_MPM.nii"
+              - "<<session>>/anat/<<subject>>_<<session>>_acq-MTw_echo-*_flip-2_mt-on_MPM.nii"
+              - "<<session>>/anat/<<subject>>_<<session>>_acq-semc_echo-*_MESE.nii"
   jsonNIFTI:
     fmap:
       - provenance: 

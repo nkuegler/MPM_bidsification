@@ -26,6 +26,7 @@
 # List of personalized, plugin-related errors
 from bidsme.plugins import exceptions
 from bidsme.bidsMeta import BidsSession
+from bidsme.plugins.tools.General import CleanupPrepared
 import pandas as pd
 import numpy as np
 import os
@@ -56,6 +57,7 @@ ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
 session_shim_currents = None
 session_shim_current_warning_counter = 0
+remove_list_path = f"{resources_path}/acq_remove_list.json"
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -622,6 +624,11 @@ def SessionEndEP(scan: BidsSession) -> int:
 
     ## reset data availability flag
     data_avail_in_dir = False
+
+    ## Removing acquisitions from remove_list 
+    with open(remove_list_path, 'r') as f:
+        remove_list = json.load(f)
+    CleanupPrepared(prep_dir, remove_list, scan)
 
 
 def SubjectEndEP(scan: BidsSession) -> int:

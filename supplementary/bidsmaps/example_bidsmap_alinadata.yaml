@@ -11,15 +11,26 @@ MRI:
           ProtocolName: ['localizer', 'ThreeDream_5mm_40deg', 'smap_kp_mtflash3d_v1s_4p0']
         bids: !!omap []
         json: !!omap []
+      - provenance: 
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/006-t1w_kp_mtflash3d_v1s_0p6_ND/s20241105120250-1.nii
+        checked: true
+        model: __unknown__
+        suffix: ''
+        attributes:
+          SeriesDescription: ['kp_afib1_v1g_ND', 't1w_kp_mtflash3d_v1s_0p6_ND', 'pdw_kp_mtflash3d_v1s_0p6_ND',
+            'mtw_kp_mtflash3d_v1s_0p6_ND']
+        bids: !!omap []
+        json: !!omap []
     anat:
       - provenance: 
-          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/010-t1w_kp_mtflash3d_v1s_0p6_ND/s20241105120250-1.nii
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/010-t1w_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
         example: anat/sub-001_ses-01_acq-T1wND_echo-1_flip-1_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
         attributes:
           ProtocolName: t1w_kp_mtflash3d_v1s_0p6
+          SeriesDescription: t1w_kp_mtflash3d_v1s_0p6
         bids: !!omap
           - task: ~
           - acq: T1w<<custom:acq_suffix>>
@@ -43,13 +54,14 @@ MRI:
           - FlipAngle: <FlipAngle>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
-          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/018-pdw_kp_mtflash3d_v1s_0p6_ND/s20241105120250-1.nii
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/018-pdw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
         example: anat/sub-001_ses-01_acq-PDwND_echo-1_flip-2_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
         attributes:
           ProtocolName: pdw_kp_mtflash3d_v1s_0p6
+          SeriesDescription: pdw_kp_mtflash3d_v1s_0p6
         bids: !!omap
           - task: ~
           - acq: PDw<<custom:acq_suffix>>
@@ -73,13 +85,14 @@ MRI:
           - FlipAngle: <FlipAngle>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
-          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/026-mtw_kp_mtflash3d_v1s_0p6_ND/s20241105120250-1.nii
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/026-mtw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
         example: anat/sub-001_ses-01_acq-MTwND_echo-1_flip-2_mt-on_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
         attributes:
           ProtocolName: mtw_kp_mtflash3d_v1s_0p6
+          SeriesDescription: mtw_kp_mtflash3d_v1s_0p6
         bids: !!omap
           - task: ~
           - acq: MTw<<custom:acq_suffix>>
@@ -180,13 +193,14 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
     fmap:
       - provenance: 
-          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/030-kp_afib1_v1g_ND/s20241105120250-1.nii
+          /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/030-kp_afib1_v1g/s20241105120250-1.nii
         example: fmap/sub-001_ses-01_acq-tr1-ND_echo-1_TB1AFI
         checked: true
         model: fmap:TB1AFI
         suffix: TB1AFI
         attributes:
           ProtocolName: kp_afib1_v1g
+          SeriesDescription: kp_afib1_v1g
         bids: !!omap
           - acq: tr<<custom:tr_index>><<custom:acq_suffix>>
           - ce: ~
@@ -198,7 +212,7 @@ MRI:
           - part: ~
           - chunk: ~
         json: !!omap
-          - RepetitionTime: <custom:RepetitionTime>
+          - RepetitionTime: <<custom:RepetitionTime>>
           - EchoTime: <EchoTime>
           - NonlinearGradientCorrection: <NonlinearGradientCorrection>
           - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>

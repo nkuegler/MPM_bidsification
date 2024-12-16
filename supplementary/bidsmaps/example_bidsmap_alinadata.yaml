@@ -8,7 +8,7 @@ MRI:
         model: __unknown__
         suffix: ''
         attributes:
-          ProtocolName: ['localizer', 'ThreeDream_5mm_40deg', 'smap_kp_mtflash3d_v1s_4p0']
+          ProtocolName: ['localizer', 'ThreeDream_5mm_40deg']
         bids: !!omap []
         json: !!omap []
       - provenance: 
@@ -18,13 +18,13 @@ MRI:
         suffix: ''
         attributes:
           SeriesDescription: ['kp_afib1_v1g_ND', 't1w_kp_mtflash3d_v1s_0p6_ND', 'pdw_kp_mtflash3d_v1s_0p6_ND',
-            'mtw_kp_mtflash3d_v1s_0p6_ND']
+            'mtw_kp_mtflash3d_v1s_0p6_ND', 'smap_kp_mtflash3d_v1s_4p0_ND']
         bids: !!omap []
         json: !!omap []
     anat:
       - provenance: 
           /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/010-t1w_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
-        example: anat/sub-001_ses-01_acq-T1wND_echo-1_flip-1_mt-off_part-mag_MPM
+        example: anat/sub-001_ses-01_acq-T1w_echo-1_flip-1_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -55,7 +55,7 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
           /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/018-pdw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
-        example: anat/sub-001_ses-01_acq-PDwND_echo-1_flip-2_mt-off_part-mag_MPM
+        example: anat/sub-001_ses-01_acq-PDw_echo-1_flip-2_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -86,7 +86,7 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
           /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/026-mtw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
-        example: anat/sub-001_ses-01_acq-MTwND_echo-1_flip-2_mt-on_part-mag_MPM
+        example: anat/sub-001_ses-01_acq-MTw_echo-1_flip-2_mt-on_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -193,8 +193,27 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
     fmap:
       - provenance: 
+          /data/pt_03002/data/temp/sub-002/ses-01/MRI/008-smap_kp_mtflash3d_v1s_4p0/s20241105120250-1.nii
+        example: fmap/sub-002_ses-01_acq-headT1w_part-mag_RB1COR
+        checked: true
+        model: fmap:RB1COR
+        suffix: RB1COR
+        attributes:
+          SeriesDescription: smap_kp_mtflash3d_v1s_4p0
+        bids: !!omap
+          - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
+          - part: <<custom:part>>
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - SequenceName: <PulseSequenceName>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - IntendedFor: <<custom:IntendedFor>>
+      - provenance: 
           /data/pt_02262/bids_test/alinadata/prep/sub-001/ses-01/MRI/030-kp_afib1_v1g/s20241105120250-1.nii
-        example: fmap/sub-001_ses-01_acq-tr1-ND_echo-1_TB1AFI
+        example: fmap/sub-001_ses-01_acq-tr1_echo-1_TB1AFI
         checked: true
         model: fmap:TB1AFI
         suffix: TB1AFI

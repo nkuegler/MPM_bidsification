@@ -50,6 +50,13 @@ tfl_multiMTC_MT_OFF_counter = 0
 session_shim_currents = None
 session_shim_current_warning_counter = 0
 
+# list of sequences in order of acquisition in current session
+seq_list = list()
+
+# The index of current sequence, corresponds to order in the sequence list
+seq_index = -1
+
+
 """
 Additional exceptions must derive from corresponding exception class
 with changing code between 1 and 9. Code 0 is reserved for generic
@@ -178,7 +185,15 @@ def SessionEP(scan: BidsSession) -> int:
         code 130
     """
 
-    return 0
+    global seq_list
+    global seq_index
+    
+    session_dir = os.path.join(scan.in_path, "MRI")
+    seq_list = sorted(os.listdir(session_dir))
+    seq_list = [s.split("-", 1)[1] for s in seq_list]
+    seq_index = -1
+    # print(f"files in {session_dir}: {seq_list}")
+
 
 def SequenceEP(recording: object) -> int:
     """
@@ -206,9 +221,20 @@ def SequenceEP(recording: object) -> int:
     Error.SequenceEPerror
         code 140
     """
+    global seq_index
+
+    recording.custom["IntendedFor"] = ""
+    seq_index += 1
+    rec_id = seq_list[seq_index]
+
+    # checking if current sequence corresponds in correct place in list
+    if rec_id != recording.recId():
+        logger.warning("{}: Id mismatch folder {}"
+                       .format(recording.recIdentity(False),
+                               rec_id))
+
 
     ### adapted from Nikita Beliy's plugin
-    rec_id = recording.recId()
     if recording.Module() == "MRI":
 
         ### tfl_multiMTC
@@ -223,6 +249,67 @@ def SequenceEP(recording: object) -> int:
                 tfl_multiMTC_MT_OFF_counter += 1
                 recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
     
+        ### t1_mp2rage_sag_p3
+        if rec_id.startswith("t1_mp2rage_sag_p3"):
+            if "INV1".casefold() in rec_id.casefold():
+                recording.custom["inversion_number"] = "1"
+            if "INV2".casefold() in rec_id.casefold():
+                recording.custom["inversion_number"] = "2"
+            # differentiate between two UNI T1 images
+            if "UNI_Images".casefold() in rec_id.casefold():
+                recording.custom["UniT1_descr"] = "IMG"
+            if "UNI-DEN".casefold() in rec_id.casefold():
+                recording.custom["UniT1_descr"] = "DEN"
+
+
+        def find_smap_modality(seq_list: list, current_index: int) -> str:
+            """
+            Determines the modality of an SMAP sequence from a list of sequences.
+            Sensitivity maps (SMAP) are acquired right before the intended modality (T1w, PDw, MTw).
+            This function examines the elements in `seq_list` starting from the index 
+            immediately after `current_index` and checks for specific modality keywords 
+            ("t1w", "pdw", "mtw") in a case-insensitive manner. It returns the first 
+            matching modality found.
+            Args:
+                seq_list (list): A list of sequence names.
+                current_index (int): The index of the current sequence in the list.
+            Returns:
+                str: The modality of the sequence ("T1w", "PDw", or "MTw") if found, 
+                     otherwise None.
+            """
+
+            # Look at subsequent elements
+            for i in range(current_index + 1, len(seq_list)):
+                element = seq_list[i].casefold()  # Case-insensitive comparison
+                
+                # Check for modalities
+                if "t1w" in element:
+                    return "T1w"
+                elif "pdw" in element:
+                    return "PDw"
+                elif "mtw" in element:
+                    return "MTw"
+                
+            return None
+
+        ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
+        if rec_id.startswith("smap_kp_mtflash3d"):
+            receive_coil = recording.getAttribute("ReceiveCoilName")
+            if "head" in receive_coil.casefold():
+                recording.custom["ReceiveCoil"] = "head"
+            elif "body" in receive_coil.casefold():
+                recording.custom["ReceiveCoil"] = "body"
+            else:
+                recording.custom["ReceiveCoil"] = "unknown"
+        
+
+            smap_modality = find_smap_modality(seq_list, seq_index)
+            if smap_modality:
+                recording.custom["IntendedFor"] = smap_modality
+            else:
+                logger.warning("{}: Unable to determine modality of sensitivity map"
+                        .format(recording.recIdentity()))
+                recording.custom["IntendedFor"] = "invalid"
 
 
 def RecordingEP(recording: object) -> int:
@@ -262,19 +349,6 @@ def RecordingEP(recording: object) -> int:
             tr_list = [0.025,0.125] # in s
 
             recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
-        
-
-        ### t1_mp2rage_sag_p3
-        if rec_id.startswith("t1_mp2rage_sag_p3"):
-            if "INV1".casefold() in rec_id.casefold():
-                recording.custom["inversion_number"] = "1"
-            if "INV2".casefold() in rec_id.casefold():
-                recording.custom["inversion_number"] = "2"
-            # differentiate between two UNI T1 images
-            if "UNI_Images".casefold() in rec_id.casefold():
-                recording.custom["UniT1_descr"] = "IMG"
-            if "UNI-DEN".casefold() in rec_id.casefold():
-                recording.custom["UniT1_descr"] = "DEN"
 
 
         try:

@@ -52,6 +52,7 @@ MRI:
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
           - FlipAngle: <FlipAngle>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
           /data/pt_03002/data/temp/sub-002/ses-01/MRI/020-pdw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
@@ -84,6 +85,7 @@ MRI:
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
           - FlipAngle: <FlipAngle>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
           /data/pt_03002/data/temp/sub-002/ses-01/MRI/028-mtw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
@@ -117,6 +119,7 @@ MRI:
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
           - FlipAngle: <FlipAngle>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
           /data/pt_03002/data/temp/sub-002/ses-01/MRI/032-t1_mp2rage_sag_p3_0.75mm_INV1/s20241105120250-1.nii
@@ -148,6 +151,7 @@ MRI:
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
           - FlipAngle: <FlipAngle>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - MagneticFieldStrength: <MagneticFieldStrength>
       - provenance: 
@@ -175,6 +179,7 @@ MRI:
           - RepetitionTimeExcitation: <RepetitionTime>
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - MagneticFieldStrength: <MagneticFieldStrength>
       - provenance: 
@@ -197,6 +202,7 @@ MRI:
           - RepetitionTimeExcitation: <RepetitionTime>
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - MagneticFieldStrength: <MagneticFieldStrength>
     fmap:
@@ -217,6 +223,7 @@ MRI:
           - PartialFourier: <PartialFourier>
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - IntendedFor: <<custom:IntendedFor>>
       - provenance: 
@@ -246,5 +253,6 @@ MRI:
           - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
           - PartialFourier: <PartialFourier>
           - DwellTime: <DwellTime>
+          - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - IntendedFor: ~

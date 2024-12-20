@@ -7,9 +7,9 @@ MRI:
         example: anat/sub-001_ses-01_acq-T1w_rec-loraks_echo-01_flip-1_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
-        suffix: 'MPM'
+        suffix: MPM
         attributes:
-          ProtocolName: t1w_kp_mtflash3d_v1s_0p6
+          ProtocolName: ['t1w_kp_mtflash3d_v1s_0p6','t1w_kp_mtflash3d_v1sx_0p6']
         bids: !!omap
           - task: ~
           - acq: T1w
@@ -28,13 +28,15 @@ MRI:
           - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
           - PartialFourier: <PartialFourier>
           - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
           - DwellTime: <DwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <MultibandAccelerationFactor>
-          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
-          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
           - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
           - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
       - provenance: 
           /data/pt_02262/bids_test/loraks_test/prep2/sub-001/ses-01/MRI/003-pdw_kp_mtflash3d_v1s_0p6_loraks/meas_MID00065_FID17041_pdw_kp_mtflash3d_v1s_0p6_rec-loraks_echo-1_mt-off_part-mag.nii
         example: anat/sub-001_ses-01_acq-PDw_rec-loraks_echo-01_flip-2_mt-off_part-mag_MPM
@@ -42,7 +44,7 @@ MRI:
         model: anat:MPM
         suffix: MPM
         attributes:
-          ProtocolName: pdw_kp_mtflash3d_v1s_0p6
+          ProtocolName: ['pdw_kp_mtflash3d_v1s_0p6','pdw_kp_mtflash3d_v1sx_0p6']
         bids: !!omap
           - task: ~
           - acq: PDw
@@ -61,21 +63,23 @@ MRI:
           - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
           - PartialFourier: <PartialFourier>
           - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
           - DwellTime: <DwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <MultibandAccelerationFactor>
-          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
-          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
           - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
           - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
       - provenance: 
           /data/pt_02262/bids_test/loraks_test/prep2/sub-001/ses-01/MRI/005-ernst_kp_mtflash3d_v1s_0p5_sag_loraks/meas_MID00068_FID17044_ernst_kp_mtflash3d_v1s_0p5_sag_rec-loraks_echo-01_mt-off_part-mag.nii
         example: anat/sub-001_ses-01_acq-ernst_rec-loraks_echo-01_part-mag_MEGRE
         checked: true
         model: anat:MEGRE
-        suffix: 'MEGRE'
+        suffix: MEGRE
         attributes:
-          ProtocolName: ernst_kp_mtflash3d_v1s_0p5_sag
+          ProtocolName: ['ernst_kp_mtflash3d_v1s_0p5_sag','ernst_kp_mtflash3d_v1sx_0p5_sag']
         bids: !!omap
           - task: ~
           - acq: ernst
@@ -92,10 +96,12 @@ MRI:
           - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
           - PartialFourier: <PartialFourier>
           - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
           - DwellTime: <DwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <MultibandAccelerationFactor>
-          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
-          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
           - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
           - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>

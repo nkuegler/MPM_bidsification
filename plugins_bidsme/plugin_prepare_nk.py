@@ -134,7 +134,7 @@ def InitEP(source: str, destination: str,
     prep_dir = remove_trailing_slash(prep_dir) # to ensure correct functioning of os.path.dirname
 
     global base_dir
-    base_dir = os.path.dirname(prep_dir)
+    base_dir = os.path.dirname(nifti_dir)
 
     id_files_dir = f"{base_dir}/{id_files_dir_name}"
 
@@ -194,6 +194,7 @@ def SubjectEP(scan: BidsSession) -> int:
 
     if scan.subject in sub_id_df['subjID'].values:
         scan.subject = f"{int(sub_id_df.loc[sub_id_df['subjID'] == scan.subject, 'bids_subjID'].iloc[0]):03}"
+        print(f"Subject ID derived from '{csv_sub_file}'.")
     else:
         print(f"Subject ID not present in '{csv_sub_file}'. Adding and indexing the subject.")
         if sub_id_df.empty:
@@ -201,13 +202,14 @@ def SubjectEP(scan: BidsSession) -> int:
         else:
             # current_bids_subjID = int(sub_id_df['bids_subjID'].iat[-1]) + 1
             current_bids_subjID = int(np.max(sub_id_df['bids_subjID'].astype(int))) + 1
-        print(f"Current subject: {current_subjectID} -> {int(current_bids_subjID):03}")
 
         new_row = pd.DataFrame({'subjID': [scan.subject], 'bids_subjID': [f"{int(current_bids_subjID):03}"]})
         # display(new_row)
         sub_id_df = pd.concat([sub_id_df, new_row], ignore_index=True)
         
         scan.subject = f"{int(new_row['bids_subjID'].iloc[0]):03}"
+    
+    print(f"Current subject: {current_subjectID} -> {scan.subject}")
 
     # display(sub_id_df)
     sub_id_df.to_csv(csv_sub_file, index=False)
@@ -274,6 +276,7 @@ def SessionEP(scan: BidsSession) -> int:
 
     if scan.session in ses_id_df['sesID'].values:
         scan.session = f"{int(ses_id_df.loc[ses_id_df['sesID'] == scan.session, 'bids_sesID'].iloc[0]):02}"
+        print(f"Session ID derived from '{csv_ses_file}'.")
     else: 
         print(f"Session ID not present in '{csv_ses_file}'. Adding and indexing the subject.")
         if ses_id_df.empty:
@@ -281,13 +284,14 @@ def SessionEP(scan: BidsSession) -> int:
         else:
             # current_bids_sesID = int(ses_id_df['bids_sesID'].iat[-1]) + 1
             current_bids_sesID = int(np.max(ses_id_df['bids_sesID'].astype(int))) + 1
-        print(f"Current session: {current_sessionID} -> {int(current_bids_sesID):02}")
 
         new_row = pd.DataFrame({'sesID': [scan.session], 'bids_sesID': [f"{int(current_bids_sesID):02}"]})
         # display(new_row)
         ses_id_df = pd.concat([ses_id_df, new_row], ignore_index=True)
 
         scan.session = f"{int(new_row['bids_sesID'].iloc[0]):02}"
+
+    print(f"Current session: {current_sessionID} -> {scan.session}")
 
     # display(ses_id_df)
 
@@ -603,7 +607,7 @@ def SessionEndEP(scan: BidsSession) -> int:
             if 'shim_curr_cons' in column_ses_dict:
                 subN_sessions_dict['shim_curr_cons'][-1] = 'consistent'
         else:
-            print("Shim currents are INCONSISTENT in this session! The data may be unusable.")
+            logger.warning(f"Shim currents are INCONSISTENT in this {scan.session} of {scan.subject}! The data may be unusable.")
             if 'shim_curr_cons' in column_ses_dict:
                 subN_sessions_dict['shim_curr_cons'][-1] = 'inconsistent'
     else:
@@ -646,7 +650,9 @@ def SubjectEndEP(scan: BidsSession) -> int:
     global subN_sessions_dict
 
     print(f"""{scan.subject}_sessions.tsv:
-          {subN_sessions_dict}""")
+          {subN_sessions_dict}
+          ------------------------------------
+          """)
           
     df_sessions = pd.DataFrame(subN_sessions_dict)
     output_filename_tsv = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.tsv"

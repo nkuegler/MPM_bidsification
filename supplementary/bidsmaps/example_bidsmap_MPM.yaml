@@ -277,6 +277,15 @@ MRI:
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-T1w_echo-*_flip-1_mt-off_MPM.nii"
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-PDw_echo-*_flip-2_mt-off_MPM.nii"
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-MTw_echo-*_flip-2_mt-on_MPM.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-T1w_rec-loraks_echo-*_flip-1_mt-off_part-mag_MPM.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-T1w_rec-loraks_echo-*_flip-1_mt-off_part-phase_MPM.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-T1w_rec-loraksRsos_echo-*_flip-1_mt-off_part-mag_MPM.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-PDw_rec-loraks_echo-*_flip-2_mt-off_part-mag_MPM.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-PDw_rec-loraks_echo-*_flip-2_mt-off_part-phase_MPM.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-PDw_rec-loraksRsos_echo-*_flip-2_mt-off_part-mag_MPM.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-ernst_rec-loraks_echo-*_part-mag_MEGRE.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-ernst_rec-loraks_echo-*_part-phase_MEGRE.nii"
+              - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-ernst_rec-loraksRsos_echo-*_part-mag_MEGRE.nii"
       - provenance: 
           /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/017-kp_afib1_v1f_4mm_PA_forT2/s2023-11-21_14-24-161653-00001-00048-1.nii
         example: fmap/sub-001_ses-01_acq-tr1forT2_echo-1_TB1AFI

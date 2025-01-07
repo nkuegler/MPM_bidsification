@@ -81,3 +81,16 @@ The pipeline re-uses software from several different researchers.
 - Ilona Lipp
 
 This list will be extended.
+
+
+
+# Added functionality but needs to be described in README
++ Bidsification of LORAKS data best when done after bidsification of DICOMS
+    + if there is no bidsified DICOM data, the LORAKS bidsification will work, but there is no information on shim current consistency
++ Bidsification of LORAKS data only works when a corresponding BIDS directory is found (can be empty):
+    + the following lines need to be commented out in the `plugin_prepare_loraks_nk.py` to work without original BIDS directory
+        ```
+        if not os.path.exists(corresponding_bids_data_path):
+            raise exceptions.InitEPError(f"Corresponding BIDS directory not found at {corresponding_bids_data_path}")
+        ```
+

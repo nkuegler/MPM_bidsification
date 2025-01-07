@@ -46,8 +46,10 @@ prep_dir = ""
 bids_dir = ""
 dry_run = False
 corresponding_bids_data_path = ""
+available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d"]
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
+
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -241,7 +243,7 @@ def RecordingEP(recording: object) -> int:
     def get_series_id(str_to_check, recording):
 
         full_string = recording.currentFile(True)
-        if "_0p6" in full_string: # resolution of T1w and PDw
+        if "_0p6" in full_string: # resolution of T1w, PDw, and MTw
             string_end = "_0p6"
         elif "_0p5_sag" in full_string: # resolution of Ernst acquisition
             string_end = "_0p5_sag"
@@ -282,27 +284,18 @@ def RecordingEP(recording: object) -> int:
 
             ## retrieve echo number from filename
             echo_number = re.findall(r'echo-\d+', recording.currentFile(True).casefold())
-            recording.custom["EchoNumbers"] = f"{int(echo_number[0].split("-")[1]):02d}"
+            if echo_number:
+                recording.custom["EchoNumbers"] = f"{int(echo_number[0].split("-")[1]):02d}"
+            else:
+                logger.error(f"No echo number found in filename: {recording.currentFile(True)}")
 
 
             ### set protocol name as attribute
-            t1w_str = "t1w_kp_mtflash3d"
-            if t1w_str.casefold() in recording.currentFile(True).casefold():
-                recording.series_id = f"{get_series_id(t1w_str, recording)}_{recon_method}"
-                recording.series_no = 1 + rsos
-                recording.setAttribute("ProtocolName", f"{get_series_id(t1w_str, recording)}")
-
-            pdw_str = "pdw_kp_mtflash3d"
-            if pdw_str.casefold() in recording.currentFile(True).casefold():
-                recording.series_id = f"{get_series_id(pdw_str, recording)}_{recon_method}"
-                recording.series_no = 3 + rsos
-                recording.setAttribute("ProtocolName", f"{get_series_id(pdw_str, recording)}")
-
-            ernst_str = "ernst_kp_mtflash3d"
-            if ernst_str.casefold() in recording.currentFile(True).casefold():
-                recording.series_id = f"{get_series_id(ernst_str, recording)}_{recon_method}"
-                recording.series_no = 5 + rsos
-                recording.setAttribute("ProtocolName", f"{get_series_id(ernst_str, recording)}")
+            for ind, contrast_fname in enumerate(available_contrasts_loraks):
+                if contrast_fname.casefold() in recording.currentFile(True).casefold():
+                    recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
+                    recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos) # first element in list = 1+rsos, second = 3+rsos, third = 5+rsos
+                    recording.setAttribute("ProtocolName", f"{get_series_id(contrast_fname, recording)}")
 
 
 def FileEP(path: str, recording: object) -> int:

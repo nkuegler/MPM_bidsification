@@ -55,6 +55,7 @@ subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
 corresponding_bids_data_path = ""
+available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "ernst_kp_mtflash3d"]
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -452,19 +453,10 @@ def RecordingEP(recording: object) -> int:
             return 0
         
         if recon_method:
-            t1w_str = "t1w_kp_mtflash3d"
-            if t1w_str.casefold() in recording.currentFile(True).casefold():
-                recording.series_id = f"{get_series_id(t1w_str, recording)}_{recon_method}"
-                recording.series_no = 1 + rsos_factor
-            pdw_str = "pdw_kp_mtflash3d"
-            if pdw_str.casefold() in recording.currentFile(True).casefold():
-                recording.series_id = f"{get_series_id(pdw_str, recording)}_{recon_method}"
-                recording.series_no = 3 + rsos_factor
-            ernst_str = "ernst_kp_mtflash3d"
-            if ernst_str.casefold() in recording.currentFile(True).casefold():
-                recording.series_id = f"{get_series_id(ernst_str, recording)}_{recon_method}"
-                recording.series_no = 5 + rsos_factor
-
+            for ind, contrast_fname in enumerate(available_contrasts_loraks):
+                if contrast_fname.casefold() in recording.currentFile(True).casefold():
+                    recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
+                    recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
 
 
 def FileEP(path: str, recording: object) -> int:

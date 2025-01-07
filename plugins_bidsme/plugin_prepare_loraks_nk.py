@@ -26,7 +26,6 @@
 # List of personalized, plugin-related errors
 from bidsme.plugins import exceptions
 from bidsme.bidsMeta import BidsSession
-from bidsme.plugins.tools.General import CleanupPrepared
 import pandas as pd
 import numpy as np
 import os
@@ -55,7 +54,7 @@ sessions_tsv_template = f"{resources_path}/supplementary/table_templates/session
 subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
-remove_list_path = f"{resources_path}/acq_remove_list.json"
+corresponding_bids_data_path = ""
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -140,6 +139,11 @@ def InitEP(source: str, destination: str,
 
     if not os.path.exists(id_files_dir):
         os.makedirs(id_files_dir)
+
+    global corresponding_bids_data_path
+    corresponding_bids_data_path = os.path.abspath(os.path.join(nifti_dir, '..', 'bids')) # works for: source dir is on the same level as bids dir
+    if not os.path.exists(corresponding_bids_data_path):
+        raise exceptions.InitEPError(f"Corresponding BIDS directory not found at {corresponding_bids_data_path}")
 
     print(f"""Loading sessions_nk.json from {sessions_tsv_template}.
           This functionality is not part of Bidsme, but implemented in a plugin. 
@@ -538,6 +542,27 @@ def SessionEndEP(scan: BidsSession) -> int:
         code 180
     """
 
+    ## copy shim current inconsistency information from sessions.tsv in the bidsified data set to the one in the LORAKS directory 
+    global subN_sessions_dict
+
+    sessions_tsv_bids = os.path.join(corresponding_bids_data_path, scan.subject, f"{scan.subject}_sessions.tsv")
+    if os.path.isfile(sessions_tsv_bids):
+        df = pd.read_csv(sessions_tsv_bids, sep='\t')
+        target_row = df[df['session_id'] == scan.session]
+        shim_curr_cons = target_row['shim_curr_cons'].values[0]
+        
+        if shim_curr_cons == 'consistent':
+            logger.info(f"No shim current inconsistencies present in this session!")
+        elif shim_curr_cons == 'inconsistent':
+            logger.warning(f"Shim currents are INCONSISTENT in this {scan.session} of {scan.subject}! The data may be unusable.")
+        else:
+            logger.warning(f"""NO INFORMATION on shim current consistency available for {scan.session} of {scan.subject}.
+                           Please check the manually!""")
+            shim_curr_cons = 'n/a'
+
+        column_ses_dict = list(subN_sessions_dict.keys())
+        if 'shim_curr_cons' in column_ses_dict:
+            subN_sessions_dict['shim_curr_cons'][-1] = shim_curr_cons
 
     ## allow the next session to populate the dictionary
     global ses_dict_populated_for_this_ses
@@ -545,11 +570,6 @@ def SessionEndEP(scan: BidsSession) -> int:
 
     ## reset data availability flag
     data_avail_in_dir = False
-
-    # ## Removing acquisitions from remove_list 
-    # with open(remove_list_path, 'r') as f:
-    #     remove_list = json.load(f)
-    # CleanupPrepared(prep_dir, remove_list, scan)
 
 
 def SubjectEndEP(scan: BidsSession) -> int:

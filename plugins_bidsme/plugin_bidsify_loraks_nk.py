@@ -45,6 +45,9 @@ logger = logging.getLogger(__name__)
 prep_dir = ""
 bids_dir = ""
 dry_run = False
+corresponding_bids_data_path = ""
+shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
+shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -112,6 +115,8 @@ def InitEP(source: str, destination: str,
     bids_dir = destination
     dry_run = dry
 
+    global corresponding_bids_data_path
+    corresponding_bids_data_path = os.path.abspath(os.path.join(bids_dir, '..', '..')) # works for: bids_dir/derivatives/LORAKS
 
     return 0
 
@@ -376,8 +381,18 @@ def SessionEndEP(scan: BidsSession) -> int:
         code 180
     """
     
-    return 0
-
+    ## copy SHIM_CURR_INCONSISTENCY warning file to session directory if present in the bidsified data
+    shim_incons_file = os.path.join(corresponding_bids_data_path, scan.subject, scan.session, shim_incons_filename)
+    if os.path.isfile(shim_incons_file):
+        shutil.copy(shim_incons_file, os.path.join(bids_dir, scan.subject, scan.session, shim_incons_filename))
+        logger.info(f"Copying {shim_incons_filename} from correponding session in the bidsified dataset")
+        
+    ## copy SHIM_CURR_NOINFO warning file to session directory if present in the bidsified data
+    shim_noinfo_file = os.path.join(corresponding_bids_data_path, scan.subject, scan.session, shim_noinfo_filename)
+    if os.path.isfile(shim_noinfo_file):
+        shutil.copy(shim_noinfo_file, os.path.join(bids_dir, scan.subject, scan.session, shim_noinfo_filename))
+        logger.info(f"Copying {shim_noinfo_filename} from correponding session in the bidsified dataset")
+    
 
 def SubjectEndEP(scan: BidsSession) -> int:
     """

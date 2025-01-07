@@ -54,8 +54,15 @@ sessions_tsv_template = f"{repo_path}/supplementary/table_templates/sessions_nk.
 subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
+
+shim_current_relevant_recIDs = ["t1w_kp_mtflash3d_v1s", 
+                                "pdw_kp_mtflash3d_v1s", 
+                                "mtw_kp_mtflash3d_v1s", 
+                                "kp_afib1_v1f_4mm_PA", 
+                                "kp_afib1_v1g_4mm_PA"]
 session_shim_currents = None
 session_shim_current_warning_counter = 0
+session_shim_current_relevant_sequences_counter = 0
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -364,6 +371,13 @@ def SequenceEP(recording: object) -> int:
     global data_avail_in_dir
     data_avail_in_dir = True
 
+    ### count how many shim current relevant sequences are in the session
+    rec_id = recording.recId()
+    if recording.Module() == "MRI":
+        if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
+            global session_shim_current_relevant_sequences_counter
+            session_shim_current_relevant_sequences_counter += 1
+
     ### populating the sub-<label>_sessions.tsv file
     ### performing this in SequenceEP to access the recording object
     ### only add the parameters once per session (ses_dict_populated_for_this_ses)
@@ -437,11 +451,7 @@ def RecordingEP(recording: object) -> int:
         global session_shim_currents
         global session_shim_current_warning_counter
 
-        if rec_id.startswith("t1w_kp_mtflash3d_v1s") or \
-                rec_id.startswith("pdw_kp_mtflash3d_v1s") or \
-                rec_id.startswith("mtw_kp_mtflash3d_v1s") or \
-                rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
-                rec_id.startswith("kp_afib1_v1g_4mm_PA"):
+        if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
             alShimCurrent = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
             shim_currents = recording.getAttribute(alShimCurrent)
             if session_shim_currents is None:
@@ -599,17 +609,24 @@ def SessionEndEP(scan: BidsSession) -> int:
     
     if data_avail_in_dir:
         global session_shim_current_warning_counter
+        global session_shim_current_relevant_sequences_counter
         global subN_sessions_dict
         column_ses_dict = list(subN_sessions_dict.keys())
         
-        if session_shim_current_warning_counter == 0:
-            print("No shim current inconsistencies present in this session!")
+        if session_shim_current_relevant_sequences_counter in (0, 1): 
             if 'shim_curr_cons' in column_ses_dict:
-                subN_sessions_dict['shim_curr_cons'][-1] = 'consistent'
+                logger.warning(f"No information about shim current consistency available in {scan.session} of {scan.subject}.")
+                subN_sessions_dict['shim_curr_cons'][-1] = 'n/a' # 0 or 1 relevant sequences do not provide any information about consistent shim currents
         else:
-            logger.warning(f"Shim currents are INCONSISTENT in this {scan.session} of {scan.subject}! The data may be unusable.")
-            if 'shim_curr_cons' in column_ses_dict:
-                subN_sessions_dict['shim_curr_cons'][-1] = 'inconsistent'
+            if session_shim_current_warning_counter == 0:
+                logger.info("No shim current inconsistencies present in this session!")
+                if 'shim_curr_cons' in column_ses_dict:
+                    subN_sessions_dict['shim_curr_cons'][-1] = 'consistent'
+            else:
+                logger.warning(f"Shim currents are INCONSISTENT in this {scan.session} of {scan.subject}! The data may be unusable.")
+                if 'shim_curr_cons' in column_ses_dict:
+                    subN_sessions_dict['shim_curr_cons'][-1] = 'inconsistent'
+
     else:
         print(f"No NIfTI data found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
 
@@ -620,6 +637,9 @@ def SessionEndEP(scan: BidsSession) -> int:
 
     ## reset the warning counter for shim currents
     session_shim_current_warning_counter = 0
+
+    ## reset the counter for relevant sequences
+    session_shim_current_relevant_sequences_counter = 0
 
     ## allow the next session to populate the dictionary
     global ses_dict_populated_for_this_ses

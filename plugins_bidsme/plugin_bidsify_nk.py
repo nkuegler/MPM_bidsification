@@ -47,8 +47,15 @@ bids_dir = ""
 dry_run = False
 tfl_multiMTC_MT_ON_counter = 0
 tfl_multiMTC_MT_OFF_counter = 0
+
+shim_current_relevant_recIDs = ["t1w_kp_mtflash3d_v1s", 
+                                "pdw_kp_mtflash3d_v1s", 
+                                "mtw_kp_mtflash3d_v1s", 
+                                "kp_afib1_v1f_4mm_PA", 
+                                "kp_afib1_v1g_4mm_PA"]
 session_shim_currents = None
 session_shim_current_warning_counter = 0
+session_shim_current_relevant_sequences_counter = 0
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -230,7 +237,12 @@ def SequenceEP(recording: object) -> int:
                 global tfl_multiMTC_MT_OFF_counter
                 tfl_multiMTC_MT_OFF_counter += 1
                 recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
-    
+
+
+        ### count how many shim current relevant sequences are in the session
+        if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
+            global session_shim_current_relevant_sequences_counter
+            session_shim_current_relevant_sequences_counter += 1
 
 
 def RecordingEP(recording: object) -> int:
@@ -344,11 +356,7 @@ def RecordingEP(recording: object) -> int:
         global session_shim_currents
         global session_shim_current_warning_counter
 
-        if rec_id.startswith("t1w_kp_mtflash3d_v1s") or \
-                rec_id.startswith("pdw_kp_mtflash3d_v1s") or \
-                rec_id.startswith("mtw_kp_mtflash3d_v1s") or \
-                rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
-                rec_id.startswith("kp_afib1_v1g_4mm_PA"):
+        if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
             alShimCurrent = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
             shim_currents = recording.getAttribute(alShimCurrent)
             if session_shim_currents is None:
@@ -446,31 +454,46 @@ def SessionEndEP(scan: BidsSession) -> int:
 
     ## warn if shim currents are inconsistent + delete the bidsified data or create warning file for the corresponding session
     global session_shim_current_warning_counter
-    if session_shim_current_warning_counter == 0:
-        print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
-    else:
-        logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! This may render the data USELESS!""")
-        incons_path = f"{bids_dir}/{scan.subject}/{scan.session}"
+    global session_shim_current_relevant_sequences_counter
 
-        # ## delete the bidsified data of the corresponding session
-        # try:
-        #     # List all contents
-        #     for item in os.listdir(incons_path):
-        #         item_path = os.path.join(incons_path, item)
-        #         if os.path.isfile(item_path):
-        #             os.remove(item_path)
-        #         elif os.path.isdir(item_path):
-        #             shutil.rmtree(item_path)
-        # except Exception as e:
-        #     print(f"Error while cleaning directory: {e}")
+    session_path = f"{bids_dir}/{scan.subject}/{scan.session}"
 
-        ## Create a txt file indicating shim current inconsistencies
-        inconsistency_file = os.path.join(incons_path, "WARNING_INCONS_SHIMCURR.txt")
-        with open(inconsistency_file, "w") as f:
+    if session_shim_current_relevant_sequences_counter in (0, 1): 
+        logger.warning(f"""No information on shim current consistency available in {scan.subject} {scan.session}.""")
+        ## create a txt file indicating that there is no information on shim current consistency
+        noinfo_shim_file = os.path.join(session_path, "WARNING_NOINFO_SHIMCURR.txt")
+        with open(noinfo_shim_file, "w") as f:
             f.write(f"""WARNING: 
-                    Shim currents are inconsistent for T1w, PDw, MTw, and (pTx) AFI in {scan.subject} {scan.session}. 
-                    This may render the data unusable!
+                    There is no information on shim current consistency available in {scan.subject} {scan.session} due to missing sequence data.
+                    (probably no DICOM data for T1w, PDw, and MTw acquisitions)
+                    
                     """)
+    else:
+        if session_shim_current_warning_counter == 0:
+            print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
+        else:
+            logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! This may render the data USELESS!""")
+
+            # ## delete the bidsified data of the corresponding session
+            # try:
+            #     # List all contents
+            #     for item in os.listdir(session_path):
+            #         item_path = os.path.join(session_path, item)
+            #         if os.path.isfile(item_path):
+            #             os.remove(item_path)
+            #         elif os.path.isdir(item_path):
+            #             shutil.rmtree(item_path)
+            # except Exception as e:
+            #     print(f"Error while cleaning directory: {e}")
+
+            ## Create a txt file indicating shim current inconsistencies
+            inconsistency_file = os.path.join(session_path, "WARNING_INCONS_SHIMCURR.txt")
+            with open(inconsistency_file, "w") as f:
+                f.write(f"""WARNING: 
+                        Shim currents are inconsistent for T1w, PDw, MTw, and (pTx) AFI in {scan.subject} {scan.session}. 
+                        This may render the data unusable!
+
+                        """)
     
 
     ## reset shim currents for next session
@@ -479,6 +502,9 @@ def SessionEndEP(scan: BidsSession) -> int:
 
     ## reset the warning counter for shim currents
     session_shim_current_warning_counter = 0
+
+    ## reset the counter for relevant sequences
+    session_shim_current_relevant_sequences_counter = 0
 
 
 def SubjectEndEP(scan: BidsSession) -> int:

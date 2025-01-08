@@ -3,7 +3,7 @@ MRI:
   hmriNIFTI:
     __ignore__:
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/001-localizer/s2023-11-21_14-24-145437-00001-00001-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/001-localizer/s2023-11-21_14-24-145437-00001-00001-1.nii
         checked: true
         model: __unknown__
         suffix: ''
@@ -14,7 +14,7 @@ MRI:
         json: !!omap []
     anat:
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/011-t1w_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-150143-00001-00288-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/011-t1w_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-150143-00001-00288-1.nii
         example: anat/sub-003_ses-01_acq-T1w_echo-1_flip-1_mt-off_MPM
         checked: true
         model: anat:MPM
@@ -48,7 +48,7 @@ MRI:
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/012-pdw_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-151336-00001-00288-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/012-pdw_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-151336-00001-00288-1.nii
         example: anat/sub-003_ses-01_acq-PDw_echo-1_flip-2_mt-off_MPM
         checked: true
         model: anat:MPM
@@ -82,7 +82,7 @@ MRI:
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/013-mtw_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-152629-00001-00288-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/013-mtw_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-152629-00001-00288-1.nii
         example: anat/sub-003_ses-01_acq-MTw_echo-1_flip-2_mt-on_MPM
         checked: true
         model: anat:MPM
@@ -120,7 +120,7 @@ MRI:
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/015-ernst_kp_mtflash3d_v1sx_0p5_sag/s2023-11-21_14-24-154701-00001-00120-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/015-ernst_kp_mtflash3d_v1sx_0p5_sag/s2023-11-21_14-24-154701-00001-00120-1.nii
         example: anat/sub-003_ses-01_acq-ernst_echo-01_MEGRE
         checked: true
         model: anat:MEGRE
@@ -152,7 +152,7 @@ MRI:
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/016-semc_js_res0p6_etl7_esp9_grappa3_slice52/s2023-11-21_14-24-160627-00001-00001-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/016-semc_js_res0p6_etl7_esp9_grappa3_slice52/s2023-11-21_14-24-160627-00001-00001-1.nii
         example: anat/sub-003_ses-01_acq-semc_echo-1_MESE
         checked: true
         model: anat:MESE
@@ -182,7 +182,7 @@ MRI:
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/022-tfl_multiMTC_ss_centric_MT_ON_2AVG/s2023-11-21_14-24-163059-00001-00001-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/022-tfl_multiMTC_ss_centric_MT_ON_2AVG/s2023-11-21_14-24-163059-00001-00001-1.nii
         example: anat/sub-003_ses-01_acq-001_run-1_mt-on_MTR
         checked: true
         model: anat:MTR
@@ -213,7 +213,7 @@ MRI:
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/023-tfl_multiMTC_ss_centric_MT_OFF_1AVG/s2023-11-21_14-24-163913-00001-00001-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/023-tfl_multiMTC_ss_centric_MT_OFF_1AVG/s2023-11-21_14-24-163913-00001-00001-1.nii
         example: anat/sub-003_ses-01_acq-001_run-1_mt-off_MTR
         checked: true
         model: anat:MTR
@@ -245,7 +245,7 @@ MRI:
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
     fmap:
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/014-kp_afib1_v1f_4mm_PA/s2023-11-21_14-24-153811-00001-00048-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/014-kp_afib1_v1f_4mm_PA/s2023-11-21_14-24-153811-00001-00048-1.nii
         example: fmap/sub-001_ses-01_acq-tr1ptx_echo-1_TB1AFI
         checked: true
         model: fmap:TB1AFI
@@ -280,7 +280,7 @@ MRI:
               - "<<session>>/anat/<<subject>>_<<session>>_acq-PDw_echo-*_flip-2_mt-off_MPM.nii"
               - "<<session>>/anat/<<subject>>_<<session>>_acq-MTw_echo-*_flip-2_mt-on_MPM.nii"
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/017-kp_afib1_v1f_4mm_PA_forT2/s2023-11-21_14-24-161653-00001-00048-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/017-kp_afib1_v1f_4mm_PA_forT2/s2023-11-21_14-24-161653-00001-00048-1.nii
         example: fmap/sub-001_ses-01_acq-tr1forT2_echo-1_TB1AFI
         checked: true
         model: fmap:TB1AFI
@@ -318,7 +318,7 @@ MRI:
   jsonNIFTI:
     fmap:
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/024-cmrr_noddi_1.4mm_p3_mb2_invertpa/s20231121142449-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/024-cmrr_noddi_1.4mm_p3_mb2_invertpa/s20231121142449-1.nii
         example: fmap/sub-003_ses-01_acq-DWIRF_dir-PA_run-001_epi
         checked: true
         model: fmap:epi
@@ -341,7 +341,7 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - IntendedFor: "<<session>>/dwi/<<subject>>_<<session>>_run-001_dwi.nii"
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/026-cmrr_noddi_1.4mm_p3_mb2_noise/s20231121142449-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/026-cmrr_noddi_1.4mm_p3_mb2_noise/s20231121142449-1.nii
         example: fmap/sub-003_ses-01_acq-DWInoRF_dir-AP_run-001_epi
         checked: true
         model: fmap:epi
@@ -365,7 +365,7 @@ MRI:
           - IntendedFor: "<<session>>/dwi/<<subject>>_<<session>>_run-001_dwi.nii"
     dwi:
       - provenance: 
-          /data/pt_02262/bids_test/bids_folders_autom/prepared/sub-003/ses-01/MRI/025-cmrr_noddi_1.4mm_p3_mb2/s20231121142449-1.nii
+          /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/025-cmrr_noddi_1.4mm_p3_mb2/s20231121142449-1.nii
         example: dwi/sub-003_ses-01_run-001_dwi
         checked: true
         model: dwi:dwi

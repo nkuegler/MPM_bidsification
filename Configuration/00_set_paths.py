@@ -33,7 +33,7 @@
 # In[2]:
 
 
-DATASET_PATH = "/data/pt_02262/bids_test/bids_folders_autom"
+DATASET_PATH = "/data/pt_02262/data/TH_bids"
 
 
 # If you follow the `bidsme-example/example_1` dataset,

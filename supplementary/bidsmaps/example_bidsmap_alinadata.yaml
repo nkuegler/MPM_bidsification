@@ -2,7 +2,7 @@ __bids__: 1.10.0
 MRI:
   jsonNIFTI:
     __ignore__:
-      - provenance: /data/pt_03002/data/temp/sub-002/ses-01/MRI/001-localizer/s20241105120250-1.nii
+      - provenance: /data/p_03002/data/temp/sub-002/ses-01/MRI/001-localizer/s20241105120250-1.nii
         checked: true
         model: __unknown__
         suffix: ''
@@ -11,7 +11,7 @@ MRI:
         bids: !!omap []
         json: !!omap []
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/006-smap_kp_mtflash3d_v1s_4p0_ND/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/006-smap_kp_mtflash3d_v1s_4p0_ND/s20241105120250-1.nii
         checked: true
         model: __unknown__
         suffix: ''
@@ -22,7 +22,7 @@ MRI:
         json: !!omap []
     anat:
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/012-t1w_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/012-t1w_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
         example: anat/sub-002_ses-01_acq-T1w_echo-1_flip-1_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
@@ -55,7 +55,7 @@ MRI:
           - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/020-pdw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/020-pdw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
         example: anat/sub-002_ses-01_acq-PDw_echo-1_flip-2_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
@@ -88,7 +88,7 @@ MRI:
           - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/028-mtw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/028-mtw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
         example: anat/sub-002_ses-01_acq-MTw_echo-1_flip-2_mt-on_part-mag_MPM
         checked: true
         model: anat:MPM
@@ -122,7 +122,7 @@ MRI:
           - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/032-t1_mp2rage_sag_p3_0.75mm_INV1/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/032-t1_mp2rage_sag_p3_0.75mm_INV1/s20241105120250-1.nii
         example: anat/sub-002_ses-01_inv-1_MP2RAGE
         checked: true
         model: anat:MP2RAGE
@@ -155,7 +155,7 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - MagneticFieldStrength: <MagneticFieldStrength>
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/034-t1_mp2rage_sag_p3_0.75mm_T1_Images/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/034-t1_mp2rage_sag_p3_0.75mm_T1_Images/s20241105120250-1.nii
         example: anat/sub-002_ses-01_T1map
         checked: true
         model: anat:MP2RAGE
@@ -183,7 +183,7 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - MagneticFieldStrength: <MagneticFieldStrength>
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/036-t1_mp2rage_sag_p3_0.75mm_UNI_Images/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/036-t1_mp2rage_sag_p3_0.75mm_UNI_Images/s20241105120250-1.nii
         example: anat/sub-002_ses-01_acq-IMG_UNIT1
         checked: true
         model: anat:MP2RAGE
@@ -207,7 +207,7 @@ MRI:
           - MagneticFieldStrength: <MagneticFieldStrength>
     fmap:
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/008-smap_kp_mtflash3d_v1s_4p0/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/008-smap_kp_mtflash3d_v1s_4p0/s20241105120250-1.nii
         example: fmap/sub-002_ses-01_acq-headT1w_part-mag_RB1COR
         checked: true
         model: fmap:RB1COR
@@ -227,7 +227,7 @@ MRI:
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - IntendedFor: <<custom:IntendedFor>>
       - provenance: 
-          /data/pt_03002/data/temp/sub-002/ses-01/MRI/031-kp_afib1_v1g/s20241105120250-1.nii
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/031-kp_afib1_v1g/s20241105120250-1.nii
         example: fmap/sub-002_ses-01_acq-tr1_echo-1_TB1AFI
         checked: true
         model: fmap:TB1AFI

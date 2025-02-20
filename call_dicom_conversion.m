@@ -19,7 +19,7 @@ function call_dicom_conversion(input_dir, output_dir, excl_str, check_results)
     % end
 
     addpath('/data/u_kuegler_software/git/spm12')
-    addpath('/data/u_kuegler_software/git/hMRI-toolbox')
+    addpath('/data/u_kuegler_software/git/hMRI-toolbox_IronSleep')
     addpath('/data/u_kuegler_software/git/MPM_bidsification/hMRI_toolbox_functions/dicom_import')
 
     disp("Retrieving DICOMs from " + input_dir)

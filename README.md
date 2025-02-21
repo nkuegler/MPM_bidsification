@@ -93,4 +93,4 @@ This list will be extended.
         if not os.path.exists(corresponding_bids_data_path):
             raise exceptions.InitEPError(f"Corresponding BIDS directory not found at {corresponding_bids_data_path}")
         ```
-
+    + However, this case is not thoroughly tested, so please stick to the suggested order: first bidsify the DICOM data, thereafter bidsify the LORAKS reconstructed data.

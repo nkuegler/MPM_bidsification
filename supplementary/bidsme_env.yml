@@ -1,0 +1,13 @@
+name: bidsme
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - ipykernel
+  - jupyterlab
+  - pandas
+  - scipy
+  - matplotlib
+  - nibabel
+  - pydicom
+  - pip

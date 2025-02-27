@@ -181,6 +181,7 @@ MRI:
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+          - SliceThickness: <format03f:SliceThickness>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/022-tfl_multiMTC_ss_centric_MT_ON_2AVG/s2023-11-21_14-24-163059-00001-00001-1.nii
         example: anat/sub-003_ses-01_acq-001_run-1_mt-on_MTR

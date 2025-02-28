@@ -1,0 +1,20 @@
+name: bidsme_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - ipykernel
+  - jupyterlab
+  - scipy
+  - matplotlib
+  - pandas > 1.4
+  - ruamel.yaml >= 0.15.35
+  - coloredlogs
+  - pyparsing
+  - bidsschematools
+  - pydicom >= 1.4.2
+  - nibabel
+  - dcm2niix >= 1.0.20220715
+  - pip
+  - pip:
+    - git+https://gitlab.uliege.be/CyclotronResearchCentre/Public/bidstools/bidsme/bidsme.git

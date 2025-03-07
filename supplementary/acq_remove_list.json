@@ -1,10 +1,60 @@
-{"MRI":
 {
- "sub-006": {
-    "ses-01": ["018-pdw_kp_mtflash3d_v1s_0p6_ND","019-pdw_kp_mtflash3d_v1s_0p6_ND","020-pdw_kp_mtflash3d_v1s_0p6","021-pdw_kp_mtflash3d_v1s_0p6"]
+  "MRI": {
+    "sub-006": {
+      "ses-01": [
+        "014-smap_kp_mtflash3d_v1s_4p0_ND",
+        "015-smap_kp_mtflash3d_v1s_4p0_ND",
+        "016-smap_kp_mtflash3d_v1s_4p0",
+        "017-smap_kp_mtflash3d_v1s_4p0",
+        "018-pdw_kp_mtflash3d_v1s_0p6_ND",
+        "019-pdw_kp_mtflash3d_v1s_0p6_ND",
+        "020-pdw_kp_mtflash3d_v1s_0p6",
+        "021-pdw_kp_mtflash3d_v1s_0p6"
+      ]
     },
- "sub-008": { 
-    "ses-01": ["036-t1w_kp_mtflash3d_v1s_0p6_ND","037-t1w_kp_mtflash3d_v1s_0p6_ND","038-t1w_kp_mtflash3d_v1s_0p6","039-t1w_kp_mtflash3d_v1s_0p6"]
+    "sub-008": {
+      "ses-01": [
+        "032-smap_kp_mtflash3d_v1s_4p0_ND",
+        "033-smap_kp_mtflash3d_v1s_4p0_ND",
+        "034-smap_kp_mtflash3d_v1s_4p0",
+        "035-smap_kp_mtflash3d_v1s_4p0",
+        "036-t1w_kp_mtflash3d_v1s_0p6_ND",
+        "037-t1w_kp_mtflash3d_v1s_0p6_ND",
+        "038-t1w_kp_mtflash3d_v1s_0p6",
+        "039-t1w_kp_mtflash3d_v1s_0p6"
+      ]
+    },
+    "sub-014": {
+      "ses-01": [
+        "022-smap_kp_mtflash3d_v1s_4p0_ND",
+        "023-smap_kp_mtflash3d_v1s_4p0_ND",
+        "024-smap_kp_mtflash3d_v1s_4p0",
+        "025-smap_kp_mtflash3d_v1s_4p0",
+        "026-mtw_kp_mtflash3d_v1s_0p6_ND",
+        "027-mtw_kp_mtflash3d_v1s_0p6_ND",
+        "028-mtw_kp_mtflash3d_v1s_0p6",
+        "029-mtw_kp_mtflash3d_v1s_0p6"
+      ]
+    },
+    "sub-017": {
+      "ses-01": [
+        "032-pdw_kp_mtflash3d_v1s_0p6_ND",
+        "033-pdw_kp_mtflash3d_v1s_0p6_ND",
+        "034-pdw_kp_mtflash3d_v1s_0p6",
+        "035-pdw_kp_mtflash3d_v1s_0p6"
+      ]
+    },
+    "sub-023": {
+      "ses-01": [
+        "014-smap_kp_mtflash3d_v1s_4p0_ND",
+        "015-smap_kp_mtflash3d_v1s_4p0_ND",
+        "016-smap_kp_mtflash3d_v1s_4p0",
+        "017-smap_kp_mtflash3d_v1s_4p0",
+        "018-pdw_kp_mtflash3d_v1s_0p6_ND",
+        "019-pdw_kp_mtflash3d_v1s_0p6_ND",
+        "020-pdw_kp_mtflash3d_v1s_0p6",
+        "021-pdw_kp_mtflash3d_v1s_0p6"
+      ]
     }
-}
+  }
 }

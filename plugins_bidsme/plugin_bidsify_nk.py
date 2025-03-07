@@ -123,6 +123,10 @@ def InitEP(source: str, destination: str,
     bids_dir = destination
     dry_run = dry
 
+    global bidsmap_step
+    bidsmap_step = kwargs.get("bidsmap_step", False) # get the value from the options passed to the plugin, default is False
+
+
     return 0
 
 
@@ -523,14 +527,15 @@ def SubjectEndEP(scan: BidsSession) -> int:
         code 180
     """
 
-    ## copy sessions tsv and json files for each subject
-    subject_sessions_pattern = f"{scan.subject}_sessions"
-    for file_name in os.listdir(scan.in_path):
-        if re.match(subject_sessions_pattern, file_name):
-            prep_file = os.path.join(scan.in_path, file_name)
-            bids_file = os.path.join(f"{bids_dir}/{scan.subject}", file_name)
-            shutil.copy(prep_file, bids_file)
-            # print(f"Copying {prep_file} to {bids_file}")
+    if not bidsmap_step:
+        ## copy sessions tsv and json files for each subject
+        subject_sessions_pattern = f"{scan.subject}_sessions"
+        for file_name in os.listdir(scan.in_path):
+            if re.match(subject_sessions_pattern, file_name):
+                prep_file = os.path.join(scan.in_path, file_name)
+                bids_file = os.path.join(f"{bids_dir}/{scan.subject}", file_name)
+                shutil.copy(prep_file, bids_file)
+                # print(f"Copying {prep_file} to {bids_file}")
 
 def FinaliseEP() -> int:
     """

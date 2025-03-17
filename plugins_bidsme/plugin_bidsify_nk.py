@@ -32,6 +32,7 @@ import os
 import re
 import warnings
 import shutil
+import plugin_helper_functions as helper
 
 # Will integrate plugin into logging
 import logging
@@ -278,36 +279,6 @@ def SequenceEP(recording: object) -> int:
                 recording.custom["UniT1_descr"] = "DEN"
 
 
-        def find_smap_modality(seq_list: list, current_index: int) -> str:
-            """
-            Determines the modality of an SMAP sequence from a list of sequences.
-            Sensitivity maps (SMAP) are acquired right before the intended modality (T1w, PDw, MTw).
-            This function examines the elements in `seq_list` starting from the index 
-            immediately after `current_index` and checks for specific modality keywords 
-            ("t1w", "pdw", "mtw") in a case-insensitive manner. It returns the first 
-            matching modality found.
-            Args:
-                seq_list (list): A list of sequence names.
-                current_index (int): The index of the current sequence in the list.
-            Returns:
-                str: The modality of the sequence ("T1w", "PDw", or "MTw") if found, 
-                     otherwise None.
-            """
-
-            # Look at subsequent elements
-            for i in range(current_index + 1, len(seq_list)):
-                element = seq_list[i].casefold()  # Case-insensitive comparison
-                
-                # Check for modalities
-                if "t1w" in element:
-                    return "T1w"
-                elif "pdw" in element:
-                    return "PDw"
-                elif "mtw" in element:
-                    return "MTw"
-                
-            return None
-
         ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
         if rec_id.startswith("smap_kp_mtflash3d"):
             receive_coil = recording.getAttribute("ReceiveCoilName")
@@ -319,7 +290,7 @@ def SequenceEP(recording: object) -> int:
                 recording.custom["ReceiveCoil"] = "unknown"
         
 
-            smap_modality = find_smap_modality(seq_list, seq_index)
+            smap_modality = helper.find_smap_modality(seq_list, seq_index)
             if smap_modality:
                 recording.custom["IntendedFor"] = smap_modality
             else:

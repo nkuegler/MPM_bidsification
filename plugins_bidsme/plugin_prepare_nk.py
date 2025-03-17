@@ -35,6 +35,8 @@ import warnings
 import json
 from datetime import datetime
 import shutil
+import plugin_helper_functions as helper
+
 
 # Will integrate plugin into logging
 import logging

@@ -32,6 +32,7 @@ import os
 import re
 import warnings
 import shutil
+import plugin_helper_functions as helper
 
 # Will integrate plugin into logging
 import logging

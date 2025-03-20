@@ -179,13 +179,13 @@ if not os.path.exists(corresponding_bids_data_path):
 As mentioned before, the Bidsification of the LORAKS-reconstructed data should be performed AFTER the Bidsification of the DICOM-imported data. If there is no bidsified DICOM data, the LORAKS bidsification should still work but there won't be any information on shim current consistency available. This case was also not thoroughly tested, so there may be a few bugs.
 
 
-> <font color="red">**Very important note:**</font><br>
+> <span style="color:red">**Very important note:**</span><br>
 >
-> <font color="red">During the preparation, WARNINGS will be raised by the logger, claiming that Bidsme was *"Unable to get recording Id for file ..."*. These warnings can be ignored, as they were addressed but the logger output cannot be removed without destroying its functionality. Not raising any warnings would potentially lead to overlooking a different, more severe issue.</font><br>
+> <span style="color:red">During the preparation, WARNINGS will be raised by the logger, claiming that Bidsme was *"Unable to get recording Id for file ..."*. These warnings can be ignored, as they were addressed but the logger output cannot be removed without destroying its functionality. Not raising any warnings would potentially lead to overlooking a different, more severe issue.</span><br>
 >
-> <font color="red">The Bidsmap creation step will raise the same WARNINGS, causing this step to crash early. Until this is fixed, you need to rely on your experience on how to create a proper Bidsmap without the help of this function. If you made a mistake in the `bidsmap.yaml`, the `bidsme bidsify` command will raise an error or you will find the mistake in the resulting sidecar JSON files in the bidsified data (*e.g.*, missing or falsely populated fields). </font><br>
+> <span style="color:red">The Bidsmap creation step will raise the same WARNINGS, causing this step to crash early. Until this is fixed, you need to rely on your experience on how to create a proper Bidsmap without the help of this function. If you made a mistake in the `bidsmap.yaml`, the `bidsme bidsify` command will raise an error or you will find the mistake in the resulting sidecar JSON files in the bidsified data (*e.g.*, missing or falsely populated fields). </span><br>
 >
-> <font color="red">The `bidsme bidsify` command will also raise the same WARNINGS but the execution will not stop. Please also ignore these warnings as they were addressed but the logger output remains.</font><br>
+> <span style="color:red">The `bidsme bidsify` command will also raise the same WARNINGS but the execution will not stop. Please also ignore these warnings as they were addressed but the logger output remains.</span><br>
 
 
 

@@ -188,7 +188,88 @@ As mentioned before, the Bidsification of the LORAKS-reconstructed data should b
 > <span style="color:red">The `bidsme bidsify` command will also raise the same WARNINGS but the execution will not stop. Please also ignore these warnings as they were addressed but the logger output remains.</span><br>
 
 
+#### Branch alina_data
+
+The second branch in the **MPM_bidsification** repository is used to bidsify the data acquired by [Alina Studenova](mailto:studenova@cbs.mpg.de?subject=Question%20about%20MRI%20Dataset). Her data was acquired using the **7T Siemens Terra.X** system, while the IronSleep data was acquired on the **7T Siemens Terra** system. <br>
+
+**Key differences:**
+
++ A manually created `ids_dates.json` file is used to specify which subjects/sessions are used from the data containing directory. (implemented in `bidsify_Alina.ipynb`)
++ At the last time of testing, the *SPM DICOM Import* did not work for Terra.X data. Therefore *dcm2niix* is used for converting the DICOM data in this data set into NIfTI format. (implemented in `bidsify_Alina.ipynb`)
+    + **Important hint:** Checking the [documentation for dcm2niix](https://github.com/rordenlab/dcm2niix/blob/master/docs/source/dcm2niix.rst), it contains the explanation for the `-x`  flag: "... If "i", images are neither cropped nor rotated to canonical space". While rotation is not really mentioned elsewhere in the documentation this is the relevant bit. Regarding the rotation of the resulting data matrix, it makes a difference setting `-x i` or not (default is `-x n`). [This post](https://github.com/rordenlab/dcm2niix/issues/438#issuecomment-712407835) also explains the issue.
++ A different metadata structure and different sequences require a different bidsmap and adjusted plugins: 
+    + `example_bidsmap_alinadata.yaml`
+    + `plugin_prepare_nk.py` and `plugin_bidsify_nk.py` were adjusted
+    + `plugin_prepare_loraks_nk.py` and `plugin_bidsify_loraks_nk.py` were adjusted
++ As multiple files with the same names in different branches create confusion, the supplementary files for this branch are located in a separate `resources/` directory at `PROJECT_DIR/bids/code/resources/`. These files were also copied to the **MPM_repository** to assure version control.
+<br>
+<br>
+
+<span style="color:red">**If you want to use the repository for your data, quite a few adjustments will probably be necessary. You can use either the IronSleep (_`*_MPM*`_) or the alina_data (_`*_alina*`_) files as starting point depending on the properties of your data.**</span>
+
+
 
 ## File description (**MPM_bidsification** repository)
 
++ `.ipynb_checkpoints/` – ignore
++ `docs/` – directory containing detailed documentation of different things (still worked on)
++ `plugins_bidsme/` – different plugins for different use cases and data sets (find more information about the plugins in the `docs/` directory or directly in the code)
+    + `*_prepare*` – used for preparation step
+    + `*_bidsify*` – used for bidsification step
+    + `*_loraks*` – designed for bidsification of the LORAKS-reconstructed data
+    > **Warning:** Make sure that you checked out the correct branch of the repository as the plugins in the main branch and the plugins in the alina_data branch are not equal even though they have the same names.
++ `spm_dicom_import/` – scripts adapted from the [postmortembrain-mpm](https://github.com/IlonaLipp/postmortembrain-mpm) repository (Author: Ilona Lipp)
+    + `convert_dicoms_to_nifti.m` – main function called for DICOM-to-NIfTI conversion (using SPM DICOM Import)
+    + `convert_dicoms_to_nifti_no_check.m` – adjusted function of the one above that skips checks during the process (use with care: quicker but hard to detect if files were skipped)
+    + `check_if_all_nifti_files_have_same_dimensions.m` – helper function
+    + `convert_dir_output_to_cell_structure.m` – helper function
++ `supplementary/` – all the supplementary functions and scripts needed for the bidsification (aside from the plugins)
+    + `bidsmaps/` – `bidsmap.yaml` files created for the bidsification of different data sets
+        + `*_MPM*` – for IronSleep data
+        + `*_alinadata*` – for Alina's data
+        + `*_loraks*` – for LORAKS-reconstructed data
+    + `table_templates/` – templates that define the columns in the `.tsv` files in the data set
+        + `participants_nk.json` – template for creating the `participants.tsv`
+        + `sessions_nk.json` - template for creating the different `sub-XXX_sessions.tsv` files
+    + `acq_remove_list.json` (only in the alina_data branch) – defines which sequences should removed from the `temp/` directory before bidsification (usually duplicates due to repeated acquisitions)
+    + `bidsme_env.yml` – environment YAML file to create the appropriate conda/mamba environment
+    + `dataset_description.json` – example of a description file (required for a BIDS-conform dataset)
+    + `example_readme.md` – example of a README file (required for a BIDS-conform dataset)
++ `bidsify_Alina.ipynb` (only in the alina_data branch) – Jupyter notebook for running the bidsification of the DICOM-imported data
++ `bidsify_Alina_loraks.ipynb` (only in the alina_data branch) – Jupyter notebook for running the bidsification of the LORAKS-reconstructed data
++ `bidsify_IronSleep.ipynb` – Jupyter notebook for running the bidsification of the DICOM-imported data
++ `bidsify_IronSleep_loraks.ipynb` – Jupyter notebook for running the bidsification of the LORAKS-reconstructed data
++ `call_dicom_conversion.m` – script that sets the paths in the MATLAB instance and calls the DICOM Import script
++ `main_dicom_conv_batchautom.sh` – call the DICOM-to-NIfTI conversion for a batch of files (inherits the paths to each file and to the output directory from the `settings.py`)
++ `main_dicom_conv.sh` *(deprecated)* – call the DICOM-to-NIfTI conversion for a single file (paths as arguments)
++ `nii_dtibatch.m` *(not relevant for the bidsification)* – script to check the `.bvec` and `.bval` files created by *dcm2niix* from diffusion data (found in the [dcm2niix documentation](https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage#Diffusion_Tensor_Imaging), [link to the script on Github](https://github.com/rordenlab/spmScripts/blob/master/nii_dtibatch.m))
++ `README.md` – description of the **MPM_bidsification** repository
++ `settings.py` – specify paths and parameters for DICOM-to-NIfTI conversion using `main_dicom_conv_batchautom.sh`
 
+
+## (Not documented yet) Functionalities of the different Plugins
+
+## (Not documented yet) Bidsmap Entries
+
+## ToDos
+
++ adjust all paths to Pathlib instead of OS or other path libraries, so that the application will also run on windows machines
++ pass the path to the `sessions.json` to the prepare plugin (plugin_opt) + document accordingly (step 6)
++ check consistency of shim currents only do when `bidsmap_step==False` -> change Quote in step 7
++ see code block in chapter Bidsification of LORAKS-reconstructed data: "must be commented out" → could rather be handled by passing a specific plugin_opt
++ write each step as function instead of code in the Jupyter Notebook → can be called from the CLI or from a python script for deployment, also possible to call it from the Jupyter notebook for debugging/testing
++ Include a resources directory for the IronSleep data → move the important files to the bids/code/ directory instead of the repository → also describe this in Step 5
++ Github repo for IronSleep directory (only include code) and alinadata directory (only include code) → version control
++ document plugins and write put this on github as documentation → link to it from confluence
++ document the different bidsmap entries also on github → include in step 7
++ describe transformation of data in the bidsmap (see `action_value` function in `bidsme/Modules/common.py` or described in the Jupyter notebook in section 4)
++ LORAKS-reconstructed bidsification → `bidsme.mapper` with `logger.setLevel("ERROR")` → may fix the issue
++ create an updated flow chart similar to the one below
++ after running the command, create file that documents paths to input directories (or even input files)
+
+<br>
+<br>
+
+**Deprecated code visualization:**
+
+![image](status_repo_2024-11-12.png)

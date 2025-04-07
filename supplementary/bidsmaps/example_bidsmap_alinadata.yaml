@@ -7,7 +7,7 @@ MRI:
         model: __unknown__
         suffix: ''
         attributes:
-          ProtocolName: ['localizer', 'ThreeDream_5mm_40deg']
+          ProtocolName: ['localizer', 'ThreeDream_5mm_40deg', 'ep2d_diff_3scan_trace_tra_p3_s2']
         bids: !!omap []
         json: !!omap []
       - provenance: 
@@ -224,6 +224,7 @@ MRI:
           - EchoTime: <EchoTime>
           - DwellTime: <DwellTime>
           - SliceThickness: <SliceThickness>
+          - ReceiveCoilName: <ReceiveCoilName>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
           - IntendedFor: <<custom:IntendedFor>>
       - provenance: 

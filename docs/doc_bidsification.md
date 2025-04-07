@@ -95,6 +95,7 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
         + This plugin adjusts subject and session names according to the previously created `.csv` files in the `id_info/` directory (forces a specific naming onto the subjects/sessions). If there are no "ID-files" or not even an `id_info/` directory, the subjects and sessions are numbered with increasing integers (subjects: 3-digits, sessions: 2-digits) and the mapping from their original IDs to the BIDS-conform IDs is documented in newly created `.csv` files in the `id_info/` directory.
         + Additionally, it moves the `.bvec` and `.bval` files of the diffusion-weighted data to the according sessions in the `temp/` directory, as this is not done by *Bidsme*. 
     + The "participants" template (.json) passed to the command defines the structure of the `participants.tsv` file. The creation of the `sub-XXX_sessions.tsv` is not implemented in *Bidsme* and is therefore also handled by the custom plugin `plugin_prepare_nk.py`.
+    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the two options `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
     + For other arguments of the command (*e.g.*, which subset of subjects to run on if not all), please refer to the help command or the Bidsme documentation.
     + ```
       bidsme.prepare(SOURCE_PATH, PREPARED_PATH, 
@@ -125,6 +126,8 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
         + This process can be very tedious and many features are not well documented. Feel free to reach out if you need help ([kuegler@cbs.mpg.de](mailto:kuegler@cbs.mpg.de?subject=Help%20with%20MPM_bidsification) or Minerva messenger user: kuegler).
     + The good thing is that the `bidsmap.yaml` has to be **created only once** including all the different `ProtocolNames`. If every session follows the same protocol, you specify the Bidsmap for one session and, thereafter, use it to bidsify your whole data set.
     + The custom plugin `plugin_bidsify_nk.py` creates variables that are used to populate the `bidsmap.yaml` with custom values. The plugin is available in the `plugins_bidsme/` directory in the **MPM_bidsification** repository.
+    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the two options `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
+        + The option `bidsmap_step == True` should be used in the `bidsme.mapper` step to avoid certain code blocks from running which would raise an error during the creation of the bidsmap but are needed during the actual bidsification.
     + ```
       PLUGIN_BIDS = "/path/to/plugin_bidsify.py"
       bidsme.mapper(PREPARED_PATH, BIDSIFIED_PATH, plugin_file=PLUGIN_BIDS,
@@ -132,7 +135,8 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
                     sub_list=['sub-002','sub-003']
                    )
       ```
-    > The `bidsme.mapper` command stops when the logger raises a warning (`bidsme.prepare` only stops at errors). Therefore, the custom-designed shim current check described in step 6 will stop the execution when shim current inconsistencies are detected. If this happens, this sanity check has to be commented out during the bidsmap creation. This has no influence on the `bidsmap.yaml` but is useful in the preparation and bidsification steps. When creating the Bidsmap for LORAKS-reconstructed data, warnings are raised due to the absence of some standard fields in the sidecar JSON files. These warnings terminate the execution of the command. You can find more on this problem in the *very important note* in [Bidsification of LORAKS-reconstructed data](#bidsification-of-loraks-reconstructed-data).
+    > The `bidsme.mapper` command stops when the logger raises a warning (`bidsme.prepare` only stops at errors). Therefore, the custom-designed shim current check described in step 6 will stop the execution when shim current inconsistencies are detected. To avoid this, make sure to pass `plugin_opt={"bidsmap_step": True}` to the `plugin_bidsify_nk.py` during the Bidsmap creation step. This option prevents the plugin from running the shim current consistency check which does not influence the `bidsmap.yaml` anyway but is useful during actual data bidsification step. <br>
+    > When creating the Bidsmap for LORAKS-reconstructed data, warnings are raised due to the absence of some standard fields in the sidecar JSON files. These warnings terminate the execution of the command. You can find more on this problem in the *very important note* in [Bidsification of LORAKS-reconstructed data](#bidsification-of-loraks-reconstructed-data).
 
 + **Step 8: `bidsme bidsify`**
 
@@ -144,6 +148,7 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
     + You can use additional flags with the command to specify which subjects/sessions are included in (or excluded from) the bidsification. 
         + Find more information by running `bidsme bidsify --help` in the CLI. (Make sure, that the `bidsme_env` environment is activated. Otherwise *Bidsme* is not available.)
     + The same plugin `plugin_bidsify_nk.py` as in the previous step is used.
+    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the two options `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
     + Everything described in the previous two steps is now applied to the bidsification and the whole bidsified data set is stored in the `bids/` directory.
     + ```
       MAP_FILE = os.path.join(BIDSIFIED_PATH, "code/bidsme/bidsmap.yaml")
@@ -201,6 +206,9 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
     + `example_bidsmap_alinadata.yaml`
     + `plugin_prepare_nk.py` and `plugin_bidsify_nk.py` were adjusted
     + `plugin_prepare_loraks_nk.py` and `plugin_bidsify_loraks_nk.py` were adjusted
++ The data set contains sensitivity maps. For the DICOM-imported data, they are named according to the properties in the .JSON files. The sensitivity maps can also be included in the LORAKS reconstructions, and thereby in the bidsified data derived from the LORAKS-reconstructed data. The `plugin_opt: include_smaps` must be handed to the plugins, when bidsifying the LORAKS-reconstructed data. 
+    + If `include_smaps == True` (only for LORAKS-reconstructed data), there must be one sensitivity map per contrast (*T1w, PDw, MTw, ...*). By analyzing which sequence was acquired right after an smap (helper function `find_smap_modality`), the specific bidsified name of this smap will include the name of the modality which it was acquired for (`_acq` entity). Different custom fields for the Bidsmap are acquired in a similar way and from the attributes in the .JSON files.
++ The `acq_remove_list.json` is used int the `alina_data` branch to defines which sequences should removed from the `temp/` directory before bidsification to account for duplicates due to repeated acquisitions.
 + As multiple files with the same names in different branches create confusion, the supplementary files for this branch are located in a separate `resources/` directory at `PROJECT_DIR/bids/code/resources/`. These files were also copied to the **MPM_repository** to assure version control.
 <br>
 <br>
@@ -217,6 +225,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
     + `*_prepare*` – used for preparation step
     + `*_bidsify*` – used for bidsification step
     + `*_loraks*` – designed for bidsification of the LORAKS-reconstructed data
+    + `plugin_helper_functions.py` - helper functions to be imported and used across all custom plugins
     > **Warning:** Make sure that you checked out the correct branch of the repository as the plugins in the main branch and the plugins in the alina_data branch are not equal even though they have the same names.
 + `spm_dicom_import/` – scripts adapted from the [postmortembrain-mpm](https://github.com/IlonaLipp/postmortembrain-mpm) repository (Author: Ilona Lipp)
     + `convert_dicoms_to_nifti.m` – main function called for DICOM-to-NIfTI conversion (using SPM DICOM Import)
@@ -255,7 +264,6 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 
 + adjust all paths to Pathlib instead of OS or other path libraries, so that the application will also run on windows machines
 + pass the path to the `sessions.json` to the prepare plugin (plugin_opt) + document accordingly (step 6)
-+ check consistency of shim currents only do when `bidsmap_step==False` -> change Quote in step 7
 + see code block in chapter Bidsification of LORAKS-reconstructed data: "must be commented out" → could rather be handled by passing a specific plugin_opt
 + write each step as function instead of code in the Jupyter Notebook → can be called from the CLI or from a python script for deployment, also possible to call it from the Jupyter notebook for debugging/testing
 + Include a resources directory for the IronSleep data → move the important files to the bids/code/ directory instead of the repository → also describe this in Step 5

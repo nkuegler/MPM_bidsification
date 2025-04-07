@@ -107,3 +107,25 @@ MRI:
           - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
           - CoilCombinationMethod: <CoilCombinationMethod>
           - PhaseUnwrappingMethod: <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
+    fmap:
+      - provenance: 
+          /data/p_03002/data/temp/LORAKS/sub-012/ses-01/MRI/001-smap_kp_mtflash3d_v1s_4p0_T1w_loraks/meas_MeasUID42_smap_kp_mtflash3d_v1s_4p0_rec-loraks_echo-1_mt-off_part-mag.nii
+        example: fmap/sub-012_ses-01_acq-headT1w_rec-loraks_part-mag_RB1COR
+        checked: true
+        model: fmap:RB1COR
+        suffix: RB1COR
+        attributes:
+          ProtocolName: ['smap_kp_mtflash3d_v1s_4p0', 'smap_kp_mtflash3d_v1sx_4p0']
+        bids: !!omap
+          - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
+          - rec: <<custom:ReconMethod>>
+          - part: <<custom:part>>
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - SequenceName: <PulseSequenceName>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - SliceThickness: <SliceThickness>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - IntendedFor: <<custom:IntendedFor>>

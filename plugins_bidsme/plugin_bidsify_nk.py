@@ -32,6 +32,7 @@ import os
 import re
 import warnings
 import shutil
+import plugin_helper_functions as helper
 
 # Will integrate plugin into logging
 import logging
@@ -125,7 +126,12 @@ def InitEP(source: str, destination: str,
 
     global bidsmap_step
     bidsmap_step = kwargs.get("bidsmap_step", False) # get the value from the options passed to the plugin, default is False
+    bidsmap_step = helper.argument_to_bool(bidsmap_step)
+    if bidsmap_step == -1:
+        raise exceptions.InitEPError(f"Invalid value for 'bidsmap_step' in plugin options")
 
+    print("options passed to plugin:")
+    print(f"- bidsmap_step: {bidsmap_step}, {type(bidsmap_step)}")
 
     return 0
 
@@ -356,23 +362,26 @@ def RecordingEP(recording: object) -> int:
             logging.getLogger().setLevel(original_level)
 
 
-        ### check that the shim currents are the same for all T1w, PDw, MTw, and (pTx) AFI scans
-        global session_shim_currents
-        global session_shim_current_warning_counter
 
-        if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
-            alShimCurrent = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
-            shim_currents = recording.getAttribute(alShimCurrent)
-            if session_shim_currents is None:
-                session_shim_currents = shim_currents
-            else:
-                if session_shim_currents != shim_currents:
-                    logger.warning(f"""Shim currents vary in 
-                                  {recording.currentFile(False)} 
-                                  from the rest of the session. 
-                                  This renders the data useless!
-                                  {session_shim_currents} vs. {shim_currents}""")
-                    session_shim_current_warning_counter += 1
+
+        if not bidsmap_step:
+            ### check that the shim currents are the same for all T1w, PDw, MTw, and (pTx) AFI scans
+            global session_shim_currents
+            global session_shim_current_warning_counter
+            
+            if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
+                alShimCurrent = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
+                shim_currents = recording.getAttribute(alShimCurrent)
+                if session_shim_currents is None:
+                    session_shim_currents = shim_currents
+                else:
+                    if session_shim_currents != shim_currents:
+                        logger.warning(f"""Shim currents vary in 
+                                    {recording.currentFile(False)} 
+                                    from the rest of the session. 
+                                    This renders the data useless!
+                                    {session_shim_currents} vs. {shim_currents}""")
+                        session_shim_current_warning_counter += 1
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -456,48 +465,49 @@ def SessionEndEP(scan: BidsSession) -> int:
     tfl_multiMTC_MT_OFF_counter = 0
 
 
-    ## warn if shim currents are inconsistent + delete the bidsified data or create warning file for the corresponding session
-    global session_shim_current_warning_counter
-    global session_shim_current_relevant_sequences_counter
+    if not bidsmap_step:
+        ## warn if shim currents are inconsistent + delete the bidsified data or create warning file for the corresponding session
+        global session_shim_current_warning_counter
+        global session_shim_current_relevant_sequences_counter
 
-    session_path = f"{bids_dir}/{scan.subject}/{scan.session}"
+        session_path = f"{bids_dir}/{scan.subject}/{scan.session}"
 
-    if session_shim_current_relevant_sequences_counter in (0, 1): 
-        logger.warning(f"""No information on shim current consistency available in {scan.subject} {scan.session}.""")
-        ## create a txt file indicating that there is no information on shim current consistency
-        noinfo_shim_file = os.path.join(session_path, "WARNING_NOINFO_SHIMCURR.txt")
-        with open(noinfo_shim_file, "w") as f:
-            f.write(f"""WARNING: 
-                    There is no information on shim current consistency available in {scan.subject} {scan.session} due to missing sequence data.
-                    (probably no DICOM data for T1w, PDw, and MTw acquisitions)
-                    
-                    """)
-    else:
-        if session_shim_current_warning_counter == 0:
-            print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
-        else:
-            logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! This may render the data USELESS!""")
-
-            # ## delete the bidsified data of the corresponding session
-            # try:
-            #     # List all contents
-            #     for item in os.listdir(session_path):
-            #         item_path = os.path.join(session_path, item)
-            #         if os.path.isfile(item_path):
-            #             os.remove(item_path)
-            #         elif os.path.isdir(item_path):
-            #             shutil.rmtree(item_path)
-            # except Exception as e:
-            #     print(f"Error while cleaning directory: {e}")
-
-            ## Create a txt file indicating shim current inconsistencies
-            inconsistency_file = os.path.join(session_path, "WARNING_INCONS_SHIMCURR.txt")
-            with open(inconsistency_file, "w") as f:
+        if session_shim_current_relevant_sequences_counter in (0, 1): 
+            logger.warning(f"""No information on shim current consistency available in {scan.subject} {scan.session}.""")
+            ## create a txt file indicating that there is no information on shim current consistency
+            noinfo_shim_file = os.path.join(session_path, "WARNING_NOINFO_SHIMCURR.txt")
+            with open(noinfo_shim_file, "w") as f:
                 f.write(f"""WARNING: 
-                        Shim currents are inconsistent for T1w, PDw, MTw, and (pTx) AFI in {scan.subject} {scan.session}. 
-                        This may render the data unusable!
-
+                        There is no information on shim current consistency available in {scan.subject} {scan.session} due to missing sequence data.
+                        (probably no DICOM data for T1w, PDw, and MTw acquisitions)
+                        
                         """)
+        else:
+            if session_shim_current_warning_counter == 0:
+                print(f"No shim current inconsistencies present in {scan.subject} {scan.session}!")
+            else:
+                logger.warning(f"""Shim current inconsistencies found in {scan.subject} {scan.session}! This may render the data USELESS!""")
+
+                # ## delete the bidsified data of the corresponding session
+                # try:
+                #     # List all contents
+                #     for item in os.listdir(session_path):
+                #         item_path = os.path.join(session_path, item)
+                #         if os.path.isfile(item_path):
+                #             os.remove(item_path)
+                #         elif os.path.isdir(item_path):
+                #             shutil.rmtree(item_path)
+                # except Exception as e:
+                #     print(f"Error while cleaning directory: {e}")
+
+                ## Create a txt file indicating shim current inconsistencies
+                inconsistency_file = os.path.join(session_path, "WARNING_INCONS_SHIMCURR.txt")
+                with open(inconsistency_file, "w") as f:
+                    f.write(f"""WARNING: 
+                            Shim currents are inconsistent for T1w, PDw, MTw, and (pTx) AFI in {scan.subject} {scan.session}. 
+                            This may render the data unusable!
+
+                            """)
     
 
     ## reset shim currents for next session

@@ -6,6 +6,13 @@
 # Institution: Max Planck Institute for Cognitive and Brain Sciences, Leipzig, Germany
 
 
+import pandas as pd
+import numpy as np
+import os
+import re
+import warnings
+import shutil
+
 
 def find_smap_modality(seq_list: list, current_index: int) -> str:
     """
@@ -26,6 +33,10 @@ def find_smap_modality(seq_list: list, current_index: int) -> str:
     # Look at subsequent elements
     for i in range(current_index + 1, len(seq_list)):
         element = seq_list[i].casefold()  # Case-insensitive comparison
+
+        # if the next element is also an smap, continue with the next element
+        if "smap" in element:
+            continue
         
         # Check for modalities
         if "t1w" in element:
@@ -36,3 +47,26 @@ def find_smap_modality(seq_list: list, current_index: int) -> str:
             return "MTw"
         
     return None
+
+
+def argument_to_bool(argument: str) -> bool:
+    """
+    Converts an argument (string or int) to a boolean value. Raises exception if the argument is not "True", "False", "true", "false", "1", "0", 1, or 0.
+    If argument is already of type bool, it is returned as is.
+
+    Args:
+        argument (str or int): The argument to convert.
+    Returns:"
+        bool: The boolean value corresponding to the argument.
+    """
+    if isinstance(argument, bool):
+        return argument
+    
+    else: 
+        if argument.casefold()=="false" or argument==0 or argument=="0":
+            return False
+        elif argument.casefold()=="true" or argument==1 or argument=="1":
+            return True
+        else:
+            return -1
+        

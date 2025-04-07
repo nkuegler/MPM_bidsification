@@ -51,6 +51,11 @@ available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mt
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
 
+# list of sequences in order of acquisition in current session
+seq_list = list()
+
+# The index of current sequence, corresponds to order in the sequence list
+seq_index = -1
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -121,6 +126,33 @@ def InitEP(source: str, destination: str,
     global corresponding_bids_data_path
     corresponding_bids_data_path = os.path.abspath(os.path.join(bids_dir, '..', '..')) # works for: bids_dir/derivatives/LORAKS
 
+    global bidsmap_step
+    bidsmap_step = kwargs.get("bidsmap_step", False) # get the value from the options passed to the plugin, default is False
+    bidsmap_step = helper.argument_to_bool(bidsmap_step)
+    if bidsmap_step == -1:
+        raise exceptions.InitEPError(f"Invalid value for 'bidsmap_step' in plugin options")
+
+    global include_smaps
+    include_smaps = kwargs.get("include_smaps", False)
+    include_smaps = helper.argument_to_bool(include_smaps)
+    if include_smaps == -1:
+        raise exceptions.InitEPError(f"Invalid value for 'include_smaps' in plugin options")
+
+    print("options passed to plugin:")
+    print(f"- bidsmap_step: {bidsmap_step}, {type(bidsmap_step)}")
+    print(f"- include_smaps: {include_smaps}, {type(include_smaps)}")
+
+    global available_contrasts_loraks
+    global smap_ident
+    if include_smaps:
+        new_list = []
+        smap_ident = "smap_kp_mtflash3d"
+        for item in available_contrasts_loraks:
+            new_list.append(smap_ident)
+            new_list.append(item)
+        available_contrasts_loraks = new_list
+
+
     return 0
 
 
@@ -183,6 +215,15 @@ def SessionEP(scan: BidsSession) -> int:
         code 130
     """
 
+    global seq_list
+    global seq_index
+    
+    session_dir = os.path.join(scan.in_path, "MRI")
+    seq_list = sorted(os.listdir(session_dir))
+    seq_list = [s.split("-", 1)[1] for s in seq_list]
+    seq_index = -1
+    # print(f"files in {session_dir}: {seq_list}")
+
     return 0
 
 def SequenceEP(recording: object) -> int:
@@ -211,6 +252,46 @@ def SequenceEP(recording: object) -> int:
     Error.SequenceEPerror
         code 140
     """
+
+    global seq_index
+
+    recording.custom["IntendedFor"] = ""
+    seq_index += 1
+    rec_id = seq_list[seq_index]
+    # print(rec_id)
+    # print(recording.recId())
+    # print(recording.currentFile(True))
+
+    # checking if current sequence corresponds in correct place in list
+    if rec_id != recording.recId():
+        logger.warning("{}: Id mismatch folder {}"
+                       .format(recording.recIdentity(False),
+                               rec_id))
+    
+
+    if recording.Module() == "MRI":
+        ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
+        if rec_id.startswith("smap_kp_mtflash3d"):
+            receive_coil = recording.getAttribute("ReceiveCoilName")
+            if receive_coil:
+                if "head" in receive_coil.casefold():
+                    recording.custom["ReceiveCoil"] = "head"
+                elif "body" in receive_coil.casefold():
+                    recording.custom["ReceiveCoil"] = "body"
+                else:
+                    recording.custom["ReceiveCoil"] = ""
+            else:
+                recording.custom["ReceiveCoil"] = ""
+        
+            # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
+            smap_modality = helper.find_smap_modality(seq_list, seq_index)
+            if smap_modality:
+                # print(f"smap_modality: {smap_modality}")
+                recording.custom["IntendedFor"] = smap_modality
+            else:
+                logger.warning("{}: Unable to determine modality of sensitivity map"
+                        .format(recording.recIdentity()))
+                recording.custom["IntendedFor"] = "invalid"
 
 
     return 0
@@ -248,6 +329,8 @@ def RecordingEP(recording: object) -> int:
             string_end = "_0p6"
         elif "_0p5_sag" in full_string: # resolution of Ernst acquisition
             string_end = "_0p5_sag"
+        elif "_4p0" in full_string: # resolution of sensitivity maps
+            string_end = "_4p0"
         else:
             logger.warning(f"ProtocolName couldn't be derived properly from {full_string}")
             return str_to_check
@@ -292,11 +375,38 @@ def RecordingEP(recording: object) -> int:
 
 
             ### set protocol name as attribute
-            for ind, contrast_fname in enumerate(available_contrasts_loraks):
-                if contrast_fname.casefold() in recording.currentFile(True).casefold():
-                    recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
-                    recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos) # first element in list = 1+rsos, second = 3+rsos, third = 5+rsos
-                    recording.setAttribute("ProtocolName", f"{get_series_id(contrast_fname, recording)}")
+            global available_contrasts_loraks
+            
+            ### recording.series_id and recording.series_no code works 
+            ### but is not used in bidsification step at the moment
+            if include_smaps and \
+                    smap_ident.casefold() in recording.currentFile(True).casefold():
+                
+                ### determine the contrast which the sensitivity map was acquired for by looking at the following sequences
+                smap_modality = helper.find_smap_modality(seq_list, seq_index)
+                if smap_modality:
+                    # print(f"smap_modality: {smap_modality}")
+                    # recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
+                    ### find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)
+                    # smap_modal_idx = next((i for i, elem in enumerate(available_contrasts_loraks) if smap_modality.casefold() in elem.casefold()), None)
+                    ### use (smap_modal_idx - 1) as index of the smap
+                    # recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[smap_modal_idx-1] + rsos) # smap always right before corresponding contrast
+                    recording.setAttribute("ProtocolName", f"{get_series_id(smap_ident, recording)}")
+
+                else:
+                    logger.warning("{}: Unable to determine modality of sensitivity map"
+                            .format(recording.recIdentity()))
+
+            else:
+                for ind, contrast_fname in enumerate(available_contrasts_loraks):
+                    if contrast_fname.casefold() in recording.currentFile(True).casefold():
+                        # recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
+                        # recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos) # first element in list = 1+rsos, second = 3+rsos, third = 5+rsos
+                        recording.setAttribute("ProtocolName", f"{get_series_id(contrast_fname, recording)}")
+                        break # quit loop after the first match                
+
+            #print(f"series_id: {recording.series_id}")
+            #print(f"series_no: {recording.series_no}")
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -356,6 +466,9 @@ def SequenceEndEP(path: str, recording: object) -> int:
         code 170
     """
 
+    global smap_modality
+    smap_modality = None
+    
     return 0
 
 
@@ -404,14 +517,15 @@ def SubjectEndEP(scan: BidsSession) -> int:
         code 180
     """
 
-    ## copy sessions tsv and json files for each subject
-    subject_sessions_pattern = f"{scan.subject}_sessions"
-    for file_name in os.listdir(scan.in_path):
-        if re.match(subject_sessions_pattern, file_name):
-            prep_file = os.path.join(scan.in_path, file_name)
-            bids_file = os.path.join(f"{bids_dir}/{scan.subject}", file_name)
-            shutil.copy(prep_file, bids_file)
-            # print(f"Copying {prep_file} to {bids_file}")
+    if not bidsmap_step:
+        ## copy sessions tsv and json files for each subject
+        subject_sessions_pattern = f"{scan.subject}_sessions"
+        for file_name in os.listdir(scan.in_path):
+            if re.match(subject_sessions_pattern, file_name):
+                prep_file = os.path.join(scan.in_path, file_name)
+                bids_file = os.path.join(f"{bids_dir}/{scan.subject}", file_name)
+                shutil.copy(prep_file, bids_file)
+                print(f"Copying {prep_file} to {bids_file}")
 
     return 0
 

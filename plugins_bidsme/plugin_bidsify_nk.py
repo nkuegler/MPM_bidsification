@@ -245,7 +245,6 @@ def SequenceEP(recording: object) -> int:
                                rec_id))
 
 
-    ### adapted from Nikita Beliy's plugin
     if recording.Module() == "MRI":
 
         ### tfl_multiMTC

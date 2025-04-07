@@ -34,6 +34,7 @@ import warnings
 import json
 from datetime import datetime
 import shutil
+import plugin_helper_functions as helper
 
 # Will integrate plugin into logging
 import logging
@@ -60,6 +61,13 @@ available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "ernst_kp_
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
     return path[:-1] if path.endswith('/') else path
+
+# list of sequences in order of acquisition in current session
+files_list = list()
+
+# The index of current sequence, corresponds to order in the sequence list
+file_index = -1
+
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -145,6 +153,25 @@ def InitEP(source: str, destination: str,
     corresponding_bids_data_path = os.path.abspath(os.path.join(nifti_dir, '..', 'bids')) # works for: source dir is on the same level as bids dir
     if not os.path.exists(corresponding_bids_data_path):
         raise exceptions.InitEPError(f"Corresponding BIDS directory not found at {corresponding_bids_data_path}")
+
+    global include_smaps
+    include_smaps = kwargs.get("include_smaps", False)
+    include_smaps = helper.argument_to_bool(include_smaps)
+    if include_smaps == -1:
+        raise exceptions.InitEPError(f"Invalid value for 'include_smaps' in plugin options")
+
+    print("options passed to plugin:")
+    print(f"- include_smaps: {include_smaps}")
+
+    global available_contrasts_loraks
+    global smap_ident
+    if include_smaps:
+        new_list = []
+        smap_ident = "smap_kp_mtflash3d"
+        for item in available_contrasts_loraks:
+            new_list.append(smap_ident)
+            new_list.append(item)
+        available_contrasts_loraks = new_list
 
     print(f"""Loading sessions_nk.json from {sessions_tsv_template}.
           This functionality is not part of Bidsme, but implemented in a plugin. 
@@ -319,6 +346,8 @@ def SessionEP(scan: BidsSession) -> int:
             subN_sessions_dict['original_session_id'][-1] = current_sessionID
     # more population of the dictionary in SequenceEP to access a recording object
 
+    global file_index
+    file_index = -1
 
 def SequenceEP(recording: object) -> int:
     """
@@ -363,6 +392,15 @@ def SequenceEP(recording: object) -> int:
             return dt.strftime('%Y-%m-%d_%H-%M')
         
         return None  # No match found
+
+
+    global files_list
+
+    # create a list of all files in the directory -> strip that list by all elements that do not contain ".nii" (or ".nii.gz")
+    current_dir = os.path.dirname(recording.currentFile(False))
+    files_list = [f for f in os.listdir(current_dir) if os.path.isfile(os.path.join(current_dir, f)) and '.nii' in f]
+    files_list = sorted(files_list)
+    # print(f"NIfTI files in {current_dir}: {files_list}")
 
 
     ### flag to ensure that there are files in the session directory
@@ -440,7 +478,15 @@ def RecordingEP(recording: object) -> int:
         series_id = f"{str_to_check}{recording_id_rest}"
         return series_id
 
+    global file_index
+    global available_contrasts_loraks
+
     if recording.Module() == "MRI":
+        file_index += 1
+        # print(f"{file_index}: {recording.currentFile(True)}")
+
+
+        ## evaluate whether _loraks or _loraksRsos is present in the filename
         recon_method = ""
 
         if "rec-loraksRsos".casefold() in recording.currentFile(True).casefold():
@@ -453,10 +499,35 @@ def RecordingEP(recording: object) -> int:
             return 0
         
         if recon_method:
-            for ind, contrast_fname in enumerate(available_contrasts_loraks):
-                if contrast_fname.casefold() in recording.currentFile(True).casefold():
-                    recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
-                    recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
+            if not include_smaps:
+                for ind, contrast_fname in enumerate(available_contrasts_loraks):
+                    if contrast_fname.casefold() in recording.currentFile(True).casefold():
+                        recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
+                        recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
+
+            else: 
+                if smap_ident.casefold() in recording.currentFile(True).casefold():
+                    # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
+                    smap_modality = helper.find_smap_modality(files_list, file_index)
+                    if smap_modality:
+                        recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
+                        # find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)
+                        smap_modal_idx = next((i for i, elem in enumerate(available_contrasts_loraks) if smap_modality.casefold() in elem.casefold()), None)
+                        # use (smap_modal_idx - 1) as index of the smap
+                        recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[smap_modal_idx-1] + rsos_factor) # smap always right before corresponding contrast
+
+                    else:
+                        logger.warning("{}: Unable to determine modality of sensitivity map"
+                                .format(recording.recIdentity()))
+                
+                else:
+                    for ind, contrast_fname in enumerate(available_contrasts_loraks):
+                        if contrast_fname.casefold() in recording.currentFile(True).casefold():
+                            recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
+                            recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
+                
+                # print(f"series_id: {recording.series_id}")
+                # print(f"series_no: {recording.series_no}")
 
 
 def FileEP(path: str, recording: object) -> int:

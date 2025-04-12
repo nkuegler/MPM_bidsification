@@ -47,7 +47,7 @@ prep_dir = ""
 bids_dir = ""
 dry_run = False
 corresponding_bids_data_path = ""
-available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "ernst_kp_mtflash3d"]
+available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
 
@@ -334,6 +334,14 @@ def RecordingEP(recording: object) -> int:
             string_end = "_0p5_sag"
         elif "_4p0" in full_string: # resolution of sensitivity maps
             string_end = "_4p0"
+        ### AFI B1 very hard to include due to uncertainty about the correct repetition time
+        # elif "_4mm_PA" in full_string: # resolution of B1 AFI maps
+        #     if "_4mm_PA_forT2" in full_string: # resolution of B1 AFI maps sTx
+        #         string_end = "_4mm_PA_forT2"
+        #     elif "_4mm_PA_trueform" in full_string: # resolution of B1 AFI maps sTx
+        #         string_end = "_4mm_PA_trueform"
+        #     else:
+        #         string_end = "_4mm_PA" # resolution of B1 AFI maps pTx
         else:
             logger.warning(f"ProtocolName couldn't be derived properly from {full_string}")
             return str_to_check
@@ -381,7 +389,7 @@ def RecordingEP(recording: object) -> int:
             ### set protocol name as attribute
             global available_contrasts_loraks
             
-            ### recording.series_id and recording.series_no code works 
+            ### recording.series_id and recording.series_no code probably works 
             ### but is not used in bidsification step at the moment
             if include_smaps and \
                     smap_ident.casefold() in recording.currentFile(True).casefold():
@@ -407,7 +415,7 @@ def RecordingEP(recording: object) -> int:
                         # recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
                         # recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos) # first element in list = 1+rsos, second = 3+rsos, third = 5+rsos
                         recording.setAttribute("ProtocolName", f"{get_series_id(contrast_fname, recording)}")
-                        break # quit loop after the first match                
+                        break # quit loop after the first match 
 
             #print(f"series_id: {recording.series_id}")
             #print(f"series_no: {recording.series_no}")

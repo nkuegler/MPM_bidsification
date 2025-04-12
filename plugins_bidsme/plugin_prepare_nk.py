@@ -35,6 +35,7 @@ import warnings
 import json
 from datetime import datetime
 import shutil
+from pathlib import Path
 import plugin_helper_functions as helper
 
 
@@ -53,7 +54,7 @@ dry_run = False
 id_files_dir_name = f"id_info"
 id_files_dir = ""
 base_dir = ""
-sessions_tsv_template = f"{resources_path}/table_templates/sessions_nk.json"
+sessions_tsv_template = None 
 subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
@@ -151,6 +152,12 @@ def InitEP(source: str, destination: str,
 
     if not os.path.exists(id_files_dir):
         os.makedirs(id_files_dir)
+
+    global sessions_tsv_template
+    sessions_tsv_template = kwargs.get("sessions_tsv_template", None) # get the value from the options passed to the plugin, default is None
+    sessions_tsv_template = str(Path(sessions_tsv_template))
+    if sessions_tsv_template == None:
+        raise exceptions.InitEPError(f"No sessions_tsv_template specified in plugin options")
 
     print(f"""Loading sessions_nk.json from {sessions_tsv_template}.
           This functionality is not part of Bidsme, but implemented in a plugin. 

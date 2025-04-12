@@ -94,8 +94,9 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
     + You can pass a custom plugin to the command to apply custom modifications (*e.g.*, `plugin_prepare_nk.py` in the `plugins_bidsme/` directory). 
         + This plugin adjusts subject and session names according to the previously created `.csv` files in the `id_info/` directory (forces a specific naming onto the subjects/sessions). If there are no "ID-files" or not even an `id_info/` directory, the subjects and sessions are numbered with increasing integers (subjects: 3-digits, sessions: 2-digits) and the mapping from their original IDs to the BIDS-conform IDs is documented in newly created `.csv` files in the `id_info/` directory.
         + Additionally, it moves the `.bvec` and `.bval` files of the diffusion-weighted data to the according sessions in the `temp/` directory, as this is not done by *Bidsme*. 
-    + The "participants" template (.json) passed to the command defines the structure of the `participants.tsv` file. The creation of the `sub-XXX_sessions.tsv` is not implemented in *Bidsme* and is therefore also handled by the custom plugin `plugin_prepare_nk.py`.
-    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the two options `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
+    + The "participants" template (.json) passed to the command defines the structure of the `participants.tsv` file. 
+        + The creation of the `sub-XXX_sessions.tsv` is not implemented in *Bidsme* and is therefore also handled by the custom plugin `plugin_prepare_nk.py`. It is necessary to pass the path to the `sessions.json` template as `plugin_opt`: `sessions_tsv_template`.
+    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the three options `sessions_tsv_template` (passes the path to the `sessions.json` to the prepare plugin), `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data), and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
     + For other arguments of the command (*e.g.*, which subset of subjects to run on if not all), please refer to the help command or the Bidsme documentation.
     + ```
       bidsme.prepare(SOURCE_PATH, PREPARED_PATH, 
@@ -126,7 +127,7 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
         + This process can be very tedious and many features are not well documented. Feel free to reach out if you need help ([kuegler@cbs.mpg.de](mailto:kuegler@cbs.mpg.de?subject=Help%20with%20MPM_bidsification) or Minerva messenger user: kuegler).
     + The good thing is that the `bidsmap.yaml` has to be **created only once** including all the different `ProtocolNames`. If every session follows the same protocol, you specify the Bidsmap for one session and, thereafter, use it to bidsify your whole data set.
     + The custom plugin `plugin_bidsify_nk.py` creates variables that are used to populate the `bidsmap.yaml` with custom values. The plugin is available in the `plugins_bidsme/` directory in the **MPM_bidsification** repository.
-    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the two options `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
+    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the three options `sessions_tsv_template` (passes the path to the `sessions.json` to the prepare plugin), `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
         + The option `bidsmap_step == True` should be used in the `bidsme.mapper` step to avoid certain code blocks from running which would raise an error during the creation of the bidsmap but are needed during the actual bidsification.
     + ```
       PLUGIN_BIDS = "/path/to/plugin_bidsify.py"
@@ -148,7 +149,7 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
     + You can use additional flags with the command to specify which subjects/sessions are included in (or excluded from) the bidsification. 
         + Find more information by running `bidsme bidsify --help` in the CLI. (Make sure, that the `bidsme_env` environment is activated. Otherwise *Bidsme* is not available.)
     + The same plugin `plugin_bidsify_nk.py` as in the previous step is used.
-    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the two options `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
+    + The `plugin_opt` argument is used to pass variables to the plugins. Currently, the three options `sessions_tsv_template` (passes the path to the `sessions.json` to the prepare plugin), `bidsmap_step` (used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data) and `include_smaps` (to include sensitivity maps in the LORAKS-reconstructed data in Alina's dataset) are available. 
     + Everything described in the previous two steps is now applied to the bidsification and the whole bidsified data set is stored in the `bids/` directory.
     + ```
       MAP_FILE = os.path.join(BIDSIFIED_PATH, "code/bidsme/bidsmap.yaml")
@@ -263,7 +264,6 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 ## ToDos
 
 + adjust all paths to Pathlib instead of OS or other path libraries, so that the application will also run on windows machines
-+ pass the path to the `sessions.json` to the prepare plugin (plugin_opt) + document accordingly (step 6)
 + see code block in chapter Bidsification of LORAKS-reconstructed data: "must be commented out" → could rather be handled by passing a specific plugin_opt
 + write each step as function instead of code in the Jupyter Notebook → can be called from the CLI or from a python script for deployment, also possible to call it from the Jupyter notebook for debugging/testing
 + Include a resources directory for the IronSleep data → move the important files to the bids/code/ directory instead of the repository → also describe this in Step 5

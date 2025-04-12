@@ -7,3 +7,4 @@ plugins_bidsme/backup_plugin_nk.py
 main_dicom_conv_batchautom.py
 .ipynb_checkpoints/
 supplementary/bidsmaps/backup_bidsmap_loraks_AFIB1.yaml
+compare_resources.sh

@@ -263,6 +263,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 
 ## ToDos
 
++ plugin_prepare_nk -> comment out the part about finding and copying the bvec and bval files (only works if there is only one bvac and one bval file + seems to be implemented in Bidsme now)
 + adjust all paths to Pathlib instead of OS or other path libraries, so that the application will also run on windows machines
 + see code block in chapter Bidsification of LORAKS-reconstructed data: "must be commented out" → could rather be handled by passing a specific plugin_opt
 + write each step as function instead of code in the Jupyter Notebook → can be called from the CLI or from a python script for deployment, also possible to call it from the Jupyter notebook for debugging/testing

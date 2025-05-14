@@ -56,11 +56,11 @@ subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
 
-shim_current_relevant_recIDs = ["t1w_kp_mtflash3d_v1s", 
-                                "pdw_kp_mtflash3d_v1s", 
-                                "mtw_kp_mtflash3d_v1s", 
-                                "kp_afib1_v1f_4mm_PA", 
-                                "kp_afib1_v1g_4mm_PA"]
+shim_current_relevant_recIDs = ["t1w_kp_mtflash3d", 
+                                "pdw_kp_mtflash3d", 
+                                "mtw_kp_mtflash3d", 
+                                "kp_afib1_v1f", 
+                                "kp_afib1_v1g"]
 session_shim_currents = None
 session_shim_current_warning_counter = 0
 session_shim_current_relevant_sequences_counter = 0
@@ -402,6 +402,10 @@ def SequenceEP(recording: object) -> int:
             scan_institution = recording.getAttribute("InstitutionName")
             if scan_institution:
                 subN_sessions_dict['scanning_institution'][-1] = scan_institution
+            else: 
+                scan_department = recording.getAttribute("InstitutionalDepartmentName")
+                if scan_department == "Department":
+                    subN_sessions_dict['scanning_institution'][-1] = "(Pecs)"
 
         if 'manufacturer' in column_ses_dict:
             manufacturer = recording.getAttribute("Manufacturer")
@@ -555,60 +559,61 @@ def SessionEndEP(scan: BidsSession) -> int:
         # Skip if in dry run mode
         return
 
-    # Run the find command to search for bvec and bval files in the source directory of the current subject and session
-    bval_file_source = os.popen(f"find {scan.in_path} -name '*.bval'").read().strip()
-    bvec_file_source = os.popen(f"find {scan.in_path} -name '*.bvec'").read().strip()
+    # # Run the find command to search for bvec and bval files in the source directory of the current subject and session
+    # # only works if there is a single bval and bvec file in the directory
+    # bval_file_source = os.popen(f"find {scan.in_path} -name '*.bval'").read().strip()
+    # bvec_file_source = os.popen(f"find {scan.in_path} -name '*.bvec'").read().strip()
     
-    if bval_file_source and bvec_file_source:
+    # if bval_file_source and bvec_file_source:
 
-        # Extract the filenames without their extensions
-        bval_filename, _ = os.path.splitext(os.path.basename(bval_file_source))
-        bvec_filename, _ = os.path.splitext(os.path.basename(bvec_file_source))
+    #     # Extract the filenames without their extensions
+    #     bval_filename, _ = os.path.splitext(os.path.basename(bval_file_source))
+    #     bvec_filename, _ = os.path.splitext(os.path.basename(bvec_file_source))
         
-        if bval_filename == bvec_filename:
-            bval_path_source = os.path.dirname(bval_file_source)
-            print(f"Found matching bval and bvec files in {bval_path_source}")
+    #     if bval_filename == bvec_filename:
+    #         bval_path_source = os.path.dirname(bval_file_source)
+    #         print(f"Found matching bval and bvec files in {bval_path_source}")
 
-            # Extract the file's parent folder from the full path
-            bval_folder_source = os.path.basename(bval_path_source)
+    #         # Extract the file's parent folder from the full path
+    #         bval_folder_source = os.path.basename(bval_path_source)
 
-            # Use regular expression to find the 4-digit number at the end of the folder name
-            match = re.search(r'(\d{4})$', bval_folder_source)
-            if match:
-                sequence_number_4digit = match.group(1) # 4-digit number (as in source data)
-                sequence_number_3digit = sequence_number_4digit[1:] # 3-digit number (as in prepared data)
+    #         # Use regular expression to find the 4-digit number at the end of the folder name
+    #         match = re.search(r'(\d{4})$', bval_folder_source)
+    #         if match:
+    #             sequence_number_4digit = match.group(1) # 4-digit number (as in source data)
+    #             sequence_number_3digit = sequence_number_4digit[1:] # 3-digit number (as in prepared data)
 
-            # Run the find command to search for the according files in the prepared data
-            files_avail_prepared = os.popen(f"find {prep_dir}/{scan.subject}/{scan.session} -name '*{bval_filename}*'").read().strip()
+    #         # Run the find command to search for the according files in the prepared data
+    #         files_avail_prepared = os.popen(f"find {prep_dir}/{scan.subject}/{scan.session} -name '*{bval_filename}*'").read().strip()
             
-            # The output will have multiple lines. 
-            # Split the output into lines and search for the first line that contains the three-digit number
-            output_paths = files_avail_prepared.split('\n')
-            correct_path = None
-            for p in output_paths:
-                if p:  # Check if path is not empty
-                    # Get just the filename and its parent directory
-                    path_parts = p.split(os.sep)
-                    if len(path_parts) >= 2:
-                        dir_and_file = os.path.join(path_parts[-2], path_parts[-1])
-                        if sequence_number_3digit in path_parts[-2]:  # sequence number must be present in the sequence name
-                            correct_path = p
-                            break
+    #         # The output will have multiple lines. 
+    #         # Split the output into lines and search for the first line that contains the three-digit number
+    #         output_paths = files_avail_prepared.split('\n')
+    #         correct_path = None
+    #         for p in output_paths:
+    #             if p:  # Check if path is not empty
+    #                 # Get just the filename and its parent directory
+    #                 path_parts = p.split(os.sep)
+    #                 if len(path_parts) >= 2:
+    #                     dir_and_file = os.path.join(path_parts[-2], path_parts[-1])
+    #                     if sequence_number_3digit in path_parts[-2]:  # sequence number must be present in the sequence name
+    #                         correct_path = p
+    #                         break
 
-            if correct_path:
-                bval_path_prepared = os.path.dirname(correct_path)
+    #         if correct_path:
+    #             bval_path_prepared = os.path.dirname(correct_path)
 
-                print(f"Copying bval and bvec files to {bval_path_prepared}")
-                shutil.copy(bval_file_source, bval_path_prepared)
-                shutil.copy(bvec_file_source, bval_path_prepared)
-            else:
-                logger.warning(f"No matching line found containing the sequence number {sequence_number_3digit}. Please copy the bvec and bval files manually.")
+    #             print(f"Copying bval and bvec files to {bval_path_prepared}")
+    #             shutil.copy(bval_file_source, bval_path_prepared)
+    #             shutil.copy(bvec_file_source, bval_path_prepared)
+    #         else:
+    #             logger.warning(f"No matching line found containing the sequence number {sequence_number_3digit}. Please copy the bvec and bval files manually.")
 
-        else:
-            logger.warning("The bval and bvec files do not have the same name. Please check manually.")
+    #     else:
+    #         logger.warning("The bval and bvec files do not have the same name. Please check manually.")
 
-    else:
-        print(f"No bval or bvec files found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
+    # else:
+    #     print(f"No bval or bvec files found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
     
 
     ### populating the sub-<label>_sessions.tsv file with shim current information

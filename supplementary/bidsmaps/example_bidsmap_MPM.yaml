@@ -8,8 +8,9 @@ MRI:
         model: __unknown__
         suffix: ''
         attributes:
-          ProtocolName: ['localizer', 'calc_shims_4.0mm', 'AAHead_Scout_32ch-head-coil',
-            'ke_gre_clear-swi0.x0.3x1.2_G2']
+          ProtocolName: ['localizer', 'localizer ', 'calc_shims_4.0mm', 'AAHead_Scout_32ch-head-coil',
+            'ke_gre_clear-swi0.x0.3x1.2_G2', 'ep_seg_fid_1MM_SL_TE35', 'ep_seg_fid_1MM_coronal',
+            'ep_seg_fid_1mm_cor', 'QuinPilot_32Ch', 'Arithmetic Mean']
         bids: !!omap []
         json: !!omap []
     anat:
@@ -27,10 +28,45 @@ MRI:
           - ce: ~
           - rec: ~
           - run: ~
-          - echo: <EchoNumbers>
+          - echo: <format02d:EchoNumbers>
           - flip: '1'
           - mt: off
           - part: ~
+          - chunk: ~
+        json: !!omap
+          - MTState: false
+          - NonlinearGradientCorrection: false
+          - SpoilingState: true
+          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - PartialFourier: <<custom:PartialFourier>>
+          - PartialFourierDirection: <<custom:PartialFourierDirection>>
+          - EchoTime: <round10:scale-3:EchoTime>
+          - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
+          - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
+          - FlipAngle: <FlipAngle>
+          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+      - provenance: 
+          /data/pt_02262/data/TH_bids/prepared/sub-002/ses-05/MRI/t1w_kp_mtflash3d_v1s_caipi_0006/s2023-07-03_14-01-141446-00001-00224-1.nii
+        example: anat/sub-003_ses-01_acq-T1w_run-1_echo-1_flip-1_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: ['t1w_kp_mtflash3d_v1s_caipi', 't1w_kp_mtflash3d_v1s_0p8_32Ch',
+            't1w_kp_mtflash3d_0p8', 't1w_kp_mtflash3d_v1s_grap']
+        bids: !!omap
+          - task: ~
+          - acq: T1w
+          - ce: ~
+          - rec: ~
+          - run: <<custom:T1w_run_counter>>
+          - echo: <format02d:EchoNumbers>
+          - flip: '1'
+          - mt: off
+          - part: <<custom:part>>
           - chunk: ~
         json: !!omap
           - MTState: false
@@ -61,10 +97,45 @@ MRI:
           - ce: ~
           - rec: ~
           - run: ~
-          - echo: <EchoNumbers>
+          - echo: <format02d:EchoNumbers>
           - flip: '2'
           - mt: off
           - part: ~
+          - chunk: ~
+        json: !!omap
+          - MTState: false
+          - NonlinearGradientCorrection: false
+          - SpoilingState: true
+          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - PartialFourier: <<custom:PartialFourier>>
+          - PartialFourierDirection: <<custom:PartialFourierDirection>>
+          - EchoTime: <round10:scale-3:EchoTime>
+          - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
+          - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
+          - FlipAngle: <FlipAngle>
+          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+      - provenance: 
+          /data/pt_02262/data/TH_bids/prepared/sub-002/ses-05/MRI/pdw_kp_mtflash3d_v1s_caipi_0009/s2023-07-03_14-01-141446-00001-00224-1.nii
+        example: anat/sub-003_ses-01_acq-PDw_run-1_echo-1_flip-2_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: ['pdw_kp_mtflash3d_v1s_caipi', 'pdw_kp_mtflash3d_v1s_0p8_32Ch',
+            'pdw_kp_mtflash3d_0p8', 'pdw_kp_mtflash3d_v1s_grap']
+        bids: !!omap
+          - task: ~
+          - acq: PDw
+          - ce: ~
+          - rec: ~
+          - run: <<custom:PDw_run_counter>>
+          - echo: <format02d:EchoNumbers>
+          - flip: '2'
+          - mt: off
+          - part: <<custom:part>>
           - chunk: ~
         json: !!omap
           - MTState: false
@@ -95,10 +166,49 @@ MRI:
           - ce: ~
           - rec: ~
           - run: ~
-          - echo: <EchoNumbers>
+          - echo: <format02d:EchoNumbers>
           - flip: '2'
           - mt: on
           - part: ~
+          - chunk: ~
+        json: !!omap
+          - MTState: true
+          - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/1>
+          - MTNumberOfPulses: 1
+          - MTPulseShape: 'GAUSSIAN'
+          - MTPulseDuration: <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
+          - NonlinearGradientCorrection: false
+          - SpoilingState: true
+          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - PartialFourier: <<custom:PartialFourier>>
+          - PartialFourierDirection: <<custom:PartialFourierDirection>>
+          - EchoTime: <round10:scale-3:EchoTime>
+          - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
+          - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
+          - FlipAngle: <FlipAngle>
+          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+      - provenance: 
+          /data/pt_02262/data/TH_bids/prepared/sub-002/ses-05/MRI/mtw_kp_mtflash3d_v1s_caipi_0012/s2023-07-03_14-01-141446-00001-00224-1.nii
+        example: anat/sub-003_ses-01_acq-MTw_run-1_echo-1_flip-2_mt-on_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: ['mtw_kp_mtflash3d_v1s_caipi', 'mtw_kp_mtflash3d_v1s_0p8_32Ch',
+            'mtw_kp_mtflash3d_0p8', 'mtw_kp_mtflash3d_v1s_grap']
+        bids: !!omap
+          - task: ~
+          - acq: MTw
+          - ce: ~
+          - rec: ~
+          - run: <<custom:MTw_run_counter>>
+          - echo: <format02d:EchoNumbers>
+          - flip: '2'
+          - mt: on
+          - part: <<custom:part>>
           - chunk: ~
         json: !!omap
           - MTState: true
@@ -158,14 +268,47 @@ MRI:
         model: anat:MESE
         suffix: MESE
         attributes:
-          ProtocolName: ['semc_js_res0p6_etl7_esp9_grappa3_slice52', 'semc_js_res0p6_etl6_esp9p2_grappa2_slice50']
+          ProtocolName: ['semc_js_res0p6_etl7_esp9_grappa3_slice52', 'semc_js_res0p6_etl6_esp9p2_grappa2_slice50',
+            'semc_res0p8_etl10_esp11_50sl', 'semc_res0p8_etl10_esp11_50slice', 'se_mc_0p8_etl10_esp11_50sl_p3',
+            'semc_res0p8_etl10_esp11_40sl']
         bids: !!omap
           - task: ~
           - acq: semc
           - ce: ~
           - rec: ~
           - run: ~
-          - echo: <EchoNumbers>
+          - echo: <format02d:EchoNumbers>
+          - part: ~
+          - chunk: ~
+        json: !!omap
+          - NonlinearGradientCorrection: false
+          - SpoilingState: true
+          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - PartialFourier: <<custom:PartialFourier>>
+          - PartialFourierDirection: <<custom:PartialFourierDirection>>
+          - EchoTime: <round10:scale-3:EchoTime>
+          - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
+          - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
+          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+          - SliceThickness: <format03f:SliceThickness>
+      - provenance: 
+          /data/pt_02262/data/TH_bids/temp/sub-003/ses-02/MRI/022-JS_mod_semc/s2023-10-06_13-38-153951-00001-00001-1.nii
+        example: anat/sub-003_ses-01_acq-semc_run-1_echo-1_MESE
+        checked: true
+        model: anat:MESE
+        suffix: MESE
+        attributes:
+          ProtocolName: ['JS_mod_semc']
+        bids: !!omap
+          - task: ~
+          - acq: semc
+          - ce: ~
+          - rec: ~
+          - run: <<custom:deprecatedSEMC_run_counter>>
+          - echo: <format02d:EchoNumbers>
           - part: ~
           - chunk: ~
         json: !!omap
@@ -294,7 +437,8 @@ MRI:
         model: fmap:TB1AFI
         suffix: TB1AFI
         attributes:
-          ProtocolName: ['kp_afib1_v1f_4mm_PA_forT2', 'kp_afib1_v1g_4mm_PA_trueform']
+          ProtocolName: ['kp_afib1_v1f_4mm_PA_forT2', 'kp_afib1_v1g_4mm_PA_trueform',
+            'kp_afib1_v1g_4mm_32Ch', 'kp_afib1_v1g']
         bids: !!omap
           - acq: tr<<custom:tr_index>>stx
           - ce: ~
@@ -323,6 +467,38 @@ MRI:
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-PDw_echo-*_flip-2_mt-off_MPM.nii"
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-MTw_echo-*_flip-2_mt-on_MPM.nii"
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-semc_echo-*_MESE.nii"
+      - provenance: 
+          /data/pt_02262/data/TH_bids/temp/sub-002/ses-05/MRI/004-smaps_kp_mtflash3d_v1s_array/s2023-07-03_14-01-141218-00001-00022-1.nii
+        example: fmap/sub-002_ses-05_acq-arrayT1w_part-mag_RB1COR
+        checked: true
+        model: fmap:RB1COR
+        suffix: RB1COR
+        attributes:
+          ProtocolName: ['smaps_kp_mtflash3d_v1s_array', 'smaps_kp_mtflash3d_v1s_body',
+            smaps_kp_mtflash3d_v1s_BC, smaps_kp_mtflash3d_v1s_32Ch, sens_maps_kp_mtflash3d_v1s_array,
+            sens_maps_kp_mtflash3d_v1s_BC, smaps_kp_mtflash3d_v1l_32ch-64ch_p30, smaps_kp_mtflash3d_v1l_32ch-64ch_m150]
+        bids: !!omap
+          - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
+          - run: <<custom:smap_run>>
+          - part: <<custom:part>>
+        json: !!omap
+          - SequenceName: <SequenceName>
+          - MTState: false
+          - NonlinearGradientCorrection: false
+          - SpoilingState: true
+          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - PartialFourier: <<custom:PartialFourier>>
+          - PartialFourierDirection: <<custom:PartialFourierDirection>>
+          - EchoTime: <round10:scale-3:EchoTime>
+          - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
+          - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
+          - FlipAngle: <FlipAngle>
+          - SliceThickness: <SliceThickness>
+          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+          - IntendedFor: <<custom:IntendedFor>>
   jsonNIFTI:
     fmap:
       - provenance: 
@@ -385,11 +561,66 @@ MRI:
         model: dwi:dwi
         suffix: dwi
         attributes:
-          ProtocolName: ['cmrr_noddi_1.4mm_p3_mb2', 'cmrr_noddi_1.4mm_p3_mb2_gz']
+          ProtocolName: ['cmrr_noddi_1.4mm_p3_mb2', 'cmrr_noddi_1.4mm_p3_mb2_gz',
+            'DWI_IronSleep_PA', 'ep2d_diff_2p0_PA', 'diff_6dirs_inverted_PE']
         bids: !!omap
           - acq: ~
           - dir: ~
           - run: <format03d:AcquisitionNumber>
+        json: !!omap
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - TotalReadoutTime: <TotalReadoutTime>
+          - NonlinearGradientCorrection: false
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - PartialFourier: <PartialFourier>
+          - MultibandAccelerationFactor: <MultibandAccelerationFactor>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - MatrixCoilMode: <MatrixCoilMode>
+          - CoilCombinationMethod: <CoilCombinationMethod>
+          - PulseSequenceDetails: <PulseSequenceDetails>
+          - EffectiveEchoSpacing: <round9:scale1:EffectiveEchoSpacing>
+          - SliceTiming: <SliceTiming>
+      - provenance: 
+          /data/pt_02262/data/TH_bids/temp/sub-006/ses-01/MRI/015-DWI_IronSleep_PartA/s20230703140118-1.json
+        example: dwi/sub-003_ses-01_acq-PartA_run-001_dwi
+        checked: true
+        model: dwi:dwi
+        suffix: dwi
+        attributes:
+          ProtocolName: ['DWI_IronSleep_PartA', 'ep2d_diff_2p0_b2500_partA', 'diff_50dirs_partA',
+            'dwi_IronSleep_PartA_AP']
+        bids: !!omap
+          - acq: PartA
+          - dir: ~
+          - run: ~
+        json: !!omap
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - TotalReadoutTime: <TotalReadoutTime>
+          - NonlinearGradientCorrection: false
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - PartialFourier: <PartialFourier>
+          - MultibandAccelerationFactor: <MultibandAccelerationFactor>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - MatrixCoilMode: <MatrixCoilMode>
+          - CoilCombinationMethod: <CoilCombinationMethod>
+          - PulseSequenceDetails: <PulseSequenceDetails>
+          - EffectiveEchoSpacing: <round9:scale1:EffectiveEchoSpacing>
+          - SliceTiming: <SliceTiming>
+      - provenance: 
+          /data/pt_02262/data/TH_bids/temp/sub-006/ses-01/MRI/015-DWI_IronSleep_PartB/s20230703140118-1.json
+        example: dwi/sub-003_ses-01_acq-PartB_run-001_dwi
+        checked: true
+        model: dwi:dwi
+        suffix: dwi
+        attributes:
+          ProtocolName: ['DWI_IronSleep_PartB', 'ep2d_diff_2p0_b2500_partB', 'diff_50dirs_partB',
+            'diff_IronSleep_PartB_AP']
+        bids: !!omap
+          - acq: PartB
+          - dir: ~
+          - run: ~
         json: !!omap
           - PhaseEncodingDirection: <PhaseEncodingDirection>
           - TotalReadoutTime: <TotalReadoutTime>

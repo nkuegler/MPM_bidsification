@@ -49,14 +49,21 @@ dry_run = False
 tfl_multiMTC_MT_ON_counter = 0
 tfl_multiMTC_MT_OFF_counter = 0
 
-shim_current_relevant_recIDs = ["t1w_kp_mtflash3d_v1s", 
-                                "pdw_kp_mtflash3d_v1s", 
-                                "mtw_kp_mtflash3d_v1s", 
-                                "kp_afib1_v1f_4mm_PA", 
-                                "kp_afib1_v1g_4mm_PA"]
+shim_current_relevant_recIDs = ["t1w_kp_mtflash3d", 
+                                "pdw_kp_mtflash3d", 
+                                "mtw_kp_mtflash3d", 
+                                "kp_afib1_v1f", 
+                                "kp_afib1_v1g"]
 session_shim_currents = None
 session_shim_current_warning_counter = 0
 session_shim_current_relevant_sequences_counter = 0
+
+# list of sequences in order of acquisition in current session
+seq_list = list()
+
+# The index of current sequence, corresponds to order in the sequence list
+seq_index = -1
+
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -195,6 +202,38 @@ def SessionEP(scan: BidsSession) -> int:
         code 130
     """
 
+    global seq_list
+    global seq_index
+    
+    session_dir = os.path.join(scan.in_path, "MRI")
+    seq_list = sorted(os.listdir(session_dir))
+    seq_list = [s.split("-", 1)[1] for s in seq_list]
+    seq_index = -1
+    # print(f"files in {session_dir}: {seq_list}")
+
+    global deprecatedSEMC_run_counter
+    deprecatedSEMC_run_counter = 0
+
+    global T1w_mag_run_counter
+    T1w_mag_run_counter = 0
+    global T1w_ph_run_counter
+    T1w_ph_run_counter = 0
+
+    global PDw_mag_run_counter
+    PDw_mag_run_counter = 0
+    global PDw_ph_run_counter
+    PDw_ph_run_counter = 0
+
+    global MTw_mag_run_counter
+    MTw_mag_run_counter = 0
+    global MTw_ph_run_counter
+    MTw_ph_run_counter = 0
+
+    global smap_head_count
+    smap_head_count = 0
+    global smap_body_count
+    smap_body_count = 0
+
     return 0
 
 def SequenceEP(recording: object) -> int:
@@ -224,12 +263,26 @@ def SequenceEP(recording: object) -> int:
         code 140
     """
 
+    global seq_index
+
+    recording.custom["IntendedFor"] = ""
+    seq_index += 1
+    rec_id = seq_list[seq_index]
+
+    # checking if current sequence corresponds in correct place in list
+    if rec_id != recording.recId():
+        logger.warning("{}: Id mismatch folder {}"
+                       .format(recording.recIdentity(False),
+                               rec_id))
+
+
     ### adapted from Nikita Beliy's plugin
-    rec_id = recording.recId()
     if recording.Module() == "MRI":
 
         ### AFIB1 repetition times
-        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1g_4mm_PA"):
+        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
+                rec_id.startswith("kp_afib1_v1g_4mm_PA") or \
+                rec_id.startswith("kp_afib1_v1g"):
             # Getting repetition times
             alTR = "CSASeriesHeaderInfo/MrPhoenixProtocol/alTR"
             alTR = recording.getAttribute(alTR)
@@ -248,11 +301,109 @@ def SequenceEP(recording: object) -> int:
                 tfl_multiMTC_MT_OFF_counter += 1
                 recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
 
+        ### only for a specific old MESE sequence protocol name 'JS_mod_semc'
+        global deprecatedSEMC_run_counter
+        if rec_id.startswith("JS_mod_semc"):
+            deprecatedSEMC_run_counter += 1
+            recording.custom["deprecatedSEMC_run_counter"] = deprecatedSEMC_run_counter
+
+
+        image_type = recording.getAttribute("ImageType")
+        # print(f"image_type type: {type(image_type)}")
+        # print(f"image_type: {image_type}")
+
+        if isinstance(image_type, list):
+            # for dcm2niix, stored as list
+            pass
+        elif isinstance(image_type, str):
+            # for hMRI toolbox DICOM import, stored as string like "ORIGINAL\\PRIMARY\\M\\ND "
+            image_type = [item.strip() for item in image_type.split("\\")]
+        else:
+            # image_type is None or an unexpected type
+            logger.warning(f"Unexpected ImageType format: {image_type}")
+            image_type = []
+
+        if "ND" in image_type:
+            recording.custom["NonlinearGradientCorrection"] = False
+            recording.custom["acq_suffix"] = "-ND"
+        else:
+            recording.custom["NonlinearGradientCorrection"] = True
+            recording.custom["acq_suffix"] = ""
+        
+        if "M" in image_type:
+            recording.custom["part"] = "mag"
+        if "P" in image_type:
+            recording.custom["part"] = "phase"
+
+        ### 3T data T1w, PDw, MTw run counter
+        global T1w_mag_run_counter
+        global T1w_ph_run_counter
+        global PDw_mag_run_counter
+        global PDw_ph_run_counter
+        global MTw_mag_run_counter
+        global MTw_ph_run_counter
+
+        if rec_id.startswith("t1w_kp_mtflash3d"):
+            if "M" in image_type:
+                T1w_mag_run_counter += 1
+                recording.custom["T1w_run_counter"] = T1w_mag_run_counter
+            if "P" in image_type:
+                T1w_ph_run_counter += 1
+                recording.custom["T1w_run_counter"] = T1w_ph_run_counter
+        elif rec_id.startswith("pdw_kp_mtflash3d"):
+            if "M" in image_type:
+                PDw_mag_run_counter += 1
+                recording.custom["PDw_run_counter"] = PDw_mag_run_counter
+            if "P" in image_type:
+                PDw_ph_run_counter += 1
+                recording.custom["PDw_run_counter"] = PDw_ph_run_counter
+        elif rec_id.startswith("mtw_kp_mtflash3d"):
+            if "M" in image_type:
+                MTw_mag_run_counter += 1
+                recording.custom["MTw_run_counter"] = MTw_mag_run_counter
+            if "P" in image_type:
+                MTw_ph_run_counter += 1
+                recording.custom["MTw_run_counter"] = MTw_ph_run_counter
+
 
         ### count how many shim current relevant sequences are in the session
         if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
             global session_shim_current_relevant_sequences_counter
             session_shim_current_relevant_sequences_counter += 1
+
+
+        ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
+        if rec_id.startswith("smaps_kp_mtflash3d") or rec_id.startswith("sens_maps_kp_mtflash3d"):
+            # receive_coil = recording.getAttribute("ReceiveCoilName")
+            global smap_head_count
+            global smap_body_count
+
+            if "head" in rec_id.casefold() or "32ch" in rec_id.casefold():
+                recording.custom["ReceiveCoil"] = "head"
+                smap_head_count += 1
+                recording.custom["smap_run"] = smap_head_count
+            elif "array" in rec_id.casefold():
+                recording.custom["ReceiveCoil"] = "array"
+                smap_head_count += 1
+                recording.custom["smap_run"] = smap_head_count
+            elif "body" in rec_id.casefold() or "bc" in rec_id.casefold():
+                recording.custom["ReceiveCoil"] = "body"
+                smap_body_count += 1
+                recording.custom["smap_run"] = smap_body_count
+            else:
+                recording.custom["ReceiveCoil"] = "unknown"
+    
+
+            smap_modality = helper.find_smap_modality(seq_list, seq_index)
+            if smap_modality:
+                recording.custom["IntendedFor"] = smap_modality
+            else:
+                if bidsmap_step:
+                    print(f"WARNING: {recording.recIdentity()}: Unable to determine modality of sensitivity map")
+                else:
+                    logger.warning("{}: Unable to determine modality of sensitivity map"
+                            .format(recording.recIdentity()))
+                recording.custom["IntendedFor"] = "unknown"
 
 
 def RecordingEP(recording: object) -> int:
@@ -282,7 +433,9 @@ def RecordingEP(recording: object) -> int:
     ### adapted from Nikita Beliy's plugin
     rec_id = recording.recId()
     if recording.Module() == "MRI":
-        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1g_4mm_PA"):
+        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
+                rec_id.startswith("kp_afib1_v1g_4mm_PA") or \
+                rec_id.startswith("kp_afib1_v1g"):
             index = recording.getAttribute("EchoNumbers")
 
             TR = recording.custom["alTR"][index - 1]
@@ -360,7 +513,6 @@ def RecordingEP(recording: object) -> int:
         finally:
             # Restore original logging level
             logging.getLogger().setLevel(original_level)
-
 
 
 

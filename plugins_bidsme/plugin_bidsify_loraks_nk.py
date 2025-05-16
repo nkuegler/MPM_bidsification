@@ -328,12 +328,14 @@ def RecordingEP(recording: object) -> int:
     def get_series_id(str_to_check, recording):
 
         full_string = recording.currentFile(True)
-        if "_0p6" in full_string: # resolution of T1w, PDw, and MTw
+        if "_0p6" in full_string: # resolution of T1w, PDw, and MTw 7T
             string_end = "_0p6"
         elif "_0p5_sag" in full_string: # resolution of Ernst acquisition
             string_end = "_0p5_sag"
         elif "_4p0" in full_string: # resolution of sensitivity maps
             string_end = "_4p0"
+        elif "_1p0" in full_string: # resolution of T1w, PDw, and MTw 3T
+            string_end = "_1p0"
         ### AFI B1 very hard to include due to uncertainty about the correct repetition time
         # elif "_4mm_PA" in full_string: # resolution of B1 AFI maps
         #     if "_4mm_PA_forT2" in full_string: # resolution of B1 AFI maps sTx

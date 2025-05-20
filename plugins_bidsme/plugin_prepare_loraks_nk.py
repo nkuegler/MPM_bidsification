@@ -59,6 +59,7 @@ ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
 corresponding_bids_data_path = ""
 available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d"]
+smap_ident = "smap_kp_mtflash3d"
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -168,7 +169,6 @@ def InitEP(source: str, destination: str,
     global smap_ident
     if include_smaps:
         new_list = []
-        smap_ident = "smap_kp_mtflash3d"
         for item in available_contrasts_loraks:
             new_list.append(smap_ident)
             new_list.append(item)

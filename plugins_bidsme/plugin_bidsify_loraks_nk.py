@@ -48,6 +48,7 @@ bids_dir = ""
 dry_run = False
 corresponding_bids_data_path = ""
 available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+smap_ident = "smap_kp_mtflash3d"
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
 
@@ -148,7 +149,6 @@ def InitEP(source: str, destination: str,
     global smap_ident
     if include_smaps:
         new_list = []
-        smap_ident = "smap_kp_mtflash3d"
         for item in available_contrasts_loraks:
             new_list.append(smap_ident)
             new_list.append(item)
@@ -273,7 +273,7 @@ def SequenceEP(recording: object) -> int:
 
     if recording.Module() == "MRI":
         ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
-        if rec_id.startswith("smap_kp_mtflash3d"):
+        if rec_id.startswith(smap_ident):
             receive_coil = recording.getAttribute("ReceiveCoilName")
             if receive_coil:
                 if "head" in receive_coil.casefold():

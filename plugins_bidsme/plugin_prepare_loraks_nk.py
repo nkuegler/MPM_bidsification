@@ -57,7 +57,7 @@ subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
 corresponding_bids_data_path = ""
-available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
@@ -168,11 +168,12 @@ def InitEP(source: str, destination: str,
     global smap_ident
     if include_smaps:
         new_list = []
-        smap_ident = "smap_kp_mtflash3d"
+        smap_ident = "smaps_kp_mtflash3d"
         for item in available_contrasts_loraks:
             new_list.append(smap_ident)
             new_list.append(item)
         available_contrasts_loraks = new_list
+    print(f"Available contrasts: {available_contrasts_loraks}")
     
     global sessions_tsv_template
     sessions_tsv_template = kwargs.get("sessions_tsv_template", None) # get the value from the options passed to the plugin, default is None

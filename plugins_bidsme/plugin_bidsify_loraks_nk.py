@@ -47,7 +47,8 @@ prep_dir = ""
 bids_dir = ""
 dry_run = False
 corresponding_bids_data_path = ""
-available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+smap_ident = "smaps_kp_mtflash3d"
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
 
@@ -148,7 +149,6 @@ def InitEP(source: str, destination: str,
     global smap_ident
     if include_smaps:
         new_list = []
-        smap_ident = "smap_kp_mtflash3d"
         for item in available_contrasts_loraks:
             new_list.append(smap_ident)
             new_list.append(item)
@@ -273,7 +273,7 @@ def SequenceEP(recording: object) -> int:
 
     if recording.Module() == "MRI":
         ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
-        if rec_id.startswith("smap_kp_mtflash3d"):
+        if rec_id.startswith(smap_ident):
             receive_coil = recording.getAttribute("ReceiveCoilName")
             if receive_coil:
                 if "head" in receive_coil.casefold():
@@ -283,7 +283,10 @@ def SequenceEP(recording: object) -> int:
                 else:
                     recording.custom["ReceiveCoil"] = ""
             else:
-                recording.custom["ReceiveCoil"] = ""
+                if "20ch" in recording.currentFile(True).casefold():
+                    recording.custom["ReceiveCoil"] = "20ch"
+                else:
+                    recording.custom["ReceiveCoil"] = ""
         
             # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
             smap_modality = helper.find_smap_modality(seq_list, seq_index)
@@ -336,6 +339,8 @@ def RecordingEP(recording: object) -> int:
             string_end = "_4p0"
         elif "_1p0" in full_string: # resolution of T1w, PDw, and MTw 3T
             string_end = "_1p0"
+        elif "_20ch" in full_string: # name of smaps in infantdata 
+            string_end = "_20ch"
         ### AFI B1 very hard to include due to uncertainty about the correct repetition time
         # elif "_4mm_PA" in full_string: # resolution of B1 AFI maps
         #     if "_4mm_PA_forT2" in full_string: # resolution of B1 AFI maps sTx

@@ -263,7 +263,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 
 ## ToDos
 
-+ consistency of shim currents must be reviewed (warnings do not occur correctly in some cases) -> check different cases and adjust!
++ consistency of shim currents must be reviewed (warnings do not occur correctly in some cases, also check if it works for 3T data) -> check different cases and adjust!
 + TFL / MTR bidsification needs to be adjusted using plugins
 + plugin_prepare_nk -> comment out the part about finding and copying the bvec and bval files (only works if there is only one bvac and one bval file + seems to be implemented in Bidsme now)
 + adjust all paths to Pathlib instead of OS or other path libraries, so that the application will also run on windows machines

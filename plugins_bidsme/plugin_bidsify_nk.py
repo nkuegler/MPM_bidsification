@@ -229,10 +229,18 @@ def SessionEP(scan: BidsSession) -> int:
     global MTw_ph_run_counter
     MTw_ph_run_counter = 0
 
-    global smap_head_count
-    smap_head_count = 0
-    global smap_body_count
-    smap_body_count = 0
+    global smap_T1w_counter
+    smap_T1w_counter = None
+    global smap_PDw_counter
+    smap_PDw_counter = None
+    global smap_MTw_counter
+    smap_MTw_counter = None
+    global fallback_smap_counter
+    fallback_smap_counter = None
+    global head_coil_smap_counter
+    head_coil_smap_counter = None
+    global body_coil_smap_counter
+    body_coil_smap_counter = None
 
     return 0
 
@@ -375,28 +383,85 @@ def SequenceEP(recording: object) -> int:
         ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
         if rec_id.startswith("smaps_kp_mtflash3d") or rec_id.startswith("sens_maps_kp_mtflash3d"):
             # receive_coil = recording.getAttribute("ReceiveCoilName")
-            global smap_head_count
-            global smap_body_count
-
+            global smap_T1w_counter
+            global smap_PDw_counter
+            global smap_MTw_counter
+            global fallback_smap_counter
+            global head_coil_smap_counter
+            global body_coil_smap_counter
+            
+            # assumptions: 
+            # - there are either only head/array sensitivity maps (Terra) or head and body sensitivity maps (Prisma)
+            # - rec_id contains "head", it does not contain "array"
+            # if these asusmptions are not met, the counters may not be incremented correctly
             if "head" in rec_id.casefold() or "32ch" in rec_id.casefold():
-                recording.custom["ReceiveCoil"] = "head"
-                smap_head_count += 1
-                recording.custom["smap_run"] = smap_head_count
+                current_ReceiveCoil = "head"
+                if not head_coil_smap_counter:
+                    head_coil_smap_counter = 1
+                else:
+                    head_coil_smap_counter += 1
+                recording.custom["ReceiveCoil"] = current_ReceiveCoil
             elif "array" in rec_id.casefold():
-                recording.custom["ReceiveCoil"] = "array"
-                smap_head_count += 1
-                recording.custom["smap_run"] = smap_head_count
+                current_ReceiveCoil = "array"
+                if not head_coil_smap_counter:
+                    head_coil_smap_counter = 1
+                else:
+                    head_coil_smap_counter += 1
+                recording.custom["ReceiveCoil"] = current_ReceiveCoil                
             elif "body" in rec_id.casefold() or "bc" in rec_id.casefold():
-                recording.custom["ReceiveCoil"] = "body"
-                smap_body_count += 1
-                recording.custom["smap_run"] = smap_body_count
+                current_ReceiveCoil = "body"
+                if not body_coil_smap_counter:
+                    body_coil_smap_counter = 1
+                else:
+                    body_coil_smap_counter += 1
+                recording.custom["ReceiveCoil"] = current_ReceiveCoil
             else:
-                recording.custom["ReceiveCoil"] = "unknown"
-    
+                current_ReceiveCoil = "unknown"
+                recording.custom["ReceiveCoil"] = current_ReceiveCoil
+
 
             smap_modality = helper.find_smap_modality(seq_list, seq_index)
             if smap_modality:
                 recording.custom["IntendedFor"] = smap_modality
+                if isinstance(head_coil_smap_counter, int) and \
+                        isinstance(body_coil_smap_counter, int) and \
+                        head_coil_smap_counter != body_coil_smap_counter:
+                    # increment the contrast-specific count if head and body coil smaps are available
+                    increase_value = 1 
+                elif isinstance(head_coil_smap_counter, int) and \
+                        not body_coil_smap_counter:
+                    # increment the contrast-specific count if only head coil smaps are available
+                    increase_value = 1
+                elif isinstance(body_coil_smap_counter, int) and \
+                        not head_coil_smap_counter:
+                    # increment the contrast-specific count if only body coil smaps are available
+                    increase_value = 1
+                else:
+                    increase_value = 0 # do not increment the contrast-specific count
+
+                # each T1w/PDw/MTw smap gets a different run number. 
+                # However, sometimes there are head and body smaps for the same T1w/PDw/MTw sequence, so we need to account for that with all the other counters above.
+                if smap_modality == "T1w":
+                    if not smap_T1w_counter:
+                        smap_T1w_counter = 1
+                    else:
+                        smap_T1w_counter += increase_value  
+                    recording.custom["smap_run"] = smap_T1w_counter
+                elif smap_modality == "PDw":
+                    if not smap_PDw_counter:
+                        smap_PDw_counter = 1
+                    else:
+                        smap_PDw_counter += increase_value
+                    recording.custom["smap_run"] = smap_PDw_counter
+                elif smap_modality == "MTw":
+                    if not smap_MTw_counter:
+                        smap_MTw_counter = 1
+                    else:
+                        smap_MTw_counter += increase_value
+                    recording.custom["smap_run"] = smap_MTw_counter
+                else:
+                    raise ValueError(f"Unknown modality returned from helper function: {smap_modality}")
+
             else:
                 if bidsmap_step:
                     print(f"WARNING: {recording.recIdentity()}: Unable to determine modality of sensitivity map")
@@ -404,6 +469,11 @@ def SequenceEP(recording: object) -> int:
                     logger.warning("{}: Unable to determine modality of sensitivity map"
                             .format(recording.recIdentity()))
                 recording.custom["IntendedFor"] = "unknown"
+                if not fallback_smap_counter:
+                    fallback_smap_counter = 1
+                else:
+                    fallback_smap_counter += 1 
+                recording.custom["smap_run"] = fallback_smap_counter
 
 
 def RecordingEP(recording: object) -> int:

@@ -296,6 +296,19 @@ def SequenceEP(recording: object) -> int:
             alTR = recording.getAttribute(alTR)
             recording.custom["alTR"] = alTR
             recording.custom["alTR_sorted"] = sorted(alTR)
+        
+        ### AFIB1 SpoilingRFPhaseIncrement
+        if rec_id.startswith("kp_afib1_"):
+            adFree = "CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree"
+            adFree = recording.getAttribute(adFree)
+            # Ensure adFree is a list; if not, convert it to a list
+            if not isinstance(adFree, list):
+                try:
+                    adFree = list(adFree)
+                except TypeError:
+                    adFree = [adFree]
+            recording.custom["SpoilingRFPhaseIncrement"] = adFree[6] if len(adFree) > 6 else "n/a"
+
 
         ### tfl_multiMTC
         if rec_id.startswith("tfl_multiMTC"): 

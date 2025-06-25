@@ -407,6 +407,8 @@ MRI:
         json: !!omap
           - RepetitionTime: <<custom:RepetitionTime>>
           - EchoTime: <round10:scale-3:EchoTime>
+          - SequenceName: <SequenceName>
+          - SpoilingRFPhaseIncrement: <<custom:SpoilingRFPhaseIncrement>>
           - NonlinearGradientCorrection: false
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
@@ -452,6 +454,8 @@ MRI:
         json: !!omap
           - RepetitionTime: <<custom:RepetitionTime>>
           - EchoTime: <round10:scale-3:EchoTime>
+          - SequenceName: <SequenceName>
+          - SpoilingRFPhaseIncrement: <<custom:SpoilingRFPhaseIncrement>>
           - NonlinearGradientCorrection: false
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>

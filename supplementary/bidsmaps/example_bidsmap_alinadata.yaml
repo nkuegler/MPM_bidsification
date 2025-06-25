@@ -23,7 +23,7 @@ MRI:
     anat:
       - provenance: 
           /data/p_03002/data/temp/sub-002/ses-01/MRI/012-t1w_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
-        example: anat/sub-002_ses-01_acq-T1w_echo-1_flip-1_mt-off_part-mag_MPM
+        example: anat/sub-002_ses-01_acq-T1w_echo-1_flip-2_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -33,6 +33,39 @@ MRI:
         bids: !!omap
           - task: ~
           - acq: T1w<<custom:acq_suffix>>
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: <EchoNumber>
+          - flip: '2'
+          - mt: off
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - EchoTime: <EchoTime>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - SliceThickness: <SliceThickness>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+      - provenance: 
+          /data/p_03002/data/temp/sub-002/ses-01/MRI/020-pdw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
+        example: anat/sub-002_ses-01_acq-PDw_echo-1_flip-1_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: pdw_kp_mtflash3d_v1s_0p6
+          SeriesDescription: pdw_kp_mtflash3d_v1s_0p6
+        bids: !!omap
+          - task: ~
+          - acq: PDw<<custom:acq_suffix>>
           - ce: ~
           - rec: ~
           - run: ~
@@ -55,41 +88,8 @@ MRI:
           - SliceThickness: <SliceThickness>
           - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
       - provenance: 
-          /data/p_03002/data/temp/sub-002/ses-01/MRI/020-pdw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
-        example: anat/sub-002_ses-01_acq-PDw_echo-1_flip-2_mt-off_part-mag_MPM
-        checked: true
-        model: anat:MPM
-        suffix: MPM
-        attributes:
-          ProtocolName: pdw_kp_mtflash3d_v1s_0p6
-          SeriesDescription: pdw_kp_mtflash3d_v1s_0p6
-        bids: !!omap
-          - task: ~
-          - acq: PDw<<custom:acq_suffix>>
-          - ce: ~
-          - rec: ~
-          - run: ~
-          - echo: <EchoNumber>
-          - flip: '2'
-          - mt: off
-          - part: <<custom:part>>
-          - chunk: ~
-        json: !!omap
-          - MTState: <MTState>
-          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
-          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
-          - ParallelReductionFactorOutOfPlane: <ParallelReductionFactorOutOfPlane>
-          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
-          - PartialFourier: <PartialFourier>
-          - RepetitionTimeExcitation: <RepetitionTime>
-          - EchoTime: <EchoTime>
-          - DwellTime: <DwellTime>
-          - FlipAngle: <FlipAngle>
-          - SliceThickness: <SliceThickness>
-          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
-      - provenance: 
           /data/p_03002/data/temp/sub-002/ses-01/MRI/028-mtw_kp_mtflash3d_v1s_0p6/s20241105120250-1.nii
-        example: anat/sub-002_ses-01_acq-MTw_echo-1_flip-2_mt-on_part-mag_MPM
+        example: anat/sub-002_ses-01_acq-MTw_echo-1_flip-1_mt-on_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -103,7 +103,7 @@ MRI:
           - rec: ~
           - run: ~
           - echo: <EchoNumber>
-          - flip: '2'
+          - flip: '1'
           - mt: on
           - part: <<custom:part>>
           - chunk: ~

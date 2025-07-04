@@ -8,9 +8,9 @@ MRI:
         model: __unknown__
         suffix: ''
         attributes:
-          ProtocolName: ['localizer', 'localizer ', 'calc_shims_4.0mm', 'AAHead_Scout_32ch-head-coil',
+          ProtocolName: ['localizer', 'localizer ', 'tse_localizer_HD_p2', 'calc_shims_4.0mm', 'AAHead_Scout_32ch-head-coil',
             'ke_gre_clear-swi0.x0.3x1.2_G2', 'ep_seg_fid_1MM_SL_TE35', 'ep_seg_fid_1MM_coronal',
-            'ep_seg_fid_1mm_cor', 'QuinPilot_32Ch', 'Arithmetic Mean']
+            'ep_seg_fid_1mm_cor', 'QuinPilot_32Ch', 'Arithmetic Mean', 'vibeMT_0p43x0p43x0p5_interp_fa>350_2AVG', 'vibeMT_0p43x0p43x0p5_interp_OFF_1AVG']
         bids: !!omap []
         json: !!omap []
     anat:
@@ -333,7 +333,7 @@ MRI:
         suffix: MTR
         attributes:
           ProtocolName: ['tfl_multiMTC_ss_centric_MT_ON_2AVG', 'tfl_multiMTC_MTon_NEX2',
-            'tfl_multiMTC_MA_centric_MT_ON_2AVG']
+            'tfl_multiMTC_MA_centric_MT_ON_2AVG', 'tfl_multiMTC_MA_centric_MT_ON_75V_2AVG']
         bids: !!omap
           - task: ~
           - acq: Instance<format03d:InstanceNumber>

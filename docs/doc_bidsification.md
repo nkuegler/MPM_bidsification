@@ -277,6 +277,9 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 + LORAKS-reconstructed bidsification → `bidsme.mapper` with `logger.setLevel("ERROR")` → may fix the issue
 + create an updated flow chart similar to the one below
 + after running the command, create file that documents paths to input directories (or even input files)
++ shim current consistency check does not work properly if the .nii data is not organized in sequence directories in the `source/` directory (reason: `session_shim_current_relevant_sequences_counter` is increased in `SequenceEP` in the prepare plugin -> then only copied in the bidsified plugin -> should be refined in the bidsify plugin (sessions.tsv created in the prepare plugin should be only preliminary)) 
+    + whole `subN_sessions_dict` should be written in a helper function and then called in both prepare and bidsify plugin
+    + for now, I fixed it by making sure that the Niftis are already ordered correctly in the `source/` directory (copied them from `temp/` to `source/`)
 
 <br>
 <br>

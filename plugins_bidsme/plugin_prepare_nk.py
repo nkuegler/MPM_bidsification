@@ -329,6 +329,19 @@ def SessionEP(scan: BidsSession) -> int:
     # more population of the dictionary in SequenceEP to access a recording object
 
 
+    # Check if there are sub-directories in the session directory 
+    # TODO: this is just a preliminary check to let the user know about this bug. Once the bug is fixed, this should not cause any problems and this check can be removed.
+    # scan.in_path yields the path to the session directory
+    
+    nii_session_dir = f"{scan.in_path}/nii"
+    if not Path(nii_session_dir).is_dir():
+        logger.warning(f"Directory '{nii_session_dir}' not found. No information about the folder structure in the NIfTI source directory as the sub-directory is not called 'nii/'. Shim current consistency check may not be reliable.")
+    else:
+        subdirs = [d.name for d in Path(nii_session_dir).iterdir() if d.is_dir()]
+        if not subdirs:
+            logger.warning(f"No sub-directories found in session directory '{nii_session_dir}'. Shim current consistency check may not be reliable.")
+    
+
 def SequenceEP(recording: object) -> int:
     """
     This function is called after loading first file of

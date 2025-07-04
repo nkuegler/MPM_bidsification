@@ -502,18 +502,19 @@ def SessionEndEP(scan: BidsSession) -> int:
         code 180
     """
     
-    ## copy SHIM_CURR_INCONSISTENCY warning file to session directory if present in the bidsified data
-    shim_incons_file = os.path.join(corresponding_bids_data_path, scan.subject, scan.session, shim_incons_filename)
-    if os.path.isfile(shim_incons_file):
-        shutil.copy(shim_incons_file, os.path.join(bids_dir, scan.subject, scan.session, shim_incons_filename))
-        logger.info(f"Copying {shim_incons_filename} from correponding session in the bidsified dataset")
+    if not bidsmap_step:
+        ## copy SHIM_CURR_INCONSISTENCY warning file to session directory if present in the bidsified data
+        shim_incons_file = os.path.join(corresponding_bids_data_path, scan.subject, scan.session, shim_incons_filename)
+        if os.path.isfile(shim_incons_file):
+            shutil.copy(shim_incons_file, os.path.join(bids_dir, scan.subject, scan.session, shim_incons_filename))
+            logger.info(f"Copying {shim_incons_filename} from correponding session in the bidsified dataset")
+            
+        ## copy SHIM_CURR_NOINFO warning file to session directory if present in the bidsified data
+        shim_noinfo_file = os.path.join(corresponding_bids_data_path, scan.subject, scan.session, shim_noinfo_filename)
+        if os.path.isfile(shim_noinfo_file):
+            shutil.copy(shim_noinfo_file, os.path.join(bids_dir, scan.subject, scan.session, shim_noinfo_filename))
+            logger.info(f"Copying {shim_noinfo_filename} from correponding session in the bidsified dataset")
         
-    ## copy SHIM_CURR_NOINFO warning file to session directory if present in the bidsified data
-    shim_noinfo_file = os.path.join(corresponding_bids_data_path, scan.subject, scan.session, shim_noinfo_filename)
-    if os.path.isfile(shim_noinfo_file):
-        shutil.copy(shim_noinfo_file, os.path.join(bids_dir, scan.subject, scan.session, shim_noinfo_filename))
-        logger.info(f"Copying {shim_noinfo_filename} from correponding session in the bidsified dataset")
-    
 
 def SubjectEndEP(scan: BidsSession) -> int:
     """

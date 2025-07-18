@@ -8,9 +8,10 @@ MRI:
         model: __unknown__
         suffix: ''
         attributes:
-          ProtocolName: ['localizer', 'localizer ', 'tse_localizer_HD_p2', 'calc_shims_4.0mm', 'AAHead_Scout_32ch-head-coil',
-            'ke_gre_clear-swi0.x0.3x1.2_G2', 'ep_seg_fid_1MM_SL_TE35', 'ep_seg_fid_1MM_coronal',
-            'ep_seg_fid_1mm_cor', 'QuinPilot_32Ch', 'Arithmetic Mean', 'vibeMT_0p43x0p43x0p5_interp_fa>350_2AVG', 'vibeMT_0p43x0p43x0p5_interp_OFF_1AVG']
+          ProtocolName: ['localizer', 'localizer ', 'tse_localizer_HD_p2', 'calc_shims_4.0mm',
+            'AAHead_Scout_32ch-head-coil', 'ke_gre_clear-swi0.x0.3x1.2_G2', 'ep_seg_fid_1MM_SL_TE35',
+            'ep_seg_fid_1MM_coronal', 'ep_seg_fid_1mm_cor', 'QuinPilot_32Ch', 'Arithmetic
+                Mean', 'vibeMT_0p43x0p43x0p5_interp_fa>350_2AVG', 'vibeMT_0p43x0p43x0p5_interp_OFF_1AVG']
         bids: !!omap []
         json: !!omap []
     anat:
@@ -173,10 +174,11 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: true
-          - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/1>
           - MTNumberOfPulses: 1
           - MTPulseShape: 'GAUSSIAN'
           - MTPulseDuration: <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
+          - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
+          - MTFlipAngle: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
           - NonlinearGradientCorrection: false
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
@@ -212,10 +214,11 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: true
-          - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/1>
           - MTNumberOfPulses: 1
           - MTPulseShape: 'GAUSSIAN'
           - MTPulseDuration: <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
+          - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
+          - MTFlipAngle: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
           - NonlinearGradientCorrection: false
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>

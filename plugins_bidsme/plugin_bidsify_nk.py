@@ -334,23 +334,47 @@ def SequenceEP(recording: object) -> int:
         # print(f"image_type: {image_type}")
 
         if isinstance(image_type, list):
-            # for dcm2niix, stored as list
-            pass
+            # conversion_type = dcm2niix, ImageType stored as list
+            sDistortionCorrFilter = np.nan
         elif isinstance(image_type, str):
-            # for hMRI toolbox DICOM import, stored as string like "ORIGINAL\\PRIMARY\\M\\ND "
+            # conversion_type= SPM DICOM import, ImageType stored as string like "ORIGINAL\\PRIMARY\\M\\ND"
             image_type = [item.strip() for item in image_type.split("\\")]
+            sDistortionCorrFilter = \
+                "CSASeriesHeaderInfo/MrPhoenixProtocol/sDistortionCorrFilter/ucMode"
+            sDistortionCorrFilter = recording.getAttribute(sDistortionCorrFilter)
         else:
             # image_type is None or an unexpected type
             logger.warning(f"Unexpected ImageType format: {image_type}")
             image_type = []
 
+
         if "ND" in image_type:
-            recording.custom["NonlinearGradientCorrection"] = False
-            recording.custom["acq_suffix"] = "-ND"
+            recording.custom["acq_suffix"] = "-ND" # only used for Terra.X
+            if sDistortionCorrFilter == 1 or np.isnan(sDistortionCorrFilter):
+                recording.custom["NonlinearGradientCorrection"] = False
+                recording.custom["NonlinearGradientCorrectionType"] = "none"
+            else:
+                logger.warning("{}: ImageType 'ND' and sDistortionCorrFilter value '{}' do not match"
+                               .format(recording.recIdentity(), sDistortionCorrFilter))
+                recording.custom["NonlinearGradientCorrection"] = "n/a"
+                recording.custom["NonlinearGradientCorrectionType"] = "n/a"
         else:
-            recording.custom["NonlinearGradientCorrection"] = True
-            recording.custom["acq_suffix"] = ""
-        
+            recording.custom["acq_suffix"] = "" # only used for Terra.X
+            # check for 3D first as in 3D correction both "2D" and "3D" may be found in image_type
+            if (sDistortionCorrFilter == 4 or np.isnan(sDistortionCorrFilter)) \
+                    and ("3D" in image_type or "DIS3D" in image_type):
+                recording.custom["NonlinearGradientCorrection"] = True
+                recording.custom["NonlinearGradientCorrectionType"] = "3D"
+            elif (sDistortionCorrFilter == 2 or np.isnan(sDistortionCorrFilter)) \
+                    and ("2D" in image_type or "DIS2D" in image_type):
+                recording.custom["NonlinearGradientCorrection"] = True
+                recording.custom["NonlinearGradientCorrectionType"] = "2D"
+            else:
+                logger.warning("{}: ImageType '{}' and sDistortionCorrFilter value '{}' do not match"
+                               .format(recording.recIdentity(), image_type, sDistortionCorrFilter))
+                recording.custom["NonlinearGradientCorrection"] = "n/a"
+                recording.custom["NonlinearGradientCorrectionType"] = "n/a"
+
         if "M" in image_type:
             recording.custom["part"] = "mag"
         if "P" in image_type:

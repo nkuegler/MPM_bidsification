@@ -36,7 +36,8 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: false
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -71,7 +72,8 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: false
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -105,7 +107,8 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: false
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -140,7 +143,8 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: false
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -179,7 +183,8 @@ MRI:
           - MTPulseDuration: <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
           - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
           - MTFlipAngle: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -219,7 +224,8 @@ MRI:
           - MTPulseDuration: <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
           - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
           - MTFlipAngle: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -251,7 +257,8 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: false
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -284,7 +291,8 @@ MRI:
           - part: ~
           - chunk: ~
         json: !!omap
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -315,7 +323,8 @@ MRI:
           - part: ~
           - chunk: ~
         json: !!omap
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -348,7 +357,8 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: true
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -378,7 +388,8 @@ MRI:
           - chunk: ~
         json: !!omap
           - MTState: false
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -412,7 +423,8 @@ MRI:
           - EchoTime: <round10:scale-3:EchoTime>
           - SequenceName: <SequenceName>
           - SpoilingRFPhaseIncrement: <<custom:SpoilingRFPhaseIncrement>>
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -459,7 +471,8 @@ MRI:
           - EchoTime: <round10:scale-3:EchoTime>
           - SequenceName: <SequenceName>
           - SpoilingRFPhaseIncrement: <<custom:SpoilingRFPhaseIncrement>>
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -491,7 +504,8 @@ MRI:
         json: !!omap
           - SequenceName: <SequenceName>
           - MTState: false
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
           - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
           - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
@@ -577,7 +591,8 @@ MRI:
         json: !!omap
           - PhaseEncodingDirection: <PhaseEncodingDirection>
           - TotalReadoutTime: <TotalReadoutTime>
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
           - PartialFourier: <PartialFourier>
           - MultibandAccelerationFactor: <MultibandAccelerationFactor>
@@ -604,7 +619,8 @@ MRI:
         json: !!omap
           - PhaseEncodingDirection: <PhaseEncodingDirection>
           - TotalReadoutTime: <TotalReadoutTime>
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
           - PartialFourier: <PartialFourier>
           - MultibandAccelerationFactor: <MultibandAccelerationFactor>
@@ -631,7 +647,8 @@ MRI:
         json: !!omap
           - PhaseEncodingDirection: <PhaseEncodingDirection>
           - TotalReadoutTime: <TotalReadoutTime>
-          - NonlinearGradientCorrection: false
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
           - PartialFourier: <PartialFourier>
           - MultibandAccelerationFactor: <MultibandAccelerationFactor>

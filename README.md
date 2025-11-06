@@ -9,3 +9,4 @@ This repository contains the code to bidsifiy a set of MRI data. First, the DICO
 
 For the full documentation of this step, please refer to the [DICOM-to-NIfTI documentation](docs/doc_DICOM-to-NIfTI.md). a brief summary of the key points is provided in this section.
 
+

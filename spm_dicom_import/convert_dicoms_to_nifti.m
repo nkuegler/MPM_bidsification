@@ -1,5 +1,6 @@
 % author: Ilona Lipp 
 % repository: https://github.com/IlonaLipp/postmortembrain-mpm
+% License: CC0 1.0 Universal (public domain dedication)
 % adjusted by: Niklas Kuegler
 
 

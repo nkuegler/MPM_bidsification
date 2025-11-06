@@ -1,5 +1,6 @@
 % author: Ilona Lipp 
 % repository: https://github.com/IlonaLipp/postmortembrain-mpm
+% License: CC0 1.0 Universal (public domain dedication)
 
 function correct_or_not = check_if_all_nifti_files_have_same_dimensions(nifti_files_produced)
     %%% this is just a function to check whether dicom conversion has been

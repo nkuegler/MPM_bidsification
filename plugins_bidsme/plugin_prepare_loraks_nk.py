@@ -668,14 +668,17 @@ def SubjectEndEP(scan: BidsSession) -> int:
           """)
           
     df_sessions = pd.DataFrame(subN_sessions_dict)
-    output_filename_tsv = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.tsv"
-    df_sessions.to_csv(output_filename_tsv, sep='\t', index=False)
+    if (Path(prep_dir) / scan.subject).is_dir():
+        # save sessions.tsv
+        output_filename_tsv = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.tsv"
+        df_sessions.to_csv(output_filename_tsv, sep='\t', index=False)
+        
+        # copy sessions.json
+        output_filename_json = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.json"
+        shutil.copy(sessions_tsv_template, output_filename_json)
 
     # reset the dictionary for the next subject
     subN_sessions_dict = {}
-
-    ouptput_filename_json = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.json"
-    shutil.copy(sessions_tsv_template, ouptput_filename_json)
 
 
 def FinaliseEP() -> int:

@@ -339,7 +339,7 @@ MRI:
           - SliceThickness: <format03f:SliceThickness>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/022-tfl_multiMTC_ss_centric_MT_ON_2AVG/s2023-11-21_14-24-163059-00001-00001-1.nii
-        example: anat/sub-003_ses-01_acq-001_run-1_mt-on_MTR
+        example: anat/sub-003_ses-01_acq-75V_run-1_mt-on_chunk-LCslab_MTR
         checked: true
         model: anat:MTR
         suffix: MTR
@@ -348,15 +348,16 @@ MRI:
             'tfl_multiMTC_MA_centric_MT_ON_2AVG', 'tfl_multiMTC_MA_centric_MT_ON_75V_2AVG']
         bids: !!omap
           - task: ~
-          - acq: Instance<format03d:InstanceNumber>
+          - acq: <<custom:mtc_amplitude_int>>
           - ce: ~
           - rec: ~
           - run: <<custom:tfl_multiMTC_MT_ON_counter>>
           - mt: on
           - part: ~
-          - chunk: ~
+          - chunk: LCslab
         json: !!omap
           - MTState: true
+          - MTPulseVoltage: <<custom:mtc_amplitude>>
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
           - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
@@ -370,7 +371,7 @@ MRI:
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/023-tfl_multiMTC_ss_centric_MT_OFF_1AVG/s2023-11-21_14-24-163913-00001-00001-1.nii
-        example: anat/sub-003_ses-01_acq-001_run-1_mt-off_MTR
+        example: anat/sub-003_ses-01_run-1_mt-off_MTR
         checked: true
         model: anat:MTR
         suffix: MTR
@@ -379,13 +380,13 @@ MRI:
             'tfl_multiMTC_MToff_NEX2', 'tfl_multiMTC_MA_centric_MT_OFF_1AVG']
         bids: !!omap
           - task: ~
-          - acq: Instance<format03d:InstanceNumber>
+          - acq: ~
           - ce: ~
           - rec: ~
           - run: <<custom:tfl_multiMTC_MT_OFF_counter>>
           - mt: off
           - part: ~
-          - chunk: ~
+          - chunk: LCslab
         json: !!omap
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>

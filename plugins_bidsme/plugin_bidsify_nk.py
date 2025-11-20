@@ -229,6 +229,12 @@ def SessionEP(scan: BidsSession) -> int:
     global MTw_ph_run_counter
     MTw_ph_run_counter = 0
 
+    global MP2RAGE_run_counter
+    MP2RAGE_run_counter = 0
+
+    global AFI_ptx_run_counter
+    AFI_ptx_run_counter = 0
+
     global smap_T1w_counter
     smap_T1w_counter = None
     global smap_PDw_counter
@@ -312,11 +318,23 @@ def SequenceEP(recording: object) -> int:
 
         ### tfl_multiMTC
         if rec_id.startswith("tfl_multiMTC"): 
+
             if "mt_on" in rec_id.casefold() or "mton" in rec_id.casefold():
                 global tfl_multiMTC_MT_ON_counter
                 tfl_multiMTC_MT_ON_counter += 1
                 recording.custom["tfl_multiMTC_MT_ON_counter"] = tfl_multiMTC_MT_ON_counter
-        
+
+                # Extract voltage of the MT pulse
+                rf_pulses = recording.getAttribute("CSASeriesHeaderInfo/MrPhoenixProtocol/sTXSPEC/aRFPULSE")
+                # Find the sMTC_RF pulse and extract flAmplitude
+                mtc_amplitude = None
+                for pulse in rf_pulses:
+                    if pulse.get('tName') == 'sMTC_RF':
+                        mtc_amplitude = pulse.get('flAmplitude')
+                        break
+                recording.custom["mtc_amplitude"] = round(mtc_amplitude, 3)
+                recording.custom["mtc_amplitude_int"] = f"{int(mtc_amplitude)}V" # integer value of volts
+            
             if "mt_off" in rec_id.casefold() or "mtoff" in rec_id.casefold():
                 global tfl_multiMTC_MT_OFF_counter
                 tfl_multiMTC_MT_OFF_counter += 1
@@ -387,6 +405,8 @@ def SequenceEP(recording: object) -> int:
         global PDw_ph_run_counter
         global MTw_mag_run_counter
         global MTw_ph_run_counter
+        global MP2RAGE_run_counter
+        global AFI_ptx_run_counter
 
         if rec_id.startswith("t1w_kp_mtflash3d"):
             if "M" in image_type:
@@ -409,7 +429,12 @@ def SequenceEP(recording: object) -> int:
             if "P" in image_type:
                 MTw_ph_run_counter += 1
                 recording.custom["MTw_run_counter"] = MTw_ph_run_counter
-
+        elif rec_id.startswith("kp_afib1_v1g_4mm_PA") or rec_id.startswith("kp_afib1_v1f_4mm_PA"):
+            AFI_ptx_run_counter += 1
+            recording.custom["AFI_ptx_run_counter"] = AFI_ptx_run_counter
+        elif rec_id.startswith("t1_mp2rage_sag"):
+            MP2RAGE_run_counter += 1
+            recording.custom["MP2RAGE_run_counter"] = MP2RAGE_run_counter
 
         ### count how many shim current relevant sequences are in the session
         if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple

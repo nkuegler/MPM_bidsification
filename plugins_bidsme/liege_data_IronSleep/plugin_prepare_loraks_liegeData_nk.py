@@ -485,8 +485,8 @@ def RecordingEP(recording: object) -> int:
         # case-insensitive check, but preserves the original casing in the returned series_id
         filename = recording.currentFile(True)
         # Find the start position using case-insensitive search
-        lower_filename = filename.lower()
-        lower_str = str_to_check.lower()
+        lower_filename = filename.casefold()
+        lower_str = str_to_check.casefold()
         start_pos = lower_filename.find(lower_str)
         
         if start_pos == -1:

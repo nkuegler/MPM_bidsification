@@ -482,8 +482,25 @@ def RecordingEP(recording: object) -> int:
     """
 
     def get_series_id(str_to_check, recording):
-        recording_id_rest = recording.currentFile(True).split(str_to_check)[1].split("_rec")[0]
-        series_id = f"{str_to_check}{recording_id_rest}"
+        # case-insensitive check, but preserves the original casing in the returned series_id
+        filename = recording.currentFile(True)
+        # Find the start position using case-insensitive search
+        lower_filename = filename.lower()
+        lower_str = str_to_check.lower()
+        start_pos = lower_filename.find(lower_str)
+        
+        if start_pos == -1:
+            # Fallback if not found (shouldn't happen in normal flow)
+            recording_id_rest = filename.split(str_to_check)[1].split("_rec")[0]
+            series_id = f"{str_to_check}{recording_id_rest}"
+        else:
+            # Extract the original-cased version from the filename
+            original_cased_str = filename[start_pos:start_pos + len(str_to_check)]
+            # Get the rest of the ID after the matched string
+            remaining = filename[start_pos + len(str_to_check):]
+            recording_id_rest = remaining.split("_rec")[0]
+            series_id = f"{original_cased_str}{recording_id_rest}"
+        
         return series_id
 
     global file_index

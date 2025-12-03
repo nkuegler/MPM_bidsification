@@ -57,7 +57,7 @@ subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
 corresponding_bids_data_path = ""
-available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d_v1s_1p0_FA180", "mtw_kp_mtflash3d_v1s_1p0_fa220"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
 smap_ident = "smaps_kp_mtflash3d"
 
 def remove_trailing_slash(path):
@@ -354,8 +354,8 @@ def SessionEP(scan: BidsSession) -> int:
             subN_sessions_dict['original_session_id'][-1] = current_sessionID
     # more population of the dictionary in SequenceEP to access a recording object
 
-    global file_index
-    file_index = -1
+    # global file_index # Usually needs to be done after each sequence. Worked until now as all LORAKS-reconstructed are usually in the same directory. 
+    # file_index = -1 # moved to SequenceEndEP
 
 def SequenceEP(recording: object) -> int:
     """
@@ -482,8 +482,25 @@ def RecordingEP(recording: object) -> int:
     """
 
     def get_series_id(str_to_check, recording):
-        recording_id_rest = recording.currentFile(True).split(str_to_check)[1].split("_rec")[0]
-        series_id = f"{str_to_check}{recording_id_rest}"
+        # case-insensitive check, but preserves the original casing in the returned series_id
+        filename = recording.currentFile(True)
+        # Find the start position using case-insensitive search
+        lower_filename = filename.casefold()
+        lower_str = str_to_check.casefold()
+        start_pos = lower_filename.find(lower_str)
+        
+        if start_pos == -1:
+            # Fallback if not found (shouldn't happen in normal flow)
+            recording_id_rest = filename.split(str_to_check)[1].split("_rec")[0]
+            series_id = f"{str_to_check}{recording_id_rest}"
+        else:
+            # Extract the original-cased version from the filename
+            original_cased_str = filename[start_pos:start_pos + len(str_to_check)]
+            # Get the rest of the ID after the matched string
+            remaining = filename[start_pos + len(str_to_check):]
+            recording_id_rest = remaining.split("_rec")[0]
+            series_id = f"{original_cased_str}{recording_id_rest}"
+        
         return series_id
 
     global file_index
@@ -517,8 +534,17 @@ def RecordingEP(recording: object) -> int:
                 if smap_ident.casefold() in recording.currentFile(True).casefold():
                     # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
                     smap_modality = helper.find_smap_modality(files_list, file_index)
+                    # print(smap_modality)
                     if smap_modality:
                         recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
+                        match smap_modality:
+                            case "MTw180":
+                                smap_modality = "FA180"
+                            case "MTw220":
+                                smap_modality = "FA220"
+                            case _:
+                                pass
+                    
                         # find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)
                         smap_modal_idx = next((i for i, elem in enumerate(available_contrasts_loraks) if smap_modality.casefold() in elem.casefold()), None)
                         # use (smap_modal_idx - 1) as index of the smap
@@ -594,6 +620,8 @@ def SequenceEndEP(path: str, recording: object) -> int:
     Error.SequenceEndEPerror
         code 170
     """
+    global file_index
+    file_index = -1
     return 0
 
 

@@ -275,6 +275,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 + LORAKS-reconstructed bidsification → `bidsme.mapper` with `logger.setLevel("ERROR")` → may fix the issue
 + create an updated flow chart similar to the one below
 + after running the command, create file that documents paths to input directories (or even input files)
++ many of the string comparisons in the plugins are case-sensitive → make the comparisons case-insensitive but keep the actually extracted file name parts identical to the original ones
 
 <br>
 <br>

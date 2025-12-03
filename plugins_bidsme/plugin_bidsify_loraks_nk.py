@@ -47,7 +47,7 @@ prep_dir = ""
 bids_dir = ""
 dry_run = False
 corresponding_bids_data_path = ""
-available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "mtw_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
 smap_ident = "smaps_kp_mtflash3d"
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
@@ -299,6 +299,17 @@ def SequenceEP(recording: object) -> int:
                 recording.custom["IntendedFor"] = "invalid"
 
 
+        filename_lower = recording.currentFile(True).casefold()
+        if "mtw_kp_mtflash3d".casefold() in filename_lower:
+            # Check for FA180 or FA220 in the filename (case-insensitive)
+            if "fa180" in filename_lower:
+                recording.custom["MT_FlipAngle"] = "180"
+            elif "fa220" in filename_lower:
+                recording.custom["MT_FlipAngle"] = "220"
+            else:
+                recording.custom["MT_FlipAngle"] = ""
+        del filename_lower
+
 
     return 0
 
@@ -338,7 +349,13 @@ def RecordingEP(recording: object) -> int:
         elif "_4p0" in full_string: # resolution of sensitivity maps
             string_end = "_4p0"
         elif "_1p0" in full_string: # resolution of T1w, PDw, and MTw 3T
-            string_end = "_1p0"
+            ### careful: String comparison sensitive to case
+            if "fa220" in full_string: # name of MTw with FA220 in infantdata
+                string_end = "_fa220"
+            elif "FA180" in full_string: # name of MTw with FA180 in infantdata
+                string_end = "_FA180"
+            else:
+                string_end = "_1p0"
         elif "_20ch" in full_string: # name of smaps in infantdata 
             string_end = "_20ch"
         ### AFI B1 very hard to include due to uncertainty about the correct repetition time
@@ -363,7 +380,7 @@ def RecordingEP(recording: object) -> int:
 
 
     if recording.Module() == "MRI":
-
+        
         ### loraks attributes
         if "rec-loraks".casefold() in recording.currentFile(True).casefold():
 

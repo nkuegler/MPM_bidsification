@@ -44,8 +44,13 @@ def find_smap_modality(seq_list: list, current_index: int) -> str:
         elif "pdw" in element:
             return "PDw"
         elif "mtw" in element:
-            return "MTw"
-        
+            if "fa180" in element:
+                return "MTw180"
+            elif "fa220" in element:
+                return "MTw220"
+            else:
+                return "MTw"
+
     return None
 
 

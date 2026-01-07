@@ -304,8 +304,10 @@ def SequenceEP(recording: object) -> int:
             # Check for FA180 or FA220 in the filename (case-insensitive)
             if "fa180" in filename_lower:
                 recording.custom["MT_FlipAngle"] = "180"
+                recording.custom["MTw_run"] = "01"
             elif "fa220" in filename_lower:
                 recording.custom["MT_FlipAngle"] = "220"
+                recording.custom["MTw_run"] = "02"
             else:
                 recording.custom["MT_FlipAngle"] = ""
         del filename_lower

@@ -193,6 +193,11 @@ As mentioned before, the Bidsification of the LORAKS-reconstructed data should b
 >
 > <span style="color:red">The `bidsme bidsify` command will also raise the same WARNINGS but the execution will not stop. Please also ignore these warnings as they were addressed but the logger output remains.</span><br>
 
+#### Bidsification of Terra.X data
+After the upgrade of our Terra system to Terra.X, the DICOM format changed significantly. Since the change, the SPM DICOM Import has a few issues extracting all the necessary metadata from the DICOM files. As a (potentially temporary) solution, you should use **dcm2niix** to convert all DICOM data into NIfTI format. You can find more information on how to do this in the [corresponding section in the DICOM-to-NIfTI conversion documentation](doc_DICOM-to-NIfTI.md#full-dcm2niix-conversion-alternative). <br>
+
+From there on, you can use the same Bidsification pipeline as described above. However, as the metadata structure of the dcm2niix-converted data differs from the SPM DICOM Import data, a separate set of plugins and a different bidsmap is necessary. You can find examples in the `supplementary` directory (labeled 'terrax' or 'dcm2niix'). <br>
+
 
 #### Branch alina_data
 
@@ -220,24 +225,28 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 
 ## File description (**MPM_bidsification** repository)
 
-+ `.ipynb_checkpoints/` – ignore
 + `docs/` – directory containing detailed documentation of different things (still worked on)
 + `plugins_bidsme/` – different plugins for different use cases and data sets (find more information about the plugins in the `docs/` directory or directly in the code)
     + `*_prepare*` – used for preparation step
     + `*_bidsify*` – used for bidsification step
     + `*_loraks*` – designed for bidsification of the LORAKS-reconstructed data
     + `plugin_helper_functions.py` - helper functions to be imported and used across all custom plugins
+    + `TerraX_data/` – plugins specifically designed for MRI data acquired on Siemens Terra.X systems
+        + `plugin_prepare_terrax_dcm2niix_nk.py` – preparation plugin for Terra.X **dcm2niix**-converted data
+        + `plugin_bidsify_terrax_dcm2niix_nk.py` – bidsification plugin for Terra.X **dcm2niix**-converted data
+    + `liege_data_IronSleep/` – plugins for Liege data from the IronSleep project
+        + `plugin_prepare_liege_nk.py` – preparation plugin for Liege data
+        + `plugin_bidsify_liege_nk.py` – bidsification plugin for Liege data
+        + `plugin_prepare_liege_loraks_nk.py` – preparation plugin for LORAKS-reconstructed Liege data
+        + `plugin_bidsify_liege_loraks_nk.py` – bidsification plugin for LORAKS-reconstructed Liege data
     > **Warning:** Make sure that you checked out the correct branch of the repository as the plugins in the main branch and the plugins in the alina_data branch are not equal even though they have the same names.
-+ `spm_dicom_import/` – scripts adapted from the [postmortembrain-mpm](https://github.com/IlonaLipp/postmortembrain-mpm) repository (Author: Ilona Lipp)
-    + `convert_dicoms_to_nifti.m` – main function called for DICOM-to-NIfTI conversion (using SPM DICOM Import)
-    + `convert_dicoms_to_nifti_no_check.m` – adjusted function of the one above that skips checks during the process (use with care: quicker but hard to detect if files were skipped)
-    + `check_if_all_nifti_files_have_same_dimensions.m` – helper function
-    + `convert_dir_output_to_cell_structure.m` – helper function
++ `spm_dicom_import/` - see [DICOM-to-NIfTI documentation](doc_DICOM-to-NIfTI.md)
 + `supplementary/` – all the supplementary functions and scripts needed for the bidsification (aside from the plugins)
     + `bidsmaps/` – `bidsmap.yaml` files created for the bidsification of different data sets
-        + `*_MPM*` – for IronSleep data
-        + `*_alinadata*` – for Alina's data
+        + `*_MPM*` – for IronSleep data (usually converted with SPM DICOM Import)
         + `*_loraks*` – for LORAKS-reconstructed data
+        + `*_terrax_dcm2niix*` – for Terra.X data (adjusted DICOM format) using dcm2niix for DICOM-to-NIfTI conversion 
+        + `*_alinadata*` – for Alina's data (see branch `alina_data`; also uses dcm2niix for DICOM-to-NIfTI conversion)
     + `table_templates/` – templates that define the columns in the `.tsv` files in the data set
         + `participants_nk.json` – template for creating the `participants.tsv`
         + `sessions_nk.json` - template for creating the different `sub-XXX_sessions.tsv` files
@@ -249,12 +258,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 + `bidsify_Alina_loraks.ipynb` (only in the alina_data branch) – Jupyter notebook for running the bidsification of the LORAKS-reconstructed data
 + `bidsify_IronSleep.ipynb` – Jupyter notebook for running the bidsification of the DICOM-imported data
 + `bidsify_IronSleep_loraks.ipynb` – Jupyter notebook for running the bidsification of the LORAKS-reconstructed data
-+ `call_dicom_conversion.m` – script that sets the paths in the MATLAB instance and calls the DICOM Import script
-+ `main_dicom_conv_batchautom.sh` – call the DICOM-to-NIfTI conversion for a batch of files (inherits the paths to each file and to the output directory from the `settings.py`)
-+ `main_dicom_conv.sh` *(deprecated)* – call the DICOM-to-NIfTI conversion for a single file (paths as arguments)
-+ `nii_dtibatch.m` *(not relevant for the bidsification)* – script to check the `.bvec` and `.bval` files created by *dcm2niix* from diffusion data (found in the [dcm2niix documentation](https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage#Diffusion_Tensor_Imaging), [link to the script on Github](https://github.com/rordenlab/spmScripts/blob/master/nii_dtibatch.m))
-+ `README.md` – description of the **MPM_bidsification** repository
-+ `settings.py` – specify paths and parameters for DICOM-to-NIfTI conversion using `main_dicom_conv_batchautom.sh`
+
 
 
 ## (Not documented yet) Functionalities of the different Plugins

@@ -1,0 +1,446 @@
+__bids__: 1.10.1
+MRI:
+  jsonNIFTI:
+    __ignore__:
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-004/ses-01/MRI/001-Quinpilot_3000ms_7Slices/s20250526175041-1.nii
+        checked: true
+        model: __unknown__
+        suffix: ''
+        attributes:
+          ProtocolName: ['Quinpilot_3000ms_7Slices', 'localizer', 'ThreeDream_5mm_40deg']
+        bids: !!omap []
+        json: !!omap []
+      - provenance: ~
+        checked: true
+        model: __unknown__
+        suffix: ''
+        attributes:
+          SeriesDescription: ['kp_afib1_v1g_ND', 't1w_kp_mtflash3d_v1s_0p6_ND', 'pdw_kp_mtflash3d_v1s_0p6_ND',
+            'mtw_kp_mtflash3d_v1s_0p6_ND', 'smap_kp_mtflash3d_v1s_4p0_ND']
+        bids: !!omap []
+        json: !!omap []
+    anat:
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/004-T1_MPRAGE_3D_sag/s20250221124014-1.nii
+        example: anat/sub-001_ses-01_acq-MPRAGE_T1w
+        checked: true
+        model: anat:T1w
+        suffix: T1w
+        attributes:
+          ProtocolName: T1_MPRAGE_3D_sag
+        bids: !!omap
+          - task: ~
+          - acq: MPRAGE
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: ~
+          - part: ~
+          - chunk: ~
+          - flip: ~
+          - mt: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - BodyPart: <BodyPartExamined>
+          - SequenceName: <PulseSequenceName>
+          - MRAcquisitionType: <MRAcquisitionType>
+          - MTState: <MTState>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ParallelReductionFactorInPlane: 1
+          - ParallelReductionFactorOutOfPlane: 1
+          - PartialFourier: <PartialFourier>
+          - InversionTime: <InversionTime>
+          - SliceThickness: <SliceThickness>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/005-t2_tse_fs_tra_2D/s20250221124014-1.nii
+        example: anat/sub-001_ses-01_acq-TSE_T1w
+        checked: true
+        model: anat:T1w
+        suffix: T1w
+        attributes:
+          ProtocolName: t2_tse_fs_tra_2D
+        bids: !!omap
+          - task: ~
+          - acq: TSE
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: ~
+          - part: ~
+          - chunk: ~
+          - flip: ~
+          - mt: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/006-t2_space_dark-fluid_3D_sag_cs12_ns-t2prep/s20250221124014-1.nii
+        example: anat/sub-001_ses-01_acq-T2darkfluid_T2w
+        checked: true
+        model: anat:T2w
+        suffix: T2w
+        attributes:
+          ProtocolName: t2_space_dark-fluid_3D_sag_cs12_ns-t2prep
+        bids: !!omap
+          - task: ~
+          - acq: dark-fluid
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: ~
+          - part: ~
+          - chunk: ~
+          - flip: ~
+          - mt: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - InversionTime: <InversionTime>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/022-t1w_kp_mtflash3d_v1s_0p6/s20250221124014-1.nii
+        example: anat/sub-001_ses-01_acq-T1w_echo-01_flip-2_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          SeriesDescription: 't1w_kp_mtflash3d_v1s_0p6'
+        bids: !!omap
+          - acq: T1w
+          - rec: ~
+          - run: ~
+          - echo: <format02d:EchoNumber>
+          - flip: '2'
+          - mt: off
+          - part: <<custom:part>>
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - SpoilingState: true
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - ShimSetting: <ShimSetting>
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/030-pdw_kp_mtflash3d_v1s_0p6/s20250221124014-1.nii
+        example: anat/sub-001_ses-01_acq-PDw_echo-01_flip-1_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          SeriesDescription: 'pdw_kp_mtflash3d_v1s_0p6'
+        bids: !!omap
+          - acq: PDw
+          - rec: ~
+          - run: ~
+          - echo: <format02d:EchoNumber>
+          - flip: '1'
+          - mt: off
+          - part: <<custom:part>>
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - SpoilingState: true
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - ShimSetting: <ShimSetting>
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/038-mtw_kp_mtflash3d_v1s_0p6/s20250221124014-1.nii
+        example: anat/sub-001_ses-01_acq-MTw_echo-01_flip-1_mt-on_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          SeriesDescription: 'mtw_kp_mtflash3d_v1s_0p6'
+        bids: !!omap
+          - acq: MTw
+          - rec: ~
+          - run: ~
+          - echo: <format02d:EchoNumber>
+          - flip: '1'
+          - mt: on
+          - part: <<custom:part>>
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - SpoilingState: true
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - ShimSetting: <ShimSetting>
+      - provenance: ~
+        example: anat/sub-003_ses-01_acq-semc_echo-01_MESE
+        checked: true
+        model: anat:MESE
+        suffix: MESE
+        attributes:
+          ProtocolName: 'semc_js_res0p6_etl7_esp9_grappa3_slice52'
+        bids: !!omap
+          - acq: semc
+          - rec: ~
+          - run: ~
+          - echo: <format02d:EchoNumber>
+          - part: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - SpoilingState: true
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+    fmap:
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/015-kp_afib1_v1g/s20250221124014-1.nii
+        example: fmap/sub-001_ses-01_acq-tr1stx_echo-1_TB1AFI
+        checked: true
+        model: fmap:TB1AFI
+        suffix: TB1AFI
+        attributes:
+          SeriesDescription: 'kp_afib1_v1g'
+        bids: !!omap
+          - acq: tr<<custom:tr_index>>stx
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: <<custom:tr_index>>
+          - flip: ~
+          - inv: ~
+          - part: ~
+          - chunk: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <<custom:RepetitionTime>>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - SpoilingState: true
+          - IntendedFor: "PDw, T1w, MTw"
+          - ShimSetting: <ShimSetting>
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/018-smap_kp_mtflash3d_v1s_4p0/s20250221124014-1.nii
+        example: fmap/sub-001_ses-01_acq-headT1w_part-mag_RB1COR
+        checked: true
+        model: fmap:RB1COR
+        suffix: RB1COR
+        attributes:
+          SeriesDescription: smap_kp_mtflash3d_v1s_4p0
+        bids: !!omap
+          - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
+          - run: ~
+          - part: <<custom:part>>
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - SpoilingState: true
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ReceiveCoilActiveElements: <ReceiveCoilActiveElements>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - IntendedFor: <<custom:IntendedFor>>
+    dwi:
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/007-ep2d_diff_3scan_trace_tra_p3_s2_TRACEW/s20250221124014-1.nii
+        example: dwi/sub-001_ses-01_trace
+        checked: true
+        model: dwi:trace
+        suffix: trace
+        attributes:
+          ProtocolName: ep2d_diff_3scan_trace_tra_p3_s2
+          SeriesDescription: ep2d_diff_3scan_trace_tra_p3_s2_TRACEW
+        bids: !!omap
+          - acq: ~
+          - rec: ~
+          - dir: ~
+          - run: ~
+          - part: ~
+          - chunk: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - PartialFourierDirection: <PartialFourierDirection>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - MultibandAccelerationFactor: <MultibandAccelerationFactor>
+          - TotalReadoutTime: <TotalReadoutTime>
+          - EffectiveEchoSpacing: <EffectiveEchoSpacing>
+          - DiffusionScheme: <DiffusionScheme>
+          - SpacingBetweenSlices: <SpacingBetweenSlices>
+          - SliceTiming: <SliceTiming>
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/008-ep2d_diff_3scan_trace_tra_p3_s2_ADC/s20250221124014-1.nii
+        example: dwi/sub-001_ses-01_ADC
+        checked: true
+        model: dwi:ADC
+        suffix: ADC
+        attributes:
+          ProtocolName: ep2d_diff_3scan_trace_tra_p3_s2
+          SeriesDescription: ep2d_diff_3scan_trace_tra_p3_s2_ADC
+        bids: !!omap
+          - acq: ~
+          - rec: ~
+          - dir: ~
+          - run: ~
+          - chunk: ~
+          - ce: ~
+          - part: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: <MTState>
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTime>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - PartialFourierDirection: <PartialFourierDirection>
+          - SliceThickness: <SliceThickness>
+          - DwellTime: <DwellTime>
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - MultibandAccelerationFactor: <MultibandAccelerationFactor>
+          - TotalReadoutTime: <TotalReadoutTime>
+          - EffectiveEchoSpacing: <EffectiveEchoSpacing>
+          - SpacingBetweenSlices: <SpacingBetweenSlices>
+          - SliceTiming: <SliceTiming>

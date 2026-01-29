@@ -32,6 +32,12 @@ import os
 import re
 import warnings
 import shutil
+import sys
+
+# Get the absolute path of the parent directory of this script and add it to the system path to include helper functions as module
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 import plugin_helper_functions as helper
 
 # Will integrate plugin into logging

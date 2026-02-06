@@ -32,11 +32,12 @@ Each .nii file is accompanied by a sidecar JSON file with the same name, which c
     + The versions on the [Neurophysics Gitlab](https://gitlab.gwdg.de/cbs-neurophy/bidsification_mpm) and the [IronSleep Github](https://github.com/IronSleep/MPM_bidsification) are identical (synced). However, access to both repositories is restricted. [Reach out](mailto:kuegler@cbs.mpg.de?subject=Permissions%20missing%20MPM_bidsification) if you want to access the code.
 + **Bidsme**
     + *Bidsme* is freely available on [Github](https://github.com/CyclotronResearchCentre/bidsme/tree/dev) and [Gitlab](https://gitlab.uliege.be/CyclotronResearchCentre/Public/bidstools/bidsme/bidsme). 
-    + You **don't** need to manually install *Bidsme*. The **MPM_bidsification** repository provides an environment file `bidsme_env.yml` in the `supplementary/` directory that you can use to create a proper mamba/conda environment including *Bidsme* and all its necessary dependencies. This environment may also be used for the previous steps of the pipeline. How to create the environment from the YAML file is described in the steps below.
+    + You **don't** need to manually install *Bidsme*. The **MPM_bidsification** repository provides an environment file `bidsme_env.yml` in the `supplementary/` directory that you can use to create a proper conda environment including *Bidsme* and all its necessary dependencies. This environment may also be used for the previous steps of the pipeline. How to create the environment from the YAML file is described in the steps below.
     + *Alternatively, you can find [instructions for installing Bidsme](https://github.com/CyclotronResearchCentre/bidsme/blob/dev/INSTALLATION.md) to your virtual environment. Bidsme can be installed directly using pip, including the necessary dependencies.*
+    + `bidsme_env_adj.yml` creates a conda environment with bidsme installed from a local clone of the repository to allow changes to the bidsme code for debugging and development purposes (corresponding directory must be available and you have to adjust the path in the YAML file).
 + **dcm2niix**
     + You can either clone the [Github repository](https://github.com/rordenlab/dcm2niix) or download the [MRIcroGL viewer](https://www.nitrc.org/projects/mricrogl/) which includes dcm2niix as graphical interface.
-    + other install options are by using conda/mamba, pip, apt-get, or brew (see the instructions in the Github repository)
+    + other install options are by using conda, pip, apt-get, or brew (see the instructions in the Github repository)
     + [documentation of dcm2niix](https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage#General_Usage) (includes information on bvec & bval file creation in the DTI section)
 
 
@@ -49,15 +50,15 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
 > Stick to main branch of the repository for now. The use cases of the other branch(es) are described later.
 
 + **Step 0:**
-    + Set up miniforge, so you can use the conda or mamba package manager (you can follow the instructions in [Setting up Conda](https://wiki.cbs.mpg.de/spaces/CBSNP/pages/158105663/Setting+up+Conda)).
+    + Set up miniforge, so you can use the conda package manager (you can follow the instructions in [Setting up Conda](https://wiki.cbs.mpg.de/spaces/CBSNP/pages/158105663/Setting+up+Conda)).
 
 + **Step 1:**
     + Create an appropriate virtual environment from the provided `bidsme_env.yml` if you haven't done this in a previous step.
-    + Make sure that you don't already have a conda/mamba environment with the name `bidsme_env`. You only need to create the environment once.
+    + Make sure that you don't already have a conda environment with the name `bidsme_env`. You only need to create the environment once.
     + ```
       # cd path/to/MPM_bidsification 					 # navigate to the local clone of the repository
-      # mamba env create -f supplementary/bidsme_env.yml # create a conda/mamba environment from the yaml-file in the supplementary directory
-      mamba env list									 # check the list of environments for the newly created one "bidsme_env"
+      # conda env create -f supplementary/bidsme_env.yml # create a conda environment from the yaml-file in the supplementary directory
+      conda env list									 # check the list of environments for the newly created one "bidsme_env"
       ```
 
 + **Step 2:**
@@ -75,7 +76,7 @@ The scripts will access different files in the `plugins_bidsme/` and the `supple
 + **Step 4:**
     + Activate the virtual environment containing *Bidsme* and all the necessary dependencies.
     + ```
-      mamba activate bidsme_env   # activate mamba/conda environment
+      conda activate bidsme_env   # activate conda environment
       ```
 
 + **Step 5:**
@@ -251,7 +252,8 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
         + `participants_nk.json` – template for creating the `participants.tsv`
         + `sessions_nk.json` - template for creating the different `sub-XXX_sessions.tsv` files
     + `acq_remove_list.json` (only in the alina_data branch) – defines which sequences should removed from the `temp/` directory before bidsification (usually duplicates due to repeated acquisitions)
-    + `bidsme_env.yml` – environment YAML file to create the appropriate conda/mamba environment
+    + `bidsme_env.yml` – environment YAML file to create the appropriate conda environment
+    + `bidsme_env_adj.yml` - environment YAML file to create conda environment with bidsme installed from a local clone of the repository (allows changes to the bidsme code for debugging and development purposes)
     + `dataset_description.json` – example of a description file (required for a BIDS-conform dataset)
     + `example_readme.md` – example of a README file (required for a BIDS-conform dataset)
 + `bidsify_Alina.ipynb` (only in the alina_data branch) – Jupyter notebook for running the bidsification of the DICOM-imported data

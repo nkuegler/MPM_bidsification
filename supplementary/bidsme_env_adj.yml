@@ -1,4 +1,4 @@
-name: bidsme_env
+name: bidsme_env_adj
 channels:
   - conda-forge
   - nodefaults
@@ -18,4 +18,4 @@ dependencies:
   - dcm2niix >= 1.0.20220715
   - pip
   - pip:
-    - git+https://github.com/CyclotronResearchCentre/bidsme.git@dev
+    - -e /data/u_kuegler_software/git/bidsme_adj/

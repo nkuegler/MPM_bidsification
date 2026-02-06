@@ -638,6 +638,8 @@ def SessionEndEP(scan: BidsSession) -> int:
         global subN_sessions_dict
         column_ses_dict = list(subN_sessions_dict.keys())
         
+        logger.info(f"Number of sequences relevant for shim current consistency check: {session_shim_current_relevant_sequences_counter}")
+
         if session_shim_current_relevant_sequences_counter in (0, 1): 
             if 'shim_curr_cons' in column_ses_dict:
                 logger.warning(f"No information about shim current consistency available in {scan.session} of {scan.subject}.")
@@ -653,7 +655,9 @@ def SessionEndEP(scan: BidsSession) -> int:
                     subN_sessions_dict['shim_curr_cons'][-1] = 'inconsistent'
 
     else:
-        print(f"No NIfTI data found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
+        logger.warning(f"No NIfTI data found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
+    
+    logger.info("--------------")
 
 
     ## reset shim currents for next session

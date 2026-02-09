@@ -46,17 +46,28 @@ function convert_dicoms_to_nifti(dicom_data_dir, nifti_data_dir, omit_check, avo
 
         str_to_check_2 = strsplit(str_to_check, '_');
 
+        sequence_number = [];
+        sequence_name = '';
+
+        %% Paris data directory naming convention: '<sequence_name>_<sequence_number>_MR/PR/SR'
+        if (strcmp(str_to_check_2{end}, 'MR') || strcmp(str_to_check_2{end}, 'PR') || strcmp(str_to_check_2{end}, 'SR')) && length(str_to_check_2) >= 3 && ...
+           ~isempty(str2num(str_to_check_2{end-1}))
+            sequence_number = str2num(str_to_check_2{end-1});
+            sequence_name = strjoin(str_to_check_2(1:end-2), '_');
+
         %% Leipzig data directory naming convention: 'S<sequence_number>_<sequence_name>'
-        if strcmp(str_to_check_2{1}(1),'S')
-            str_to_check_3 = strsplit(str_to_check_2{1}, 'S');
-            sequence_number = str2num(str_to_check_3{2});
-        else
-            sequence_number = str2num(str_to_check_2{1});
-        end
+        elseif length(str_to_check_2{1}) > 1 && strcmp(str_to_check_2{1}(1), 'S') && ...
+               ~isempty(str2num(str_to_check_2{1}(2:end)))
+            sequence_number = str2num(str_to_check_2{1}(2:end));
+            sequence_name = strjoin(str_to_check_2(2:end), '_');
 
         %% Liege data directory naming convention: '<sequence_name>_<sequence_number>'
-        if isempty(sequence_number)
+        elseif ~isempty(str2num(str_to_check_2{end}))
             sequence_number = str2num(str_to_check_2{end});
+            sequence_name = strjoin(str_to_check_2(1:end-1), '_');
+
+        else
+            warning('Could not determine naming convention for folder: %s', str_to_check);
         end
 
         nifti_files_there = dir([nifti_data_dir,'/*',sprintf('%04d',sequence_number),'/*.nii']);

@@ -250,6 +250,9 @@ def SessionEP(scan: BidsSession) -> int:
     global body_coil_smap_counter
     body_coil_smap_counter = None
 
+    global anat_nm_run_counter
+    anat_nm_run_counter = 0
+
     return 0
 
 def SequenceEP(recording: object) -> int:
@@ -375,6 +378,7 @@ def SequenceEP(recording: object) -> int:
         global MTw_ph_run_counter
         global MP2RAGE_run_counter
         global AFI_stx_run_counter
+        global anat_nm_run_counter
 
         if rec_id.startswith("t1w_kp_mtflash3d"):
             if "M" in image_type:
@@ -521,6 +525,31 @@ def SequenceEP(recording: object) -> int:
                     fallback_smap_counter += 1 
                 recording.custom["smap_run"] = fallback_smap_counter
 
+        # differernt B1 maps (acquired in Paris)
+        if rec_id.casefold().startswith("b1map_"):
+            if rec_id.casefold().startswith("b1map_3DREAM".casefold()):
+                if "RefVolt".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "3DREAMrefVolt"
+                elif "relB1".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "3DREAMrelB1"
+                else:
+                    recording.custom["B1acq"] = "3DREAM"
+            
+            if rec_id.casefold().startswith("b1map_product".casefold()):
+                recording.custom["B1acq"] = "product"
+            
+            if rec_id.casefold().startswith("b1map_neurospin".casefold()):
+                if "CP".casefold() in rec_id.casefold() and "mode".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "neurospin_CPmode"
+                elif "VR".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "neurospin_VR"
+                else: 
+                    recording.custom["B1acq"] = "neurospin"
+
+        # count runs of neuromelanin sequence
+        if rec_id.casefold().startswith("anat-nm".casefold()):
+            anat_nm_run_counter += 1
+            recording.custom["anat_nm_run_counter"] = anat_nm_run_counter
 
 def RecordingEP(recording: object) -> int:
     """

@@ -60,10 +60,10 @@ MRI:
           - MagneticFieldStrength: <MagneticFieldStrength>
       - provenance: 
           /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/005-t2_tse_fs_tra_2D/s20250221124014-1.nii
-        example: anat/sub-001_ses-01_acq-TSE_T1w
+        example: anat/sub-001_ses-01_acq-TSE_T2w
         checked: true
-        model: anat:T1w
-        suffix: T1w
+        model: anat:T2w
+        suffix: T2w
         attributes:
           ProtocolName: t2_tse_fs_tra_2D
         bids: !!omap
@@ -98,15 +98,15 @@ MRI:
           - MagneticFieldStrength: <MagneticFieldStrength>
       - provenance: 
           /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/006-t2_space_dark-fluid_3D_sag_cs12_ns-t2prep/s20250221124014-1.nii
-        example: anat/sub-001_ses-01_acq-T2darkfluid_T2w
+        example: anat/sub-001_ses-01_FLAIR
         checked: true
-        model: anat:T2w
-        suffix: T2w
+        model: anat:FLAIR
+        suffix: FLAIR
         attributes:
           ProtocolName: t2_space_dark-fluid_3D_sag_cs12_ns-t2prep
         bids: !!omap
           - task: ~
-          - acq: dark-fluid
+          - acq: ~
           - ce: ~
           - rec: ~
           - run: ~
@@ -258,7 +258,7 @@ MRI:
         model: anat:MESE
         suffix: MESE
         attributes:
-          ProtocolName: 'semc_js_res0p6_etl7_esp9_grappa3_slice52'
+          ProtocolName: ['semc_js_res0p6_etl7_esp9_grappa3_slice52', 'semc_js_a', 'semc_js_b', 'semc_js_c']
         bids: !!omap
           - acq: semc
           - rec: ~

@@ -10,7 +10,7 @@ MRI:
         model: anat:MPM
         suffix: MPM
         attributes:
-          ProtocolName: ['t1w_kp_mtflash3d_v1s_0p6','t1w_kp_mtflash3d_v1sx_0p6']
+          ProtocolName: ['t1w_kp_mtflash3d_v1s_0p6', 't1w_kp_mtflash3d_v1sx_0p6', 't1w_kp_mtflash3d_v1t3_0p6']
         bids: !!omap
           - task: ~
           - acq: T1w
@@ -48,7 +48,7 @@ MRI:
         model: anat:MPM
         suffix: MPM
         attributes:
-          ProtocolName: ['pdw_kp_mtflash3d_v1s_0p6','pdw_kp_mtflash3d_v1sx_0p6']
+          ProtocolName: ['pdw_kp_mtflash3d_v1s_0p6', 'pdw_kp_mtflash3d_v1sx_0p6', 'pdw_kp_mtflash3d_v1t3_0p6']
         bids: !!omap
           - task: ~
           - acq: PDw

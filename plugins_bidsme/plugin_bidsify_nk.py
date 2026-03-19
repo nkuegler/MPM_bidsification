@@ -329,9 +329,11 @@ def SequenceEP(recording: object) -> int:
                 # Find the sMTC_RF pulse and extract flAmplitude
                 mtc_amplitude = None
                 for pulse in rf_pulses:
-                    if pulse.get('tName') == 'sMTC_RF':
-                        mtc_amplitude = pulse.get('flAmplitude')
+                    if pulse.get('tName') == 'sMTC_RF' or pulse.get('tName') == 'SRFExcit':
+                        mtc_amplitude = pulse.get('flAmplitude')    
                         break
+                if not mtc_amplitude:
+                    mtc_amplitude = 0
                 recording.custom["mtc_amplitude"] = round(mtc_amplitude, 3)
                 recording.custom["mtc_amplitude_int"] = f"{int(mtc_amplitude)}V" # integer value of volts
             

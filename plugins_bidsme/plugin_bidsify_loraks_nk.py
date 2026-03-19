@@ -48,7 +48,7 @@ bids_dir = ""
 dry_run = False
 corresponding_bids_data_path = ""
 available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
-smap_ident = "smap_kp_mtflash3d"
+smap_ident = "smaps_kp_mtflash3d"
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
 
@@ -274,14 +274,22 @@ def SequenceEP(recording: object) -> int:
     if recording.Module() == "MRI":
         ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
         if rec_id.startswith(smap_ident):
-            receive_coil = recording.getAttribute("ReceiveCoilName")
-            if receive_coil:
-                if "head" in receive_coil.casefold():
-                    recording.custom["ReceiveCoil"] = "head"
-                elif "body" in receive_coil.casefold():
-                    recording.custom["ReceiveCoil"] = "body"
-                else:
-                    recording.custom["ReceiveCoil"] = ""
+            # receive_coil = recording.getAttribute("ReceiveCoilName")
+            # if receive_coil:
+            #     if "head" in receive_coil.casefold():
+            #         recording.custom["ReceiveCoil"] = "head"
+            #     elif "body" in receive_coil.casefold():
+            #         recording.custom["ReceiveCoil"] = "body"
+            #     else:
+            #         recording.custom["ReceiveCoil"] = ""
+            # else:
+            #     recording.custom["ReceiveCoil"] = ""
+
+            ## sensitivity map with body or head coil
+            if "_32CH".casefold() in rec_id.casefold() or "_array".casefold() in rec_id.casefold():
+                recording.custom["ReceiveCoil"] = "head"
+            elif "_BC".casefold() in rec_id.casefold() or "_body".casefold() in rec_id.casefold():
+                recording.custom["ReceiveCoil"] = "body"
             else:
                 recording.custom["ReceiveCoil"] = ""
         
@@ -328,12 +336,22 @@ def RecordingEP(recording: object) -> int:
     def get_series_id(str_to_check, recording):
 
         full_string = recording.currentFile(True)
-        if "_0p6" in full_string: # resolution of T1w, PDw, and MTw
-            string_end = "_0p6"
-        elif "_0p5_sag" in full_string: # resolution of Ernst acquisition
-            string_end = "_0p5_sag"
-        elif "_4p0" in full_string: # resolution of sensitivity maps
-            string_end = "_4p0"
+        
+        # List of possible string endings to check (in order)
+        string_endings = [
+            "_0p6",      # resolution of T1w, PDw, and MTw (7T Terra)
+            "_0p5_sag",  # resolution of Ernst acquisition
+            "_0p8",      # resolution of T1w, PDw, and MTw (3T Prisma)
+            "_caipi",    # distinction of T1w, PDw, and MTw with CAIPIRINHA (3T Prisma)
+            "_4p0",      # resolution of sensitivity maps
+            "_32Ch",     # sensitivity maps (head coil) in IronSleep Prisma data
+            "_array",    # sensitivity maps (head coil) in IronSleep Prisma data
+            "_BC",       # sensitivity maps (Body coil) in IronSleep Prisma data
+            "_body"      # sensitivity maps (body coil) in IronSleep Prisma data
+        ]
+        
+        string_end = next((ending for ending in string_endings if ending in full_string), None)
+        
         ### AFI B1 very hard to include due to uncertainty about the correct repetition time
         # elif "_4mm_PA" in full_string: # resolution of B1 AFI maps
         #     if "_4mm_PA_forT2" in full_string: # resolution of B1 AFI maps sTx
@@ -342,7 +360,8 @@ def RecordingEP(recording: object) -> int:
         #         string_end = "_4mm_PA_trueform"
         #     else:
         #         string_end = "_4mm_PA" # resolution of B1 AFI maps pTx
-        else:
+
+        if not string_end:
             logger.warning(f"ProtocolName couldn't be derived properly from {full_string}")
             return str_to_check
 

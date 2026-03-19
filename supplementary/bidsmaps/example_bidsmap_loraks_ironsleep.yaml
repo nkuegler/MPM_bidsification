@@ -1,0 +1,188 @@
+__bids__: 1.10.1
+MRI:
+  jsonNIFTI:
+    anat:
+      - provenance: 
+          /data/pt_02262/bids_test/loraks_test/prep2/sub-001/ses-01/MRI/001-t1w_kp_mtflash3d_v1s_0p6_loraks/meas_MID00064_FID17040_t1w_kp_mtflash3d_v1s_0p6_rec-loraks_echo-1_mt-off_part-mag.nii
+        example: 
+          anat/sub-001_ses-01_acq-T1w_rec-loraks_echo-01_flip-2_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: ['t1w_kp_mtflash3d_v1s_0p6', 't1w_kp_mtflash3d_v1sx_0p6',
+            't1w_kp_mtflash3d_v1s_0p8', 't1w_kp_mtflash3d_v1s_caipi', 't1w_kp_mtflash3d_v1t3_0p6']
+        bids: !!omap
+          - task: ~
+          - acq: T1w
+          - ce: ~
+          - rec: <<custom:ReconMethod>>
+          - run: ~
+          - echo: <<custom:EchoNumbers>>
+          - flip: '2'
+          - mt: off
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
+          - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: 
+              <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
+      - provenance: 
+          /data/pt_02262/bids_test/loraks_test/prep2/sub-001/ses-01/MRI/003-pdw_kp_mtflash3d_v1s_0p6_loraks/meas_MID00065_FID17041_pdw_kp_mtflash3d_v1s_0p6_rec-loraks_echo-1_mt-off_part-mag.nii
+        example: 
+          anat/sub-001_ses-01_acq-PDw_rec-loraks_echo-01_flip-1_mt-off_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: ['pdw_kp_mtflash3d_v1s_0p6', 'pdw_kp_mtflash3d_v1sx_0p6',
+            'pdw_kp_mtflash3d_v1s_0p8', 'pdw_kp_mtflash3d_v1s_caipi', 'pdw_kp_mtflash3d_v1t3_0p6']
+        bids: !!omap
+          - task: ~
+          - acq: PDw
+          - ce: ~
+          - rec: <<custom:ReconMethod>>
+          - run: ~
+          - echo: <<custom:EchoNumbers>>
+          - flip: '1'
+          - mt: off
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
+          - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: 
+              <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
+      - provenance: 
+          /data/pt_02262/data/TH_bids/temp/LORAKS/sub-002/ses-04/MRI/005-mtw_kp_mtflash3d_v1sx_0p6_loraks/meas_MeasUID48_mtw_kp_mtflash3d_v1sx_0p6_rec-loraks_echo-1_mt-on_part-mag.nii
+        example: 
+          anat/sub-002_ses-04_acq-MTw_rec-loraks_echo-01_flip-1_mt-on_part-mag_MPM
+        checked: true
+        model: anat:MPM
+        suffix: MPM
+        attributes:
+          ProtocolName: ['mtw_kp_mtflash3d_v1s_0p6', 'mtw_kp_mtflash3d_v1sx_0p6',
+            'mtw_kp_mtflash3d_v1s_0p8', 'mtw_kp_mtflash3d_v1s_caipi']
+        bids: !!omap
+          - task: ~
+          - acq: MTw
+          - ce: ~
+          - rec: <<custom:ReconMethod>>
+          - run: ~
+          - echo: <<custom:EchoNumbers>>
+          - flip: '1'
+          - mt: on
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
+          - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: 
+              <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
+      - provenance: 
+          /data/pt_02262/bids_test/loraks_test/prep2/sub-001/ses-01/MRI/005-ernst_kp_mtflash3d_v1s_0p5_sag_loraks/meas_MID00068_FID17044_ernst_kp_mtflash3d_v1s_0p5_sag_rec-loraks_echo-01_mt-off_part-mag.nii
+        example: anat/sub-001_ses-01_acq-ernst_rec-loraks_echo-01_part-mag_MEGRE
+        checked: true
+        model: anat:MEGRE
+        suffix: MEGRE
+        attributes:
+          ProtocolName: ['ernst_kp_mtflash3d_v1s_0p5_sag', 'ernst_kp_mtflash3d_v1sx_0p5_sag']
+        bids: !!omap
+          - task: ~
+          - acq: ernst
+          - ce: ~
+          - rec: <<custom:ReconMethod>>
+          - run: ~
+          - echo: <<custom:EchoNumbers>>
+          - part: <<custom:part>>
+          - chunk: ~
+        json: !!omap
+          - MTState: <MTState>
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
+          - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: 
+              <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
+    fmap:
+      - provenance: 
+          /data/pt_03068/data/in_vivo/temp/LORAKS/sub-001/ses-01/MRI/001-smap_kp_mtflash3d_v1s_4p0_250221_124014_T1w_loraks/meas_MeasUID86_smap_kp_mtflash3d_v1s_4p0_250221_124014_rec-loraks_echo-1_mt-off_part-mag.nii
+        example: fmap/sub-001_ses-01_acq-T1w_rec-loraks_RB1COR
+        checked: true
+        model: fmap:RB1COR
+        suffix: RB1COR
+        attributes:
+          ProtocolName: ['smaps_kp_mtflash3d_v1s_32Ch', 'smaps_kp_mtflash3d_v1s_BC', 'smaps_kp_mtflash3d_v1s_array', 'smaps_kp_mtflash3d_v1s_body']
+        bids: !!omap
+          - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
+          - rec: <<custom:ReconMethod>>
+          - run: ~
+          - part: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelReductionFactorOutOfPlane: 
+              <ParallelReductionFactorOutOfPlane>
+          - PartialFourier: <PartialFourier>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <RepetitionTimeExcitation>
+          - DwellTime: <DwellTime>
+          - FlipAngle: <FlipAngle>
+          - Units: <Units>
+          - ReconstructionSoftware: <ReconstructionSoftware>
+          - ReconstructionSoftwareVersion: <ReconstructionSoftwareVersion>
+          - ReconstructionMethod: <ReconstructionSoftwareOptions/method>
+          - CoilCombinationMethod: <CoilCombinationMethod>
+          - PhaseUnwrappingMethod: 
+              <ReconstructionSoftwareOptions/multiEchoPhaseUnwrappingMethod>
+          - IntendedFor: <<custom:IntendedFor>>

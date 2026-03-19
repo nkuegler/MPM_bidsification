@@ -1,4 +1,4 @@
-__bids__: 1.10.0
+__bids__: 1.10.1
 MRI:
   hmriNIFTI:
     __ignore__:
@@ -37,22 +37,28 @@ MRI:
         json: !!omap
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-002/ses-05/MRI/t1w_kp_mtflash3d_v1s_caipi_0006/s2023-07-03_14-01-141446-00001-00224-1.nii
-        example: anat/sub-003_ses-01_acq-T1w_run-1_echo-1_flip-2_mt-off_part-mag_MPM
+        example: 
+          anat/sub-003_ses-01_acq-T1w_run-1_echo-1_flip-2_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -73,18 +79,23 @@ MRI:
         json: !!omap
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/012-pdw_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-151336-00001-00288-1.nii
@@ -108,22 +119,28 @@ MRI:
         json: !!omap
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-002/ses-05/MRI/pdw_kp_mtflash3d_v1s_caipi_0009/s2023-07-03_14-01-141446-00001-00224-1.nii
-        example: anat/sub-003_ses-01_acq-PDw_run-1_echo-1_flip-1_mt-off_part-mag_MPM
+        example: 
+          anat/sub-003_ses-01_acq-PDw_run-1_echo-1_flip-1_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -144,18 +161,23 @@ MRI:
         json: !!omap
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/013-mtw_kp_mtflash3d_v1sx_0p6/s2023-11-21_14-24-152629-00001-00288-1.nii
@@ -180,26 +202,35 @@ MRI:
           - MTState: true
           - MTNumberOfPulses: 1
           - MTPulseShape: 'GAUSSIAN'
-          - MTPulseDuration: <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
-          - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
-          - MTFlipAngle: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
+          - MTPulseDuration: 
+              <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
+          - MTOffsetFrequency: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
+          - MTFlipAngle: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-002/ses-05/MRI/mtw_kp_mtflash3d_v1s_caipi_0012/s2023-07-03_14-01-141446-00001-00224-1.nii
-        example: anat/sub-003_ses-01_acq-MTw_run-1_echo-1_flip-1_mt-on_part-mag_MPM
+        example: 
+          anat/sub-003_ses-01_acq-MTw_run-1_echo-1_flip-1_mt-on_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -221,22 +252,30 @@ MRI:
           - MTState: true
           - MTNumberOfPulses: 1
           - MTPulseShape: 'GAUSSIAN'
-          - MTPulseDuration: <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
-          - MTOffsetFrequency: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
-          - MTFlipAngle: <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
+          - MTPulseDuration: 
+              <scale-6:CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree/0>
+          - MTOffsetFrequency: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/1>
+          - MTFlipAngle: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree/0>
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/015-ernst_kp_mtflash3d_v1sx_0p5_sag/s2023-11-21_14-24-154701-00001-00120-1.nii
@@ -258,18 +297,23 @@ MRI:
         json: !!omap
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - FlipAngle: <FlipAngle>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/016-semc_js_res0p6_etl7_esp9_grappa3_slice52/s2023-11-21_14-24-160627-00001-00001-1.nii
@@ -292,17 +336,22 @@ MRI:
           - chunk: ~
         json: !!omap
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
           - SliceThickness: <format03f:SliceThickness>
       - provenance: 
@@ -324,17 +373,22 @@ MRI:
           - chunk: ~
         json: !!omap
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
           - SliceThickness: <format03f:SliceThickness>
       - provenance: 
@@ -348,7 +402,8 @@ MRI:
             'tfl_multiMTC_MA_centric_MT_ON_2AVG_75V', 'tfl_multiMTC_MA_centric_MT_ON_75_2AVG',
             'tfl_multiMTC_MA_centric_MT_ON_100V_2AVG', 'tfl_multiMTC_MA_centric_MT_ON_2AVG_AutoVoltage',
             'tfl_multiMTC_MA_centric_MT_ON_2AVG_default', 'tfl_multiMTC_MA_centric_MT_ON_2AVG_recommended',
-            'tfl_multiMTC_MA_centric_MT_ON_75v_2AVG', 'tfl_multiMTC_MA_centric_MT_ON_2AVG_75v']
+            'tfl_multiMTC_MA_centric_MT_ON_75v_2AVG', 'tfl_multiMTC_MA_centric_MT_ON_2AVG_75v',
+            'tfl_multiMTC_MA_centric_MT_ON_2AVG_0V']
         bids: !!omap
           - task: ~
           - acq: <<custom:mtc_amplitude_int>>
@@ -362,15 +417,20 @@ MRI:
           - MTState: true
           - MTPulseVoltage: <<custom:mtc_amplitude>>
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/023-tfl_multiMTC_ss_centric_MT_OFF_1AVG/s2023-11-21_14-24-163913-00001-00001-1.nii
@@ -392,15 +452,20 @@ MRI:
         json: !!omap
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
       - provenance: 
           /data/pt_02262/data/liege_data/temp/sub-001/ses-01/MRI/041-t1_mp2rage_sag_p3_0.75mm_UNI_Images/sub-IRN001_ses-fMRI_run-01_UNIT1.nii
@@ -415,15 +480,64 @@ MRI:
           - run: <<custom:MP2RAGE_run_counter>>
         json: !!omap
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
           - EchoTime: <round10:scale-3:EchoTime>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - SliceThickness: <format03f:SliceThickness>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+      - provenance: 
+          /data/pt_02262/data/liege_data/temp/sub-123/ses-01/MRI/018-t2_tse_tra_p2/s2025-11-04_08-31-094047-00001-00001-1.nii
+        example: anat/sub-123_ses-01_acq-TSE_T2w
+        checked: true
+        model: anat:T2w
+        suffix: T2w
+        attributes:
+          ProtocolName: t2_tse_tra_p2
+        bids: !!omap
+          - task: ~
+          - acq: TSE
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: ~
+          - part: ~
+          - chunk: ~
+          - flip: ~
+          - mt: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MTState: false
+          - MRAcquisitionType: <MRAcquisitionType>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
+          - PartialFourier: <<custom:PartialFourier>>
+          - PartialFourierDirection: <<custom:PartialFourierDirection>>
+          - EchoTime: <round10:scale-3:EchoTime>
+          - RepetitionTimeExcitation: <round10:scale-3:RepetitionTime>
+          - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
+          - FlipAngle: <FlipAngle>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
+          - SequenceName: <SequenceName>
+          - TransmitCoilName: <TransmitCoilName>
+          - SliceThickness: <SliceThickness>
+          - PhaseEncodingDirection: <InPlanePhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
     fmap:
       - provenance: 
           /data/pt_02262/data/TH_bids/prepared/sub-003/ses-01/MRI/014-kp_afib1_v1f_4mm_PA/s2023-11-21_14-24-153811-00001-00048-1.nii
@@ -449,15 +563,20 @@ MRI:
           - SequenceName: <SequenceName>
           - SpoilingRFPhaseIncrement: <<custom:SpoilingRFPhaseIncrement>>
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
           - IntendedFor:
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-T1w_echo-*_flip-1_mt-off_MPM.nii"
@@ -497,15 +616,20 @@ MRI:
           - SequenceName: <SequenceName>
           - SpoilingRFPhaseIncrement: <<custom:SpoilingRFPhaseIncrement>>
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
           - IntendedFor:
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-T1w_echo-*_flip-1_mt-off_MPM.nii"
@@ -520,8 +644,10 @@ MRI:
         suffix: RB1COR
         attributes:
           ProtocolName: ['smaps_kp_mtflash3d_v1s_array', 'smaps_kp_mtflash3d_v1s_body',
-            smaps_kp_mtflash3d_v1s_BC, smaps_kp_mtflash3d_v1s_32Ch, sens_maps_kp_mtflash3d_v1s_array,
-            sens_maps_kp_mtflash3d_v1s_BC, smaps_kp_mtflash3d_v1l_32ch-64ch_p30, smaps_kp_mtflash3d_v1l_32ch-64ch_m150]
+            smaps_kp_mtflash3d_v1s_BC, smaps_kp_mtflash3d_v1s_32Ch, 
+                sens_maps_kp_mtflash3d_v1s_array, sens_maps_kp_mtflash3d_v1s_BC, 
+                smaps_kp_mtflash3d_v1l_32ch-64ch_p30, 
+                smaps_kp_mtflash3d_v1l_32ch-64ch_m150]
         bids: !!omap
           - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
           - run: <<custom:smap_run>>
@@ -530,11 +656,15 @@ MRI:
           - SequenceName: <SequenceName>
           - MTState: false
           - NonlinearGradientCorrection: <<custom:NonlinearGradientCorrection>>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - SpoilingState: true
-          - ParallelReductionFactorInPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
-          - ParallelReductionFactorOutOfPlane: <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
-          - ParallelAcquisitionTechnique: <<custom:ParallelAcquisitionTechnique>>
+          - ParallelReductionFactorInPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFactPE>
+          - ParallelReductionFactorOutOfPlane: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/lAccelFact3D>
+          - ParallelAcquisitionTechnique: 
+              <<custom:ParallelAcquisitionTechnique>>
           - PartialFourier: <<custom:PartialFourier>>
           - PartialFourierDirection: <<custom:PartialFourierDirection>>
           - EchoTime: <round10:scale-3:EchoTime>
@@ -542,7 +672,8 @@ MRI:
           - DwellTime: <scale-9:CSAImageHeaderInfo/RealDwellTime>
           - FlipAngle: <FlipAngle>
           - SliceThickness: <SliceThickness>
-          - MultibandAccelerationFactor: <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
+          - MultibandAccelerationFactor: 
+              <CSASeriesHeaderInfo/MrPhoenixProtocol/sSliceAcceleration/lMultiBandFactor>
           - ReceiveCoilActiveElements: <CSASeriesHeaderInfo/CoilString>
           - IntendedFor: <<custom:IntendedFor>>
   jsonNIFTI:
@@ -617,7 +748,8 @@ MRI:
           - PhaseEncodingDirection: <PhaseEncodingDirection>
           - TotalReadoutTime: <TotalReadoutTime>
           - NonlinearGradientCorrection: <NonlinearGradientCorrection>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
           - PartialFourier: <PartialFourier>
           - MultibandAccelerationFactor: <MultibandAccelerationFactor>
@@ -645,7 +777,8 @@ MRI:
           - PhaseEncodingDirection: <PhaseEncodingDirection>
           - TotalReadoutTime: <TotalReadoutTime>
           - NonlinearGradientCorrection: <NonlinearGradientCorrection>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
           - PartialFourier: <PartialFourier>
           - MultibandAccelerationFactor: <MultibandAccelerationFactor>
@@ -673,7 +806,8 @@ MRI:
           - PhaseEncodingDirection: <PhaseEncodingDirection>
           - TotalReadoutTime: <TotalReadoutTime>
           - NonlinearGradientCorrection: <NonlinearGradientCorrection>
-          - NonlinearGradientCorrectionType: <<custom:NonlinearGradientCorrectionType>>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
           - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
           - PartialFourier: <PartialFourier>
           - MultibandAccelerationFactor: <MultibandAccelerationFactor>

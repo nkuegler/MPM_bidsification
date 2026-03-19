@@ -551,7 +551,7 @@ MRI:
         model: fmap:TB1AFI
         suffix: TB1AFI
         attributes:
-          ProtocolName: ['kp_afib1_v1f_4mm_PA', 'kp_afib1_v1g_4mm_PA']
+          ProtocolName: ['kp_afib1_v1f_4mm_PA', 'kp_afib1_v1g_4mm_PA', 'kp_afib1_v1h1_4mm_PA']
         bids: !!omap
           - acq: tr<<custom:tr_index>>ptx
           - ce: ~
@@ -689,7 +689,7 @@ MRI:
         model: __unknown__
         suffix: ''
         attributes:
-          ProtocolName: ['localizer', 'localizer_3D']
+          ProtocolName: ['localizer', 'localizer_3D', 'ThreeDream_5mm_40deg']
         bids: !!omap []
         json: !!omap []
       - provenance: ~
@@ -819,7 +819,7 @@ MRI:
         model: anat:MPM
         suffix: MPM
         attributes:
-          SeriesDescription: 't1w_kp_mtflash3d_v1s_0p6'
+          SeriesDescription: ['t1w_kp_mtflash3d_v1s_0p6', 't1w_kp_mtflash3d_v1t3_0p6']
         bids: !!omap
           - acq: T1w
           - rec: ~
@@ -858,7 +858,7 @@ MRI:
         model: anat:MPM
         suffix: MPM
         attributes:
-          SeriesDescription: 'pdw_kp_mtflash3d_v1s_0p6'
+          SeriesDescription: ['pdw_kp_mtflash3d_v1s_0p6', 'pdw_kp_mtflash3d_v1t3_0p6']
         bids: !!omap
           - acq: PDw
           - rec: ~
@@ -1241,6 +1241,44 @@ MRI:
           SeriesDescription: 'kp_afib1_v1g_4mm_PA'
         bids: !!omap
           - acq: tr<<custom:tr_index>>stx
+          - ce: ~
+          - rec: ~
+          - run: ~
+          - echo: <<custom:tr_index>>
+          - flip: ~
+          - inv: ~
+          - part: ~
+          - chunk: ~
+        json: !!omap
+          - NonlinearGradientCorrection: <NonlinearGradientCorrection>
+          - NonlinearGradientCorrectionType: 
+              <<custom:NonlinearGradientCorrectionType>>
+          - MRAcquisitionType: <MRAcquisitionType>
+          - EchoTime: <EchoTime>
+          - RepetitionTimeExcitation: <<custom:RepetitionTime>>
+          - FlipAngle: <FlipAngle>
+          - SequenceName: <PulseSequenceName>
+          - ReceiveCoilName: <ReceiveCoilName>
+          - ParallelReductionFactorInPlane: <ParallelReductionFactorInPlane>
+          - ParallelAcquisitionTechnique: <ParallelAcquisitionTechnique>
+          - PartialFourier: <PartialFourier>
+          - SliceThickness: <round1:scale3:SliceThickness>
+          - DwellTime: <DwellTime>
+          - PhaseEncodingDirection: <PhaseEncodingDirection>
+          - BodyPart: <BodyPartExamined>
+          - MagneticFieldStrength: <MagneticFieldStrength>
+          - SpoilingState: true
+          - IntendedFor: "PDw, T1w, MTw"
+          - ShimSetting: <ShimSetting>
+      - provenance: ~
+        example: fmap/sub-001_ses-01_acq-tr1ptx_echo-1_TB1AFI
+        checked: true
+        model: fmap:TB1AFI
+        suffix: TB1AFI
+        attributes:
+          SeriesDescription: 'kp_afib1_v1h1_4mm_PA'
+        bids: !!omap
+          - acq: tr<<custom:tr_index>>ptx
           - ce: ~
           - rec: ~
           - run: ~

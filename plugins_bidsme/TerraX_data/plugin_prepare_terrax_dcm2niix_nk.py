@@ -59,7 +59,9 @@ shim_current_relevant_recIDs = ["t1w_kp_mtflash3d",
                                 "pdw_kp_mtflash3d", 
                                 "mtw_kp_mtflash3d", 
                                 "kp_afib1_v1f", 
-                                "kp_afib1_v1g"]
+                                "kp_afib1_v1g",
+                                "kp_afib1_v1h1"
+                                ]
 session_shim_currents = None
 session_shim_current_warning_counter = 0
 session_shim_current_relevant_sequences_counter = 0

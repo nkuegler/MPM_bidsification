@@ -58,7 +58,8 @@ shim_current_relevant_recIDs = ["t1w_kp_mtflash3d",
                                 "pdw_kp_mtflash3d", 
                                 "mtw_kp_mtflash3d", 
                                 "kp_afib1_v1f", 
-                                "kp_afib1_v1g"]
+                                "kp_afib1_v1g",
+                                "kp_afib1_v1h1"]
 session_shim_currents = None
 session_shim_current_warning_counter = 0
 session_shim_current_relevant_sequences_counter = 0
@@ -237,6 +238,9 @@ def SessionEP(scan: BidsSession) -> int:
     global AFI_stx_run_counter
     AFI_stx_run_counter = 0
 
+    global AFI_ptx_run_counter
+    AFI_ptx_run_counter = 0
+
     global smap_T1w_counter
     smap_T1w_counter = None
     global smap_PDw_counter
@@ -378,6 +382,7 @@ def SequenceEP(recording: object) -> int:
         global MTw_ph_run_counter
         global MP2RAGE_run_counter
         global AFI_stx_run_counter
+        global AFI_ptx_run_counter
         global anat_nm_run_counter
 
         if rec_id.startswith("t1w_kp_mtflash3d"):
@@ -404,6 +409,9 @@ def SequenceEP(recording: object) -> int:
         elif rec_id.startswith("kp_afib1_v1g_4mm_PA") or rec_id.startswith("kp_afib1_v1f_4mm_PA"):
             AFI_stx_run_counter += 1
             recording.custom["AFI_stx_run_counter"] = AFI_stx_run_counter
+        elif rec_id.startswith("kp_afib1_v1h1_4mm_PA"):
+            AFI_ptx_run_counter += 1
+            recording.custom["AFI_ptx_run_counter"] = AFI_ptx_run_counter
         elif rec_id.startswith("t1_mp2rage_sag"):
             MP2RAGE_run_counter += 1
             recording.custom["MP2RAGE_run_counter"] = MP2RAGE_run_counter
@@ -591,7 +599,7 @@ def RecordingEP(recording: object) -> int:
         #         recording.custom["alTR_sorted"].index(TR) + 1
 
         ### AFIB1 repetition times
-        if rec_id.startswith("kp_afib1_v1g"):       ## for dcm2niix
+        if rec_id.startswith("kp_afib1_v1"):       ## for dcm2niix
             tr_index = recording.getAttribute("EchoNumber")
 
             recording.custom["tr_index"] = tr_index

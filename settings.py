@@ -7,7 +7,7 @@ run_dicom_conv=1
 # defining the path to the dicom data and the path to the nifti data
 # bash cannot handle lists of strings, thus we need to define each path separately
 # number_of_paths specifies the last directory to be processed (e.g. 4 means 4 path_to_dcm4 and path_to_nii4)
-number_of_paths=5
+number_of_paths=2
 
 # start the index at 1
 #### subject 37446.6e
@@ -58,17 +58,17 @@ number_of_paths=5
 # path_to_nii8="/data/pt_02262/data/TH_bids/source/40851.ff/20240403/nii"
 
 #### subject 41006.a1
-# path_to_dcm9="/data/pt_02262/data/TH_bids/source/41006.a1/20230606/dcm"
-# path_to_nii9="/data/pt_02262/data/TH_bids/source/41006.a1/20230606/nii"
+path_to_dcm1="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_ptx/dcm/"
+path_to_nii1="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_ptx/nii/"
 
-# path_to_dcm1="/data/pt_02262/data/TH_bids/source/41006.a1/20231012/dcm"
-# path_to_nii1="/data/pt_02262/data/TH_bids/source/41006.a1/20231012/nii"
+#path_to_dcm1="/data/pt_02262/data/TH_bids/source/41006.a1/20231012/dcm"
+#path_to_nii1="/data/pt_02262/data/TH_bids/source/41006.a1/20231012/nii"
 
-# path_to_dcm10="/data/pt_02262/data/TH_bids/source/41006.a1/20231121/dcm"
-# path_to_nii10="/data/pt_02262/data/TH_bids/source/41006.a1/20231121/nii"
+#path_to_dcm10="/data/pt_02262/data/TH_bids/source/41006.a1/20231121/dcm"
+#path_to_nii10="/data/pt_02262/data/TH_bids/source/41006.a1/20231121/nii"
 
-# path_to_dcm11="/data/pt_02262/data/TH_bids/source/41006.a1/20231123/dcm"
-# path_to_nii11="/data/pt_02262/data/TH_bids/source/41006.a1/20231123/nii"
+path_to_dcm2="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_stx/dcm/"
+path_to_nii2="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_stx/nii/"
 
 #### subject 41486.2c
 # path_to_dcm12="/data/pt_02262/data/TH_bids/source/41486.2c/20230928/dcm"
@@ -82,20 +82,20 @@ number_of_paths=5
 
 #### subject 5perlaki
 
-path_to_dcm1="/data/pt_02262/data/TH_bids/source/5perlaki/20231012/dcm"
-path_to_nii1="/data/pt_02262/data/TH_bids/source/5perlaki/20231012/nii"
+#path_to_dcm1="/data/pt_02262/data/TH_bids/source/5perlaki/20231012/dcm"
+#path_to_nii1="/data/pt_02262/data/TH_bids/source/5perlaki/20231012/nii"
 
-path_to_dcm2="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_1/dcm"
-path_to_nii2="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_1/nii"
+#path_to_dcm2="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_1/dcm"
+#path_to_nii2="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_1/nii"
 
-path_to_dcm3="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_2/dcm"
-path_to_nii3="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_2/nii"
+#path_to_dcm3="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_2/dcm"
+#path_to_nii3="/data/pt_02262/data/TH_bids/source/5perlaki/20241126_2/nii"
 
-path_to_dcm4="/data/pt_02262/data/TH_bids/source/5perlaki/20230303/dcm"
-path_to_nii4="/data/pt_02262/data/TH_bids/source/5perlaki/20230303/nii"
+#path_to_dcm4="/data/pt_02262/data/TH_bids/source/5perlaki/20230303/dcm"
+#path_to_nii4="/data/pt_02262/data/TH_bids/source/5perlaki/20230303/nii"
 
-path_to_dcm5="/data/pt_02262/data/TH_bids/source/5perlaki/20230508/dcm"
-path_to_nii5="/data/pt_02262/data/TH_bids/source/5perlaki/20230508/nii"
+#path_to_dcm5="/data/pt_02262/data/TH_bids/source/5perlaki/20230508/dcm"
+#path_to_nii5="/data/pt_02262/data/TH_bids/source/5perlaki/20230508/nii"
 
 # defining data to be converted using dcm2niix instead of hMRI Dicom Convert (recommendation: diffusion data)
 hMRI_dcmConv_excl='noddi' # case invariant comparison

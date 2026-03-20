@@ -291,18 +291,54 @@ def SequenceEP(recording: object) -> int:
 
 
     ### adapted from Nikita Beliy's plugin
+        ### adapted from Nikita Beliy's plugin
     if recording.Module() == "MRI":
 
         ### AFIB1 repetition times
         if rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
                 rec_id.startswith("kp_afib1_v1g_4mm_PA") or \
-                rec_id.startswith("kp_afib1_v1g"):
-            # Getting repetition times
-            alTR = "CSASeriesHeaderInfo/MrPhoenixProtocol/alTR"
-            alTR = recording.getAttribute(alTR)
-            recording.custom["alTR"] = alTR
-            recording.custom["alTR_sorted"] = sorted(alTR)
-        
+                rec_id.startswith("kp_afib1_v1g") or \
+                rec_id.startswith("kp_afib1_v1h1_4mm_PA"):
+
+            # Try Siemens CSA TR list first
+            alTR_key = "CSASeriesHeaderInfo/MrPhoenixProtocol/alTR"
+            alTR = recording.getAttribute(alTR_key)
+
+            # Fallback for dcm2niix jsonNIFTI files where alTR is absent
+            if alTR is None:
+                echo_num = recording.getAttribute("EchoNumber")
+                rep_time = recording.getAttribute("RepetitionTime")
+
+                recording.custom["alTR"] = None
+                recording.custom["alTR_sorted"] = None
+
+                if echo_num is not None:
+                    recording.custom["tr_index"] = int(echo_num)
+                else:
+                    recording.custom["tr_index"] = None
+
+                recording.custom["RepetitionTime"] = rep_time
+
+            else:
+                # make sure alTR is iterable
+                if not isinstance(alTR, (list, tuple)):
+                    alTR = [alTR]
+
+                recording.custom["alTR"] = alTR
+                recording.custom["alTR_sorted"] = sorted(alTR)
+
+                echo_num = recording.getAttribute("EchoNumber")
+                if echo_num is not None:
+                    tr_index = int(echo_num)
+                    recording.custom["tr_index"] = tr_index
+
+                    if 1 <= tr_index <= len(alTR):
+                        recording.custom["RepetitionTime"] = alTR[tr_index - 1]
+                    else:
+                        recording.custom["RepetitionTime"] = recording.getAttribute("RepetitionTime")
+                else:
+                    recording.custom["tr_index"] = None
+                    recording.custom["RepetitionTime"] = recording.getAttribute("RepetitionTime")
         ### AFIB1 SpoilingRFPhaseIncrement
         if rec_id.startswith("kp_afib1_"):
             adFree = "CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree"
@@ -330,7 +366,11 @@ def SequenceEP(recording: object) -> int:
                 mtc_amplitude = None
                 for pulse in rf_pulses:
                     if pulse.get('tName') == 'sMTC_RF' or pulse.get('tName') == 'SRFExcit':
+<<<<<<< HEAD
                         mtc_amplitude = pulse.get('flAmplitude')    
+=======
+                        mtc_amplitude = pulse.get('flAmplitude')
+>>>>>>> 5d6c256 (changed the way TRs are read)
                         break
                 if not mtc_amplitude:
                     mtc_amplitude = 0
@@ -572,13 +612,30 @@ def RecordingEP(recording: object) -> int:
                 rec_id.startswith("kp_afib1_v1g"):
             index = recording.getAttribute("EchoNumbers")
 
-            TR = recording.custom["alTR"][index - 1]
-            # Need to be sure about units!
-            recording.custom["RepetitionTime"] = round(TR * 1e-6, 10)
+            tr_index = recording.custom.get("tr_index", None)
+            alTR_sorted = recording.custom.get("alTR_sorted", None)
+            rep_time = recording.custom.get("RepetitionTime", None)
 
-            recording.custom["index"] = index
-            recording.custom["tr_index"] = \
-                recording.custom["alTR_sorted"].index(TR) + 1
+            # Fallback for dcm2niix AFI files without CSA alTR
+            if tr_index is None:
+                echo_num = recording.getAttribute("EchoNumber")
+                if echo_num is not None:
+                    tr_index = int(echo_num)
+                    recording.custom["tr_index"] = tr_index
+
+            if alTR_sorted is not None and tr_index is not None:
+                recording.custom["RepetitionTime"] = alTR_sorted[tr_index - 1]
+            else:
+                # keep existing fallback RepetitionTime if already set
+                if rep_time is None:
+                    rep_time = recording.getAttribute("RepetitionTime")
+                    recording.custom["RepetitionTime"] = rep_time
+                    # Need to be sure about units!
+                    recording.custom["RepetitionTime"] = round(TR * 1e-6, 10)
+
+                    recording.custom["index"] = index
+                    recording.custom["tr_index"] = \
+                        recording.custom["alTR_sorted"].index(TR) + 1
 
 
         ### Partial Fourier logic 

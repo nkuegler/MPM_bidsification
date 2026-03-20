@@ -302,7 +302,7 @@ def SequenceEP(recording: object) -> int:
     ### adapted from Nikita Beliy's plugin
     if recording.Module() == "MRI":
 
-        # ### AFIB1 repetition times
+         ### AFIB1 repetition times
         # if rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
         #         rec_id.startswith("kp_afib1_v1g_4mm_PA") or \
         #         rec_id.startswith("kp_afib1_v1g"):
@@ -406,7 +406,7 @@ def SequenceEP(recording: object) -> int:
             if "P" in image_type:
                 MTw_ph_run_counter += 1
                 recording.custom["MTw_run_counter"] = MTw_ph_run_counter
-        elif rec_id.startswith("kp_afib1_v1g_4mm_PA") or rec_id.startswith("kp_afib1_v1f_4mm_PA"):
+        elif rec_id.startswith("kp_afib1_v1g_4mm_PA") or rec_id.startswith("kp_afib1_v1f_4mm_PA") or rec_id.startswith("kp_afib1_v1h1_4mm_PA"):
             AFI_stx_run_counter += 1
             recording.custom["AFI_stx_run_counter"] = AFI_stx_run_counter
         elif rec_id.startswith("kp_afib1_v1h1_4mm_PA"):
@@ -599,14 +599,28 @@ def RecordingEP(recording: object) -> int:
         #         recording.custom["alTR_sorted"].index(TR) + 1
 
         ### AFIB1 repetition times
+<<<<<<< HEAD
         if rec_id.startswith("kp_afib1_v1"):       ## for dcm2niix
+=======
+        if rec_id.startswith(("kp_afib1_v1f", "kp_afib1_v1g", "kp_afib1_v1h1")):
+            
+
+>>>>>>> 5d6c256 (changed the way TRs are read)
             tr_index = recording.getAttribute("EchoNumber")
 
+            if tr_index not in [1, 2]:
+                raise ValueError(
+                    f"Unexpected EchoNumber={tr_index} for AFI file "
+                    f"{recording.currentFile(False)} (rec_id={rec_id})"
+                )
+
+            tr_list = [0.025, 0.125]  # in s
+            assigned_tr = tr_list[tr_index - 1]
+
             recording.custom["tr_index"] = tr_index
+            recording.setAttribute(attribute="RepetitionTime", value=tr_list[tr_index - 1])
 
-            tr_list = [0.025,0.125] # in s
 
-            recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
 
 
         if not bidsmap_step:

@@ -32,7 +32,7 @@ tmp_dir="tmp"
 if [[ $run_dicom_conv = "1" ]]; then
     echo ">>>> Running Dicom to Nifti Conversion"
     echo ">>>> using the variables defined in settings.py"
-
+    echo "Dicom number":$last_dcm_path_name ". "
     if [[ -z ${!last_dcm_path_name} ]] || [[ -z ${!last_nii_path_name} ]]; then         ## TODO: loop over all integers until number_of_paths and check if dcm and nii are specified.
         echo "Error: There must be as many path_to_dcm as path_to_nii specified in the settings file." #>&2     ## best to include in loop further down
         exit 1

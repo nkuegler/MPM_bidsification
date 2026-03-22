@@ -1,5 +1,9 @@
 # Documentation of the DICOM-to-NIfTI inversion step
 
+> [!WARNING]  
+> The DICOM-import scripts seem to not be working reliably and must be replaced by a more robust solution. 
+> For now, the best workaround is to either use the SPM GUI (Batch Editor -> SPM -> Tools -> hMRI Tools -> DICOM Import) or to convert the DICOM data using dcm2niix.
+
 This page describes the conversion of the scanner-reconstructed DICOM data to the NIfTI format. 
 
 The scripts that are described on this page are part of the **MPM_bidsification** repository ([Github](https://github.com/IronSleep/MPM_bidsification), [Gitlab](https://gitlab.gwdg.de/cbs-neurophy/bidsification_mpm)). Feel free to clone or fork the repository. If you encounter any problems, [send me an e-mail](mailto:kuegler@cbs.mpg.de?subject=Problems%20with%20MPM_bidsification) or a message on the Minerva Messenger (user: kuegler). <br>
@@ -120,6 +124,7 @@ To convert all DICOM data using **dcm2niix** instead of the SPM DICOM Import, yo
 + `settings.py` – specify paths and parameters for DICOM-to-NIfTI conversion using `main_dicom_conv_batchautom.sh`
 
 ## ToDos
++ Replace the current DICOM Import implementation by a more robust solution. (possibly just the standard import code extracted from the Batch editor)
 + This implementation is preliminary but it works and it is not needed a lot. However, the plan is to recreate the main script in python and to refine the settings/config file to be more self explanatory.
 + Paths in `call_dicom_conversion.m` should be adjusted in the config file, not in the script
 + implement a toggle to either use DICOM Import/dcm2niix OR just dcm2niix

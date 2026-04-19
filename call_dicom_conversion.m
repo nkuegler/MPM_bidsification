@@ -1,4 +1,4 @@
-function call_dicom_conversion(input_dir, output_dir, excl_str, check_results)
+function call_dicom_conversion(input_dir, output_dir, excl_str)
     %% function calling Ilona Lipps function to convert DICOMs to Niftis 
     %% using the hMRI toolbox DICOM import
 
@@ -24,12 +24,10 @@ function call_dicom_conversion(input_dir, output_dir, excl_str, check_results)
 
     disp("Retrieving DICOMs from " + input_dir)
 
-    if check_results
-        convert_dicoms_to_nifti(input_dir, output_dir, 0, true, excl_str)
-    else
-        %%% speeded up version due to no checks
-        convert_dicoms_to_nifti_no_check(input_dir, output_dir, true, excl_str)
-    end
+
+    % Scan all matching DICOM subfolders, collect every file ending in .dcm, .ima, or .IMA into one combined list, and run a single SPM/hMRI toolbox DICOM-to-NIfTI conversion batch for all of them at once.
+    % Safety checks before conversion: optionally exclude folders by name pattern, abort immediately if the output directory is not empty (or if no matching DICOM files are found).
+    convert_dicoms_to_nifti_simple(input_dir, output_dir, true, excl_str)
 
     exit
 

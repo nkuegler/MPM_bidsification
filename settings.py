@@ -2,7 +2,6 @@
 
 
 ############### Conversion from Dicoms to Nifti using hMRI Dicom Import and dcm2niix ###############
-run_dicom_conv=1
 
 # defining the path to the dicom data and the path to the nifti data
 # bash cannot handle lists of strings, thus we need to define each path separately

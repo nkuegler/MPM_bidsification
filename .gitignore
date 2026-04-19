@@ -8,3 +8,7 @@ main_dicom_conv_batchautom.py
 .ipynb_checkpoints/
 supplementary/bidsmaps/backup_bidsmap_loraks_AFIB1.yaml
 compare_resources.sh
+spm_dicom_import/convert_dicoms_to_nifti.m
+spm_dicom_import/convert_dicoms_to_nifti_no_check.m
+spm_dicom_import/convert_dir_output_to_cell_structure.m
+spm_dicom_import/check_if_all_nifti_files_have_same_dimensions.m

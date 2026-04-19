@@ -1,9 +1,5 @@
 # Documentation of the DICOM-to-NIfTI inversion step
 
-> [!WARNING]  
-> The DICOM-import scripts seem to not be working reliably and must be replaced by a more robust solution. 
-> For now, the best workaround is to either use the SPM GUI (Batch Editor -> SPM -> Tools -> hMRI Tools -> DICOM Import) or to convert the DICOM data using dcm2niix.
-
 This page describes the conversion of the scanner-reconstructed DICOM data to the NIfTI format. 
 
 The scripts that are described on this page are part of the **MPM_bidsification** repository ([Github](https://github.com/IronSleep/MPM_bidsification), [Gitlab](https://gitlab.gwdg.de/cbs-neurophy/bidsification_mpm)). Feel free to clone or fork the repository. If you encounter any problems, [send me an e-mail](mailto:kuegler@cbs.mpg.de?subject=Problems%20with%20MPM_bidsification) or a message on the Minerva Messenger (user: kuegler). <br>
@@ -40,9 +36,6 @@ Conversion is also skipped for DICOM data of sequences that have the series numb
     + You can either clone the [Github repository](https://github.com/rordenlab/dcm2niix) or download the [MRIcroGL viewer](https://www.nitrc.org/projects/mricrogl/) which includes dcm2niix as graphical interface.
     + Other install options are by using conda/mamba, pip, apt-get, or brew (see the instructions in the Github repository).
     + You can find more information in the [documentation of dcm2niix](https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage#General_Usage), which includes details on *bvec* & *bval* file creation in the DTI section.
-+ ***(postmortembrain-mpm)***
-    + The main DICOM import functions were taken and adjusted from Ilona Lipp's [postmortem-brain Github repository](https://github.com/IlonaLipp/postmortembrain-mpm).
-    + You **don't** need to clone this repository as the required MATLAB functions were adjusted and included in the **MPM_Bidsification** repository (in the `spm_dicom_import/` directory).
 + ***(Bidsme for Bidsification)***
     + More on that in the [Bidsification step](doc_bidsification.md). You **don't** need to manually install *Bidsme*. The **MPM_bidsification** repository provides an environment YAML file (`supplementary/bidsme_env.yml`) that you can use to create a proper conda environment including *Bidsme* and all its dependencies. How to create the environment from the YAML file is described in the steps below.
 
@@ -100,10 +93,6 @@ The conversion is performed by running the shell script `main_dicom_conv_batchau
     ./main_dicom_conv_batchautom.sh
     ```
 
-> **Hint:**<br>
-Ilona Lipp's DICOM import script performs several checks. Sometimes it gets stuck at a specific point and repeats the import of the failing directory indefinitely. If this happens, you can try the version of the function that skips all the checks by setting the `check_results` parameter in the `call_dicom_conversion` function call to `false`. (This is not thoroughly tested and I would recommend to keep this parameter set to `true`.)
-
-
 #### Full dcm2niix conversion (alternative)
 To convert all DICOM data using **dcm2niix** instead of the SPM DICOM Import, you can use the script `main_dcm2niix_conversion.sh` similar as described above. The script excludes files matching a certain string (specified in `settings.py`) from the SPM DICOM Import and converts them using dcm2niix. This was originally implemented to convert diffusion MRI data, as the SPM DICOM Import does not create the necessary _.bvec_ and _.bval_ files for diffusion data sets. However, if you want to convert **all** DICOM data using dcm2niix, you can specify a string that is present in **all** file names (e.g., "_"). <br>
 
@@ -112,9 +101,8 @@ To convert all DICOM data using **dcm2niix** instead of the SPM DICOM Import, yo
 
 ## File description
 
-+ `spm_dicom_import/` – scripts adapted from the [postmortembrain-mpm](https://github.com/IlonaLipp/postmortembrain-mpm) repository (Author: Ilona Lipp)
-    + `convert_dicoms_to_nifti.m` – main function called for DICOM-to-NIfTI conversion (using SPM DICOM Import)
-    + `convert_dicoms_to_nifti_no_check.m` – adjusted function of the one above that skips checks during the process (use with care: quicker but hard to detect if files were skipped)
++ `spm_dicom_import/` – scripts to perform the DICOM-to-NIfTI conversion using the SPM DICOM Import
+    + `convert_dicoms_to_nifti_simple.m` – main function called for DICOM-to-NIfTI conversion (using SPM DICOM Import)
     + `check_if_all_nifti_files_have_same_dimensions.m` – helper function
     + `convert_dir_output_to_cell_structure.m` – helper function
 + `call_dicom_conversion.m` – script that sets the paths in the MATLAB instance and calls the DICOM Import script
@@ -124,8 +112,8 @@ To convert all DICOM data using **dcm2niix** instead of the SPM DICOM Import, yo
 + `settings.py` – specify paths and parameters for DICOM-to-NIfTI conversion using `main_dicom_conv_batchautom.sh`
 
 ## ToDos
-+ Replace the current DICOM Import implementation by a more robust solution. (possibly just the standard import code extracted from the Batch editor)
 + This implementation is preliminary but it works and it is not needed a lot. However, the plan is to recreate the main script in python and to refine the settings/config file to be more self explanatory.
 + Paths in `call_dicom_conversion.m` should be adjusted in the config file, not in the script
 + implement a toggle to either use DICOM Import/dcm2niix OR just dcm2niix
 + directory structure needs to be specified manually --> write a short script to automatically create the top-level directories (bids, source, temp, id_files)
++ DICOM-to-NIfTI conversion may fail if DICOM files are not properly organized. The easiest way to solve this is to run Enrico's `split.pl` script to organize the DICOM files into subdirectories according to their SeriesNumber, SeriesDescription, and PatientName.

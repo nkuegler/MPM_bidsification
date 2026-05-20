@@ -53,7 +53,8 @@ function convert_dicoms_to_nifti_simple(dicom_data_dir, nifti_data_dir, avoid_fo
     end
 
     if isempty(filename_structure)
-        error('No DICOM files with .dcm, .ima, or .IMA suffix found in: %s', dicom_data_dir);
+        fprintf('No DICOM files with .dcm, .ima, or .IMA suffix found in: %s\n', dicom_data_dir);
+        return;
     end
 
     %%% define and run one spm job for all discovered files

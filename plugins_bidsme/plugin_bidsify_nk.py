@@ -369,15 +369,21 @@ def SequenceEP(recording: object) -> int:
 
 
         if "ND" in image_type:
-            recording.custom["acq_suffix"] = "-ND" # only used for Terra.X
-            if sDistortionCorrFilter == 1 or np.isnan(sDistortionCorrFilter):
+            if "MPRAGE_ADNI".casefold() in rec_id.casefold():
+                ### additional check for MPRAGE_ADNI sequence as this deviates from the usual convention, but only in the ND version
+                recording.custom["acq_suffix"] = "-ND" # only used for Terra.X
                 recording.custom["NonlinearGradientCorrection"] = False
                 recording.custom["NonlinearGradientCorrectionType"] = "none"
             else:
-                logger.warning("{}: ImageType 'ND' and sDistortionCorrFilter value '{}' do not match"
-                               .format(recording.recIdentity(), sDistortionCorrFilter))
-                recording.custom["NonlinearGradientCorrection"] = "n/a"
-                recording.custom["NonlinearGradientCorrectionType"] = "n/a"
+                recording.custom["acq_suffix"] = "-ND" # only used for Terra.X
+                if sDistortionCorrFilter == 1 or np.isnan(sDistortionCorrFilter):
+                    recording.custom["NonlinearGradientCorrection"] = False
+                    recording.custom["NonlinearGradientCorrectionType"] = "none"
+                else:
+                    logger.warning("{}: ImageType 'ND' and sDistortionCorrFilter value '{}' do not match"
+                                .format(recording.recIdentity(), sDistortionCorrFilter))
+                    recording.custom["NonlinearGradientCorrection"] = "n/a"
+                    recording.custom["NonlinearGradientCorrectionType"] = "n/a"
         else:
             recording.custom["acq_suffix"] = "" # only used for Terra.X
             # check for 3D first as in 3D correction both "2D" and "3D" may be found in image_type

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import bidsme
 #%%
-DATASET_PATH = Path("/data/pt_02262/data/temp/krohn_conv_v2/")
+DATASET_PATH = Path("/data/pt_03187/data/in_vivo/")
 # DATASET_PATH = Path("/data/pt_02262/data/TH_bids")
 
 SOURCE_PATH = DATASET_PATH / "source"
@@ -54,7 +54,7 @@ bidsme.prepare(str(SOURCE_PATH), str(PREPARED_PATH),
                plugin_file = str(WORKING_DIR / "plugins_bidsme" / "TerraX_data" / "plugin_prepare_terrax_dcm2niix_nk.py"),
                part_template = str(WORKING_DIR / "supplementary" / "table_templates" / "participants_nk.json"),
                plugin_opt = {"sessions_tsv_template": str(WORKING_DIR / "supplementary" / "table_templates" / "sessions_nk.json")}, 
-               # sub_list=["sub-004"] # only run on specified subjects (must be specified in BIDS notation)
+               sub_list=["sub-007"] # only run on specified subjects (must be specified in BIDS notation)
                )
 bidsme.tools.info.reporterrors(logger)
 bidsme.tools.info.reseterrors(logger)

@@ -7,7 +7,7 @@ run_dicom_conv=1
 # defining the path to the dicom data and the path to the nifti data
 # bash cannot handle lists of strings, thus we need to define each path separately
 # number_of_paths specifies the last directory to be processed (e.g. 4 means 4 path_to_dcm4 and path_to_nii4)
-number_of_paths=2
+number_of_paths=1
 
 # start the index at 1
 #### subject 37446.6e
@@ -58,8 +58,8 @@ number_of_paths=2
 # path_to_nii8="/data/pt_02262/data/TH_bids/source/40851.ff/20240403/nii"
 
 #### subject 41006.a1
-path_to_dcm1="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_ptx/dcm/"
-path_to_nii1="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_ptx/nii/"
+path_to_dcm1="/data/u_krohn_software/links_to_relevant_dirs/histopark/in_vivo/source/36881.c9/20260417/dcm/"
+path_to_nii1="/data/u_krohn_software/links_to_relevant_dirs/histopark/in_vivo/source/36881.c9/20260417/nii/"
 
 #path_to_dcm1="/data/pt_02262/data/TH_bids/source/41006.a1/20231012/dcm"
 #path_to_nii1="/data/pt_02262/data/TH_bids/source/41006.a1/20231012/nii"
@@ -67,8 +67,6 @@ path_to_nii1="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_ptx/n
 #path_to_dcm10="/data/pt_02262/data/TH_bids/source/41006.a1/20231121/dcm"
 #path_to_nii10="/data/pt_02262/data/TH_bids/source/41006.a1/20231121/nii"
 
-path_to_dcm2="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_stx/dcm/"
-path_to_nii2="/data/pt_02262/data/temp/krohn_conv_v2/source/sub_1/20260312_stx/nii/"
 
 #### subject 41486.2c
 # path_to_dcm12="/data/pt_02262/data/TH_bids/source/41486.2c/20230928/dcm"

@@ -1,0 +1,204 @@
+[34mmain(80)[0m - [1;30mINFO[0m 
+[34mmain(81)[0m - [1;30mINFO[0m -------------- START bidsme ----------------
+[34mmain(82)[0m - [1;30mINFO[0m Sat May 23 10:57:43 2026
+[34mmain(83)[0m - [1;30mINFO[0m version: 1.9.5
+[34mbidsschematools(241)[0m - [1;30mINFO[0m No schema path specified, defaulting to the bundled schema, `/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsschematools/data/schema.json`.
+[34mbidsme.schema.BIDSschema(674)[0m - [1;30mINFO[0m Loaded BIDS version 1.11.1
+[34mbidsme.schema.BIDSschema(676)[0m - [1;30mINFO[0m Schema version 1.2.1
+[34mbidsme.bidsify(188)[0m - [1;30mINFO[0m -------------- Prepearing data -------------
+[34mbidsme.bidsify(189)[0m - [1;30mINFO[0m Source directory: /data/pt_03187/data/in_vivo/temp
+[34mbidsme.bidsify(190)[0m - [1;30mINFO[0m Destination directory: /data/pt_03187/data/in_vivo/bids
+[34mbidsme.bidsify(233)[0m - [1;30mINFO[0m loading bidsmap /data/pt_03187/data/in_vivo/bids/code/bidsme/bidsmap.yaml
+[34mbidsme.plugins.plugins(79)[0m - [1;30mINFO[0m Loading module plugin_bidsify_terrax_dcm2niix_nk from /data/u_krohn_software/git/bidsification_mpm/plugins_bidsme/TerraX_data/plugin_bidsify_terrax_dcm2niix_nk.py
+options passed to plugin:
+- bidsmap_step: False, <class 'bool'>
+[34mbidsme.bidsMeta.BidsTable(134)[0m - [1;30mINFO[0m Loaded participants.tsv table with 15 entries
+[34mbidsme.bidsMeta.BidsTable(134)[0m - [1;30mINFO[0m Loaded participants.tsv table with 15 entries
+[34mbidsme.bidsify(298)[0m - [1;30mERROR[0m [31msub-006: Not found in /data/pt_03187/data/in_vivo/temp[0m
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-007'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-008'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-009'
+[34mbidsme.bidsify(298)[0m - [1;30mERROR[0m [31msub-010: Not found in /data/pt_03187/data/in_vivo/temp[0m
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-011'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-012'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-013'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-014'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-015'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-016'
+[34mbidsme.bidsify(332)[0m - [1;30mINFO[0m Skipping subject 'sub-017'
+[34mbidsme.bidsify(298)[0m - [1;30mERROR[0m [31msub-018: Not found in /data/pt_03187/data/in_vivo/temp[0m
+[34mbidsme.bidsify(298)[0m - [1;30mERROR[0m [31msub-019: Not found in /data/pt_03187/data/in_vivo/temp[0m
+[34mbidsme.bidsify(344)[0m - [1;30mINFO[0m sub-020 (15/15): Scanning folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 001-localizer/0 (2 files)
+[34mbidsme.bidsify(97)[0m - [1;30mINFO[0m 001-localizer/0: ignored modality
+[34mbidsme.bidsify(97)[0m - [1;30mINFO[0m 001-localizer/1: ignored modality
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 002-t1w_kp_mtflash3d_v1t3_0p6/0 (12 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-T1w_echo-01_flip-2_mt-off_part-mag_MPM.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-T1w_echo-01_flip-2_mt-off_part-mag_MPM.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/002-t1w_kp_mtflash3d_v1t3_0p6 in file s20260507150628-1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 003-t1w_kp_mtflash3d_v1t3_0p6/0 (12 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-T1w_echo-01_flip-2_mt-off_part-phase_MPM.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-T1w_echo-01_flip-2_mt-off_part-phase_MPM.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/003-t1w_kp_mtflash3d_v1t3_0p6 in file s20260507150628-1_ph.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 004-rfsens_kp_mtflash3d_v1t3_8p0/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m004-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 004-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/004-rfsens_kp_mtflash3d_v1t3_8p0 in file rfsens_kp_mtflash3d_v1t3_8p0_0004_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 005-rfsens_kp_mtflash3d_v1t3_8p0/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m005-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 005-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/005-rfsens_kp_mtflash3d_v1t3_8p0 in file rfsens_kp_mtflash3d_v1t3_8p0_0005_1_ph.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 006-pdw_kp_mtflash3d_v1t3_0p6/0 (12 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-PDw_echo-01_flip-1_mt-off_part-mag_MPM.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-PDw_echo-01_flip-1_mt-off_part-mag_MPM.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/006-pdw_kp_mtflash3d_v1t3_0p6 in file pdw_kp_mtflash3d_v1t3_0p6_0006_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 007-pdw_kp_mtflash3d_v1t3_0p6/0 (12 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-PDw_echo-01_flip-1_mt-off_part-phase_MPM.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-PDw_echo-01_flip-1_mt-off_part-phase_MPM.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/007-pdw_kp_mtflash3d_v1t3_0p6 in file pdw_kp_mtflash3d_v1t3_0p6_0007_1_ph.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 008-rfsens_kp_mtflash3d_v1t3_8p0/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m008-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 008-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/008-rfsens_kp_mtflash3d_v1t3_8p0 in file rfsens_kp_mtflash3d_v1t3_8p0_0008_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 009-rfsens_kp_mtflash3d_v1t3_8p0/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m009-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 009-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/009-rfsens_kp_mtflash3d_v1t3_8p0 in file rfsens_kp_mtflash3d_v1t3_8p0_0009_1_ph.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 010-mtw_kp_mtflash3d_v1t3_0p6/0 (8 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m010-mtw_kp_mtflash3d_v1t3_0p6/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 010-mtw_kp_mtflash3d_v1t3_0p6/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/010-mtw_kp_mtflash3d_v1t3_0p6 in file mtw_kp_mtflash3d_v1t3_0p6_0010_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 011-mtw_kp_mtflash3d_v1t3_0p6/0 (8 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m011-mtw_kp_mtflash3d_v1t3_0p6/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 011-mtw_kp_mtflash3d_v1t3_0p6/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/011-mtw_kp_mtflash3d_v1t3_0p6 in file mtw_kp_mtflash3d_v1t3_0p6_0011_1_ph.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 012-rfsens_kp_mtflash3d_v1t3_8p0/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m012-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 012-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/012-rfsens_kp_mtflash3d_v1t3_8p0 in file rfsens_kp_mtflash3d_v1t3_8p0_0012_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 013-rfsens_kp_mtflash3d_v1t3_8p0/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m013-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 013-rfsens_kp_mtflash3d_v1t3_8p0/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/013-rfsens_kp_mtflash3d_v1t3_8p0 in file rfsens_kp_mtflash3d_v1t3_8p0_0013_1_ph.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 014-kp_afib1_v1h1_4mm_PA/0 (4 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/fmap/sub-020_ses-02_acq-tr1ptx_echo-1_TB1AFI.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/fmap/sub-020_ses-02_acq-tr1ptx_echo-1_TB1AFI.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/014-kp_afib1_v1h1_4mm_PA in file kp_afib1_v1h1_4mm_PA_0014_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 015-ernst_kp_mtflash3d_v1s_0p5_sag/0 (20 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-ernst_echo-01_part-mag_MEGRE.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-ernst_echo-01_part-mag_MEGRE.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/015-ernst_kp_mtflash3d_v1s_0p5_sag in file ernst_kp_mtflash3d_v1s_0p5_sag_0015_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 016-ernst_kp_mtflash3d_v1s_0p5_sag/0 (20 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-ernst_echo-10_part-phase_MEGRE.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-ernst_echo-10_part-phase_MEGRE.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/016-ernst_kp_mtflash3d_v1s_0p5_sag in file ernst_kp_mtflash3d_v1s_0p5_sag_0016_10_ph.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 017-semc_js_a_ND/0 (12 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-semc_echo-01_MESE.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-semc_echo-01_MESE.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/017-semc_js_a_ND in file s20260507150628-1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 018-semc_js_a/0 (12 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-semc_echo-01_MESE.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/anat/sub-020_ses-02_acq-semc_echo-01_MESE.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/018-semc_js_a in file s20260507150628-1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 019-kp_afib1_v1g_4mm_PA_trueform/0 (4 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m019-kp_afib1_v1g_4mm_PA_trueform/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 019-kp_afib1_v1g_4mm_PA_trueform/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/019-kp_afib1_v1g_4mm_PA_trueform in file kp_afib1_v1g_4mm_PA_trueform_0019_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 020-mni_tfl_MTboost_0p4_MT_OFF_ND/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m020-mni_tfl_MTboost_0p4_MT_OFF_ND/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 020-mni_tfl_MTboost_0p4_MT_OFF_ND/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/020-mni_tfl_MTboost_0p4_MT_OFF_ND in file mni_tfl_MTboost_0p4_MT_OFF_0020_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 021-mni_tfl_MTboost_0p4_MT_OFF/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m021-mni_tfl_MTboost_0p4_MT_OFF/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 021-mni_tfl_MTboost_0p4_MT_OFF/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/021-mni_tfl_MTboost_0p4_MT_OFF in file mni_tfl_MTboost_0p4_MT_OFF_0021_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 022-mni_tfl_MTboost_0p4_MT_ON_ND/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m022-mni_tfl_MTboost_0p4_MT_ON_ND/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 022-mni_tfl_MTboost_0p4_MT_ON_ND/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/022-mni_tfl_MTboost_0p4_MT_ON_ND in file mni_tfl_MTboost_0p4_MT_ON_0022_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 023-mni_tfl_MTboost_0p4_MT_ON/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m023-mni_tfl_MTboost_0p4_MT_ON/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 023-mni_tfl_MTboost_0p4_MT_ON/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/023-mni_tfl_MTboost_0p4_MT_ON in file mni_tfl_MTboost_0p4_MT_ON_0023_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 024-cmrr_noddi_1_4mm_p3_invertpa/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m024-cmrr_noddi_1_4mm_p3_invertpa/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 024-cmrr_noddi_1_4mm_p3_invertpa/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/024-cmrr_noddi_1_4mm_p3_invertpa in file cmrr_noddi_1.4mm_p3_invertpa_0024_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 026-cmrr_noddi_1_4mm_p3_mb2/0 (2 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/dwi/sub-020_ses-02_run-001_dwi.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/dwi/sub-020_ses-02_run-001_dwi.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/026-cmrr_noddi_1_4mm_p3_mb2 in file cmrr_noddi_1.4mm_p3_mb2_0026_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 028-cmrr_noddi_1_4mm_p3_mb2/0 (2 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/dwi/sub-020_ses-02_run-001_dwi.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/dwi/sub-020_ses-02_run-001_dwi.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/028-cmrr_noddi_1_4mm_p3_mb2 in file cmrr_noddi_1.4mm_p3_mb2_0028_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 030-cmrr_noddi_1_4mm_p3_noise/0 (2 files)
+[34mbidsme.bidsify(94)[0m - [1;30mERROR[0m [31m030-cmrr_noddi_1_4mm_p3_noise/0: No compatible run found[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(95) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:ValueError: 030-cmrr_noddi_1_4mm_p3_noise/0: No compatible run found[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/030-cmrr_noddi_1_4mm_p3_noise in file cmrr_noddi_1.4mm_p3_noise_0030_1.nii[0m
+[34mbidsme.bidsify(70)[0m - [1;30mINFO[0m Processing: sub 'sub-020', ses 'ses-02', 1026-cmrr_noddi_1_4mm_p3_mb2/0 (2 files)
+[34mbidsme.bidsify(116)[0m - [1;30mERROR[0m [31m/data/pt_03187/data/in_vivo/bids/sub-020/ses-02/dwi/sub-020_ses-02_run-033_dwi.json exists at destination[0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(398) in bidsify: [0m
+[34mbidsme.exceptions.exceptions(49)[0m - [1;30mERROR[0m [31m/data/u_krohn_software/miniforge/envs/bidsme_env/lib/python3.12/site-packages/bidsme/bidsify.py(117) in coin: [0m
+[34mbidsme.exceptions.exceptions(51)[0m - [1;30mERROR[0m [31m1:FileExistsError: /data/pt_03187/data/in_vivo/bids/sub-020/ses-02/dwi/sub-020_ses-02_run-033_dwi.json exists at destination[0m
+[34mbidsme.bidsify(401)[0m - [1;30mERROR[0m [31mError processing folder /data/pt_03187/data/in_vivo/temp/sub-020/ses-02/MRI/1026-cmrr_noddi_1_4mm_p3_mb2 in file cmrr_noddi_1.4mm_p3_mb2_1026_1.nii[0m
+No shim current inconsistencies present in sub-020 ses-02!
+[34mmain(187)[0m - [1;30mINFO[0m -------------- FINISHED! -------------------
+[34mmain(147)[0m - [1;30mINFO[0m counthangler:{'ERROR': 139}
+[34mmain(151)[0m - [1;30mINFO[0m loghandler:/data/pt_03187/data/in_vivo/bids/code/bidsme/bidsify/main.log
+[34mmain(151)[0m - [1;30mINFO[0m errorhandler:/data/pt_03187/data/in_vivo/bids/code/bidsme/bidsify/main.err
+[34mmain(189)[0m - [1;30mINFO[0m Took 8.549073371 seconds
+[34mmain(190)[0m - [1;30mINFO[0m --------------------------------------------
+[34mmain(192)[0m - [1;30mWARNING[0m [33mSeveral errors detected but exit code is 0[0m

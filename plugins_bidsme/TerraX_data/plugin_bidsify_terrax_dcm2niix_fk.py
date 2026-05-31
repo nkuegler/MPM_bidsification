@@ -302,7 +302,7 @@ def SequenceEP(recording: object) -> int:
     ### adapted from Nikita Beliy's plugin
     if recording.Module() == "MRI":
 
-        # ### AFIB1 repetition times
+         ### AFIB1 repetition times
         # if rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
         #         rec_id.startswith("kp_afib1_v1g_4mm_PA") or \
         #         rec_id.startswith("kp_afib1_v1g"):
@@ -599,14 +599,24 @@ def RecordingEP(recording: object) -> int:
         #         recording.custom["alTR_sorted"].index(TR) + 1
 
         ### AFIB1 repetition times
-        if rec_id.startswith("kp_afib1_v1"):       ## for dcm2niix
+        if rec_id.startswith(("kp_afib1_v1f", "kp_afib1_v1g", "kp_afib1_v1h1")):
+            
+
             tr_index = recording.getAttribute("EchoNumber")
+            if tr_index not in [1, 2]:
+                raise ValueError(
+                    f"Unexpected EchoNumber={tr_index} for AFI file "
+                    f"{recording.currentFile(False)} (rec_id={rec_id})"
+                )
+
+            tr_list = [0.025, 0.125]  # in s
+            assigned_tr = tr_list[tr_index - 1]
 
             recording.custom["tr_index"] = tr_index
+            recording.setAttribute(attribute="RepetitionTime", value=tr_list[tr_index - 1])
+            recording.custom["RepetitionTime"] = assigned_tr
+         #   recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
 
-            tr_list = [0.025,0.125] # in s
-
-            recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
 
 
         if not bidsmap_step:
@@ -784,7 +794,7 @@ def SubjectEndEP(scan: BidsSession) -> int:
             if re.match(subject_sessions_pattern, file_name):
                 prep_file = os.path.join(scan.in_path, file_name)
                 bids_file = os.path.join(f"{bids_dir}/{scan.subject}", file_name)
-                shutil.copyfile(prep_file, bids_file)
+                shutil.copy(prep_file, bids_file)
                 # print(f"Copying {prep_file} to {bids_file}")
 
 def FinaliseEP() -> int:

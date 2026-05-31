@@ -711,7 +711,7 @@ def SubjectEndEP(scan: BidsSession) -> int:
         
         # copy sessions.json
         output_filename_json = f"{prep_dir}/{scan.subject}/{scan.subject}_sessions.json"
-        shutil.copy(sessions_tsv_template, output_filename_json)
+        shutil.copyfile(sessions_tsv_template, output_filename_json)
 
     # reset the dictionary for the next subject
     subN_sessions_dict = {}

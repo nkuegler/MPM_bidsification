@@ -32,12 +32,12 @@ bidsme.prepare(str(SOURCE_PATH), str(PREPARED_PATH),
                data_dirs={"nii_loraks_recon":"MRI",
                           # "nii_loraks_recon/*":"MRI",
                           },
-               plugin_file = str(WORKING_DIR / "plugins_bidsme" / "plugin_prepare_auto_nk.py"),
+               plugin_file = str(WORKING_DIR / "plugins_bidsme" / "plugin_prepare_unified_patched_FIXED.py"),
                # plugin_file = str(WORKING_DIR / "plugins_bidsme" / "liege_data_IronSleep" / "plugin_prepare_loraks_liegeData_nk.py"),
                part_template = str(WORKING_DIR / "supplementary" / "table_templates" / "participants_nk.json"),
                plugin_opt = {"sessions_tsv_template": str(WORKING_DIR / "supplementary" / "table_templates" / "sessions_nk.json"), "include_smaps": False},
                # sub_skip_dir=True,
-               sub_list=["sub-004","sub-008","sub-019"]  # only run on specified subjects (must be specified in BIDS notation)
+               sub_list=["sub-025"]  # only run on specified subjects (must be specified in BIDS notation)
               )
 bidsme.tools.info.reporterrors(logger)
 bidsme.tools.info.reseterrors(logger)
@@ -47,7 +47,7 @@ PLUGIN_BIDS = WORKING_DIR / "plugins_bidsme" / "plugin_prepare_unified_patched_F
 
 bidsme.mapper(str(PREPARED_PATH), str(BIDSIFIED_PATH), plugin_file=str(PLUGIN_BIDS),
               plugin_opt={"bidsmap_step": True, "include_smaps": False},
-              sub_list=["sub-004","sub-008","sub-019"],
+              sub_list=["sub-025"],
               # sub_skip_tsv=True,
               )
 bidsme.tools.info.reporterrors(logger)
@@ -58,7 +58,7 @@ PLUGIN_FILE_BIDS = str(WORKING_DIR / "plugins_bidsme" / "plugin_bidsify_auto_nk_
 # PLUGIN_FILE_BIDS = WORKING_DIR / "plugins_bidsme" / "liege_data_IronSleep" / "plugin_bidsify_loraks_liegeData_nk.py"
 
 import subprocess
-subjets=["sub-004","sub-008","sub-019"]
+subjets=["sub-025"]
 subprocess.run([
     "bidsme", "bidsify",
     str(PREPARED_PATH),

@@ -48,12 +48,12 @@ bidsme.prepare(str(SOURCE_PATH), str(PREPARED_PATH),
                    #  "nii_dcm2niix/*":"MRI",
                },
                # plugin_file = str(WORKING_DIR / "plugins_bidsme" / "plugin_prepare_nk.py"),
-               plugin_file=str(WORKING_DIR / "plugins_bidsme" / "plugin_prepare_auto_nk.py"),
+               plugin_file=str(WORKING_DIR / "plugins_bidsme" / "plugin_prepare_nk.py"),
                # plugin_file = str(WORKING_DIR / "plugins_bidsme" / "TerraX_data" / "plugin_prepare_terrax_dcm2niix_nk.py"),
                part_template=str(WORKING_DIR / "supplementary" / "table_templates" / "participants_nk.json"),
                plugin_opt={"sessions_tsv_template": str(
                    WORKING_DIR / "supplementary" / "table_templates" / "sessions_nk.json")},
-               sub_list=["sub-004","sub-008","sub-019"] # only run on specified subjects (must be specified in BIDS notation)
+               sub_list=["sub-025"] # only run on specified subjects (must be specified in BIDS notation)
                )
 bidsme.tools.info.reporterrors(logger)
 bidsme.tools.info.reseterrors(logger)
@@ -64,17 +64,17 @@ PLUGIN_BIDS = WORKING_DIR/"plugins_bidsme/plugin_bidsify_auto_nk_rewritten_FIXED
 
 bidsme.mapper(str(PREPARED_PATH), str(BIDSIFIED_PATH), plugin_file=str(PLUGIN_BIDS),
               plugin_opt={"bidsmap_step": True},
-              sub_list=["sub-004","sub-008","sub-019"],
+              sub_list=["sub-025"],
               )
 bidsme.tools.info.reporterrors(logger)
 bidsme.tools.info.reseterrors(logger)
 
 MAP_FILE = str(BIDSIFIED_PATH / "code" / "bidsme" / "bidsmap.yaml")
 #PLUGIN_FILE_BIDS = str(WORKING_DIR / "plugins_bidsme" / "plugin_bidsify_nk.py")
-PLUGIN_FILE_BIDS = str(WORKING_DIR / "plugins_bidsme" / "plugin_bidsify_auto_nk.py")
+PLUGIN_FILE_BIDS = str(WORKING_DIR / "plugins_bidsme" / "plugin_bidsify_auto_nk_rewritten_FIXED.py")
 
 import subprocess
-subjects = ["sub-004","sub-008","sub-019"]
+subjects = ["sub-025"]
 
 subprocess.run([
     "bidsme", "bidsify",

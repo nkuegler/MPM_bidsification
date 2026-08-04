@@ -596,6 +596,61 @@ def _dataset_root_id_info_dir():
     return _dataset_root_from_bids_dir(bids_dir) / "id_info"
 
 
+def _clean_subject_id(value):
+    """Return a zero-padded numeric subject label without the sub- prefix."""
+    value = str(value).replace("sub-", "", 1)
+    if value.isdigit():
+        return f"{int(value):03d}"
+    return value
+
+
+def _canonical_session_csv_name(csv_name):
+    """
+    Canonicalise per-subject session mapping filenames.
+
+    The durable id_info convention is:
+        sub-004_sessions.csv
+
+    Older/intermediate files may be named:
+        004_sessions.csv
+
+    Those legacy names are still readable, but final writes are redirected to
+    the canonical prefixed name to avoid parallel/stale mapping files.
+    """
+    name = Path(str(csv_name)).name
+    match = re.match(r"^(?:sub-)?(\d+)_sessions\.csv$", name)
+    if match:
+        return f"sub-{int(match.group(1)):03d}_sessions.csv"
+    return name
+
+
+def _session_csv_candidates(clean_sub):
+    """
+    Return session-map candidates in priority order.
+
+    Prefer the canonical prefixed name, but keep the old non-prefixed name as a
+    read fallback for backwards compatibility with previously generated maps.
+    """
+    clean_sub = _clean_subject_id(clean_sub)
+    return [f"sub-{clean_sub}_sessions.csv", f"{clean_sub}_sessions.csv"]
+
+
+def _mapping_file_candidates(csv_name):
+    """Return possible mapping filenames for a requested mapping CSV."""
+    names = [Path(str(csv_name)).name]
+    canonical = _canonical_session_csv_name(csv_name)
+    if canonical not in names:
+        names.append(canonical)
+
+    match = re.match(r"^sub-(\d+)_sessions\.csv$", canonical)
+    if match:
+        legacy = f"{int(match.group(1)):03d}_sessions.csv"
+        if legacy not in names:
+            names.append(legacy)
+
+    return names
+
+
 
 def _read_temp_mapping(csv_name):
     """
@@ -607,13 +662,18 @@ def _read_temp_mapping(csv_name):
     2. canonical dataset map:
            <dataset_root>/id_info/<csv_name>
 
-    The fallback is important for reruns or mapper/bidsify calls where the
-    temporary map is missing but the canonical id_info table already exists.
+    For per-subject session maps, prefer the canonical prefixed name
+    (sub-004_sessions.csv) but also read legacy non-prefixed maps
+    (004_sessions.csv) as fallback.
     """
-    candidates = [
-        Path(temp_id_map_dir) / csv_name,
-        _dataset_root_id_info_dir() / csv_name,
-    ]
+    candidates = []
+    for name in _mapping_file_candidates(csv_name):
+        candidates.append(Path(temp_id_map_dir) / name)
+        candidates.append(_dataset_root_id_info_dir() / name)
+
+    # Deduplicate while preserving priority order.
+    seen = set()
+    candidates = [p for p in candidates if not (str(p) in seen or seen.add(str(p)))]
 
     for path in candidates:
         if path.exists():
@@ -699,7 +759,10 @@ def _copy_temp_id_maps_to_final():
         logger.warning(f"Temporary prepare mapping directory not found: {src_dir}")
         return
     for src_csv in sorted(src_dir.glob("*.csv")):
-        _merge_csv_files(src_csv, Path(final_id_map_dir) / src_csv.name)
+        dest_name = _canonical_session_csv_name(src_csv.name)
+        if dest_name != src_csv.name:
+            logger.info(f"Canonicalising session map name: {src_csv.name} -> {dest_name}")
+        _merge_csv_files(src_csv, Path(final_id_map_dir) / dest_name)
 
 
 def _default_session_columns():
@@ -1088,44 +1151,39 @@ def SessionEP(scan: BidsSession) -> int:
     global original_session_id, current_session_row, session_info_done
 
     # Session mapping filenames have existed in two conventions:
-    #   007_sessions.csv
-    #   sub-007_sessions.csv
-    # Try both.
-    clean_sub = str(scan.subject).replace("sub-", "")
+    #   sub-007_sessions.csv  [canonical]
+    #   007_sessions.csv      [legacy fallback]
+    # Always prefer/read/write the canonical prefixed form, but keep the legacy
+    # fallback to avoid breaking older temporary maps.
+    clean_sub = _clean_subject_id(scan.subject)
     current_ses = str(scan.session)
 
     if _is_bids_like_session(current_ses):
         # Already prepared/BIDS-like, e.g. ses-02 or 02.
         scan.session = _norm_session(current_ses)
-        original_session_id = _lookup_original_id(
-            f"{clean_sub}_sessions.csv",
-            original_col="sesID",
-            bids_col="bids_sesID",
-            bids_id=scan.session,
-        )
-        if original_session_id == "n/a":
+        original_session_id = "n/a"
+        for csv_name in _session_csv_candidates(clean_sub):
             original_session_id = _lookup_original_id(
-                f"sub-{clean_sub}_sessions.csv",
+                csv_name,
                 original_col="sesID",
                 bids_col="bids_sesID",
                 bids_id=scan.session,
             )
+            if original_session_id != "n/a":
+                break
         logger.info(f"Session already BIDS-like: {current_ses} -> {scan.session}; original={original_session_id}")
     else:
         # Raw/original session folder, e.g. 20260417. Force canonical BIDS session.
-        mapped = _lookup_bids_id(
-            f"{clean_sub}_sessions.csv",
-            original_col="sesID",
-            bids_col="bids_sesID",
-            original_id=current_ses,
-        )
-        if mapped == "n/a":
+        mapped = "n/a"
+        for csv_name in _session_csv_candidates(clean_sub):
             mapped = _lookup_bids_id(
-                f"sub-{clean_sub}_sessions.csv",
+                csv_name,
                 original_col="sesID",
                 bids_col="bids_sesID",
                 original_id=current_ses,
             )
+            if mapped != "n/a":
+                break
 
         if mapped != "n/a":
             original_session_id = current_ses
@@ -1177,6 +1235,8 @@ def SequenceEP(recording: object) -> int:
     recording.custom["IntendedFor"] = ""
     seq_index += 1
     rec_id = recording.recId()
+    if _is_missing(_get_attr(recording, "ProtocolName")):
+        recording.setAttribute("ProtocolName", rec_id)
     if 0 <= seq_index < len(seq_list):
         folder_rec_id = seq_list[seq_index]
         if folder_rec_id != rec_id:

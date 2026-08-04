@@ -236,6 +236,162 @@ class SubjectMissingError(exceptions.SubjectEPError):
     code = 1
 
 
+class MappingConsistencyError(exceptions.SubjectEPError):
+    code = 2
+
+
+def _strip_prefix(value, prefix):
+    value = str(value).strip()
+    return value[len(prefix):] if value.startswith(prefix) else value
+
+
+def _is_bids_like_subject(value):
+    value = _strip_prefix(value, "sub-")
+    return value.isdigit()
+
+
+def _is_bids_like_session(value):
+    value = _strip_prefix(value, "ses-")
+    return value.isdigit() and len(value) <= 2
+
+
+def canonical_subject_id(value):
+    """Return a zero-padded BIDS subject id without the sub- prefix."""
+    value = _strip_prefix(value, "sub-")
+    if value.isdigit():
+        return f"{int(value):03d}"
+    return value
+
+
+def canonical_session_id(value):
+    """Return a zero-padded BIDS session id without the ses- prefix."""
+    value = _strip_prefix(value, "ses-")
+    if value.isdigit() and len(value) <= 2:
+        return f"{int(value):02d}"
+    return value
+
+
+def canonical_session_csv_path(bids_subject_id):
+    """Final canonical session-map filename: sub-XXX_sessions.csv."""
+    sub = canonical_subject_id(bids_subject_id)
+    return Path(id_files_dir) / f"sub-{sub}_sessions.csv"
+
+
+def legacy_session_csv_path(bids_subject_id):
+    """Old legacy session-map filename: XXX_sessions.csv. Read fallback only."""
+    sub = canonical_subject_id(bids_subject_id)
+    return Path(id_files_dir) / f"{sub}_sessions.csv"
+
+
+def _empty_subject_map():
+    return pd.DataFrame({"subjID": [], "bids_subjID": []}, dtype=str)
+
+
+def _empty_session_map():
+    return pd.DataFrame({"sesID": [], "bids_sesID": []}, dtype=str)
+
+
+def _normalise_mapping_df(df, required_cols):
+    """Keep required columns, coerce to stripped strings, and remove blank rows."""
+    if df is None or df.empty:
+        return pd.DataFrame({col: [] for col in required_cols}, dtype=str)
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = ""
+    df = df[required_cols].copy()
+    for col in required_cols:
+        df[col] = df[col].astype(str).str.strip()
+        df.loc[df[col].isin(["nan", "None", "NaN"]), col] = ""
+    # Drop rows where the original id is blank. These rows cannot be trusted.
+    df = df[df[required_cols[0]] != ""].reset_index(drop=True)
+    return df
+
+
+def _read_subject_map(path):
+    path = Path(path)
+    if not path.exists():
+        return _empty_subject_map()
+    return _normalise_mapping_df(pd.read_csv(path, dtype=str), ["subjID", "bids_subjID"])
+
+
+def _read_session_map(canonical_path, legacy_path=None):
+    """Read canonical session map first; use legacy only if canonical is absent."""
+    canonical_path = Path(canonical_path)
+    if canonical_path.exists():
+        return _normalise_mapping_df(pd.read_csv(canonical_path, dtype=str), ["sesID", "bids_sesID"]), canonical_path
+    if legacy_path is not None and Path(legacy_path).exists():
+        logger.warning(f"Canonical session map missing; reading legacy map as fallback: {legacy_path}")
+        return _normalise_mapping_df(pd.read_csv(legacy_path, dtype=str), ["sesID", "bids_sesID"]), Path(legacy_path)
+    return _empty_session_map(), canonical_path
+
+
+def _write_csv_atomic(df, path):
+    """Write mappings atomically, reducing the chance of half-written CSVs."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    df.to_csv(tmp, index=False)
+    os.replace(tmp, path)
+
+
+def _validate_subject_map(df, context="subject_ids.csv"):
+    df = _normalise_mapping_df(df, ["subjID", "bids_subjID"])
+    df["bids_subjID"] = df["bids_subjID"].map(canonical_subject_id)
+    if df["subjID"].duplicated().any():
+        dup = df.loc[df["subjID"].duplicated(keep=False), "subjID"].tolist()
+        raise RuntimeError(f"Duplicate subjID entries in {context}: {dup}")
+    if df["bids_subjID"].duplicated().any():
+        dup = df.loc[df["bids_subjID"].duplicated(keep=False), "bids_subjID"].tolist()
+        raise RuntimeError(f"Duplicate bids_subjID entries in {context}: {dup}")
+    return df
+
+
+def _validate_session_map(df, context="sessions.csv"):
+    df = _normalise_mapping_df(df, ["sesID", "bids_sesID"])
+    df["bids_sesID"] = df["bids_sesID"].map(canonical_session_id)
+    if df["sesID"].duplicated().any():
+        dup = df.loc[df["sesID"].duplicated(keep=False), "sesID"].tolist()
+        raise RuntimeError(f"Duplicate sesID entries in {context}: {dup}")
+    if df["bids_sesID"].duplicated().any():
+        dup = df.loc[df["bids_sesID"].duplicated(keep=False), "bids_sesID"].tolist()
+        raise RuntimeError(f"Duplicate bids_sesID entries in {context}: {dup}")
+    return df
+
+
+def _next_unused_numeric_id(existing_values, width):
+    used = set()
+    for value in existing_values:
+        value = str(value).strip()
+        if value.isdigit():
+            used.add(int(value))
+    candidate = 1
+    while candidate in used:
+        candidate += 1
+    return f"{candidate:0{width}d}"
+
+
+def _ensure_protocol_name_from_rec_id(recording):
+    """For standard dcm2niix data, ensure ProtocolName exists for ProtocolName-based bidsmap rules.
+
+    This is intentionally conservative: it only fills ProtocolName when the field is absent/empty.
+    Existing metadata is never overwritten.
+    """
+    if recording.Module() != "MRI":
+        return
+    rec_id = recording.recId()
+    if not rec_id:
+        return
+    try:
+        protocol = recording.getAttribute("ProtocolName")
+    except Exception:
+        protocol = None
+    if not has_value(protocol):
+        try:
+            recording.setAttribute("ProtocolName", rec_id)
+        except Exception as exc:
+            logger.warning(f"Could not set ProtocolName from recId for {recording.recIdentity(False)}: {exc}")
+
+
 def InitEP(source: str, destination: str, dry: bool, **kwargs) -> int:
     global nifti_dir, prep_dir, dry_run, id_files_dir, base_dir
     global sessions_tsv_template, include_smaps, available_contrasts_loraks
@@ -276,63 +432,121 @@ def InitEP(source: str, destination: str, dry: bool, **kwargs) -> int:
 
 
 def SubjectEP(scan: BidsSession) -> int:
-    csv_sub_file = f"{id_files_dir}/subject_ids.csv"
+    """Map original source subject IDs to stable BIDS subject IDs.
 
-    if not os.path.isfile(csv_sub_file):
-        sub_id_df = pd.DataFrame({'subjID': [], 'bids_subjID': []}, dtype=str)
-    else:
-        sub_id_df = pd.read_csv(csv_sub_file, dtype={'subjID': str, 'bids_subjID': str})
+    Invariant:
+        if subjID already exists in subject_ids.csv, its bids_subjID is reused and never changed.
+        if a conflict/duplicate exists, fail loudly instead of silently reindexing.
+    """
+    global current_subjectID, subN_sessions_dict
 
-    global current_subjectID
-    current_subjectID = scan.subject
+    csv_sub_file = Path(id_files_dir) / "subject_ids.csv"
+    sub_id_df = _read_subject_map(csv_sub_file)
+    sub_id_df = _validate_subject_map(sub_id_df, str(csv_sub_file))
 
-    if scan.subject in sub_id_df['subjID'].values:
-        scan.subject = f"{int(sub_id_df.loc[sub_id_df['subjID'] == scan.subject, 'bids_subjID'].iloc[0]):03}"
+    current_subjectID = str(scan.subject).strip()
+
+    # Preferred path: exact original source ID is already known.
+    rows = sub_id_df[sub_id_df["subjID"] == current_subjectID]
+    if len(rows):
+        mapped = canonical_subject_id(rows.iloc[0]["bids_subjID"])
+        scan.subject = mapped
         print(f"Subject ID derived from '{csv_sub_file}'.")
     else:
-        print(f"Subject ID not present in '{csv_sub_file}'. Adding and indexing the subject.")
-        current_bids_subjID = '001' if sub_id_df.empty else int(np.max(sub_id_df['bids_subjID'].astype(int))) + 1
-        new_row = pd.DataFrame({'subjID': [scan.subject], 'bids_subjID': [f"{int(current_bids_subjID):03}"]})
-        sub_id_df = pd.concat([sub_id_df, new_row], ignore_index=True)
-        scan.subject = f"{int(new_row['bids_subjID'].iloc[0]):03}"
+        # Safety path for already BIDS-like input, e.g. re-running on prepared data.
+        # Do not create a new mapping if the BIDS ID already exists.
+        if _is_bids_like_subject(current_subjectID):
+            candidate = canonical_subject_id(current_subjectID)
+            rows = sub_id_df[sub_id_df["bids_subjID"].map(canonical_subject_id) == candidate]
+            if len(rows):
+                scan.subject = candidate
+                current_subjectID = str(rows.iloc[0]["subjID"])
+                print(f"Subject already BIDS-like and found in '{csv_sub_file}'.")
+            else:
+                # Rare case: no existing row but folder already looks BIDS-like.
+                # Preserve the BIDS label and record it once.
+                scan.subject = candidate
+                new_row = pd.DataFrame({"subjID": [current_subjectID], "bids_subjID": [candidate]})
+                sub_id_df = pd.concat([sub_id_df, new_row], ignore_index=True)
+                print(f"BIDS-like subject not present in '{csv_sub_file}'. Adding stable row.")
+        else:
+            new_id = _next_unused_numeric_id(sub_id_df["bids_subjID"], width=3)
+            new_row = pd.DataFrame({"subjID": [current_subjectID], "bids_subjID": [new_id]})
+            sub_id_df = pd.concat([sub_id_df, new_row], ignore_index=True)
+            scan.subject = new_id
+            print(f"Subject ID not present in '{csv_sub_file}'. Adding new stable mapping.")
+
+    sub_id_df = _validate_subject_map(sub_id_df, str(csv_sub_file))
+    if not dry_run:
+        _write_csv_atomic(sub_id_df, csv_sub_file)
 
     print(f"Current subject: {current_subjectID} -> {scan.subject}")
-    sub_id_df.to_csv(csv_sub_file, index=False)
     scan.sub_values["original_id"] = current_subjectID
 
     with open(sessions_tsv_template, 'r') as f:
         sessions_json = json.load(f)
 
-    global subN_sessions_dict
     subN_sessions_dict = {col: [] for col in list(sessions_json.keys())}
     return 0
 
 
 def SessionEP(scan: BidsSession) -> int:
-    csv_ses_file = f"{id_files_dir}/{scan.subject}_sessions.csv"
+    """Map original source session IDs to stable BIDS session IDs for this subject.
 
-    if not os.path.isfile(csv_ses_file):
-        ses_id_df = pd.DataFrame({'sesID': [], 'bids_sesID': []}, dtype=str)
+    Invariant:
+        if sesID already exists in sub-XXX_sessions.csv, its bids_sesID is reused and never changed.
+        legacy XXX_sessions.csv is read only as fallback when the canonical file is absent.
+        all writes go to sub-XXX_sessions.csv.
+    """
+    global current_sessionID, subN_sessions_dict
+    global file_index, files_list, loraks_seen_this_session
+
+    canonical_csv = canonical_session_csv_path(scan.subject)
+    legacy_csv = legacy_session_csv_path(scan.subject)
+    ses_id_df, source_csv = _read_session_map(canonical_csv, legacy_csv)
+    ses_id_df = _validate_session_map(ses_id_df, str(source_csv))
+
+    current_sessionID = str(scan.session).strip()
+
+    # Preferred path: exact original session ID is already known.
+    rows = ses_id_df[ses_id_df["sesID"] == current_sessionID]
+    if len(rows):
+        mapped = canonical_session_id(rows.iloc[0]["bids_sesID"])
+        scan.session = mapped
+        print(f"Session ID derived from '{source_csv}'.")
     else:
-        ses_id_df = pd.read_csv(csv_ses_file, dtype={'sesID': str, 'bids_sesID': str})
+        # Safety path for already BIDS-like session labels.
+        if _is_bids_like_session(current_sessionID):
+            candidate = canonical_session_id(current_sessionID)
+            rows = ses_id_df[ses_id_df["bids_sesID"].map(canonical_session_id) == candidate]
+            if len(rows):
+                scan.session = candidate
+                current_sessionID = str(rows.iloc[0]["sesID"])
+                print(f"Session already BIDS-like and found in '{source_csv}'.")
+            else:
+                scan.session = candidate
+                new_row = pd.DataFrame({"sesID": [current_sessionID], "bids_sesID": [candidate]})
+                ses_id_df = pd.concat([ses_id_df, new_row], ignore_index=True)
+                print(f"BIDS-like session not present in '{source_csv}'. Adding stable row.")
+        else:
+            new_id = _next_unused_numeric_id(ses_id_df["bids_sesID"], width=2)
+            new_row = pd.DataFrame({"sesID": [current_sessionID], "bids_sesID": [new_id]})
+            ses_id_df = pd.concat([ses_id_df, new_row], ignore_index=True)
+            scan.session = new_id
+            print(f"Session ID not present in '{source_csv}'. Adding new stable mapping.")
 
-    global current_sessionID
-    current_sessionID = scan.session
+    ses_id_df = _validate_session_map(ses_id_df, str(canonical_csv))
+    if not dry_run:
+        _write_csv_atomic(ses_id_df, canonical_csv)
 
-    if scan.session in ses_id_df['sesID'].values:
-        scan.session = f"{int(ses_id_df.loc[ses_id_df['sesID'] == scan.session, 'bids_sesID'].iloc[0]):02}"
-        print(f"Session ID derived from '{csv_ses_file}'.")
-    else:
-        print(f"Session ID not present in '{csv_ses_file}'. Adding and indexing the subject.")
-        current_bids_sesID = '01' if ses_id_df.empty else int(np.max(ses_id_df['bids_sesID'].astype(int))) + 1
-        new_row = pd.DataFrame({'sesID': [scan.session], 'bids_sesID': [f"{int(current_bids_sesID):02}"]})
-        ses_id_df = pd.concat([ses_id_df, new_row], ignore_index=True)
-        scan.session = f"{int(new_row['bids_sesID'].iloc[0]):02}"
+    if source_csv != canonical_csv and Path(source_csv).exists():
+        logger.warning(
+            f"Read legacy session map {source_csv}; wrote canonical map {canonical_csv}. "
+            "Consider archiving the legacy file after verifying the canonical file."
+        )
 
     print(f"Current session: {current_sessionID} -> {scan.session}")
-    ses_id_df.to_csv(csv_ses_file, index=False)
 
-    global subN_sessions_dict
     for col in list(subN_sessions_dict.keys()):
         subN_sessions_dict[col].append('n/a')
 
@@ -349,7 +563,6 @@ def SessionEP(scan: BidsSession) -> int:
         if not subdirs:
             logger.warning(f"No sub-directories found in session directory '{nii_session_dir}'. Shim current consistency check may not be reliable.")
 
-    global file_index, files_list, loraks_seen_this_session
     file_index = -1
     files_list = []
     loraks_seen_this_session = False
@@ -496,6 +709,11 @@ def RecordingEP(recording: object) -> int:
 
     file_index += 1
     recon_state = detect_reconstruction_state(recording)
+
+    # Conservative metadata fallback for standard dcm2niix data.
+    # Existing ProtocolName values are preserved.
+    if recon_state == "standard":
+        _ensure_protocol_name_from_rec_id(recording)
 
     if recon_state in ("loraks", "loraksRsos"):
         handle_loraks_recording(recording, recon_state)

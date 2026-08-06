@@ -67,7 +67,6 @@ The conversion is performed by running the shell script `main_dicom_conv_batchau
         + Specify path pairs for as many sessions as you want, starting at 1. 
         + The number of specified sessions MUST coincide with the `number_of_paths` variable.
     ``` 
-    run_dicom_conv=1  # needs to be set to 1
     number_of_paths=2  # maximum number of directories that need to be converted
     path_to_dcm1="path/to/dcm"  # specify input folder (DICOM data)
     path_to_nii1="path/to/nii"  # specify output folder (NIfTI data)

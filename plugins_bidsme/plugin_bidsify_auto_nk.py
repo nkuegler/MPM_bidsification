@@ -436,54 +436,105 @@ def _handle_smap_sequence(recording, rec_id):
         recording.custom["smap_run"] = fallback_smap_counter
 
 
+def _recording_filename(recording, basename_only=False):
+    """Return the current recording filename/path as a string, tolerating BIDSme variants."""
+    for full in (not basename_only, True, False):
+        try:
+            value = recording.currentFile(full)
+            if value:
+                return Path(str(value)).name if basename_only else str(value)
+        except Exception:
+            continue
+    return ""
+
+
+def _recording_filename_lower(recording, basename_only=False):
+    return _recording_filename(recording, basename_only=basename_only).casefold()
+
+
 def _is_loraks_recording(recording):
-    try:
-        return "rec-loraks" in recording.currentFile(True).casefold()
-    except Exception:
-        return False
+    """Classify LORAKS strictly from the NIfTI filename/path, not DICOM metadata."""
+    # Important: dcm2niix/DICOM metadata often does not contain the word LORAKS.
+    # The reconstructed LORAKS NIfTIs do, e.g.
+    #   ..._rec-loraks_echo-1_mt-off_part-mag.nii
+    #   ..._rec-loraksRsos_echo-1_mt-off_part-mag.nii
+    fname = _recording_filename_lower(recording)
+    return "loraks" in fname
 
 
 def _loraks_get_series_id(str_to_check, recording):
-    full_string = recording.currentFile(True)
+    """Infer the LORAKS source sequence/protocol from the filename."""
+    full_string = _recording_filename(recording)
+    low = full_string.casefold()
+    needle = str_to_check.casefold()
+
+    # Prefer a direct filename span from the contrast name through the resolution/coil token.
     string_endings = [
         "_0p6", "_0p5_sag", "_0p8", "_caipi", "_4p0",
-        "_32Ch", "_array", "_BC", "_body",
+        "_32ch", "_array", "_bc", "_body",
     ]
-    string_end = next((ending for ending in string_endings if ending in full_string), None)
-    if not string_end:
-        logger.warning(f"ProtocolName couldn't be derived properly from {full_string}")
-        return str_to_check
-    pattern = f"({re.escape(str_to_check)}.*?{re.escape(string_end)})"
-    match = re.search(pattern, full_string)
-    if match:
-        return match.group(1)
+    string_end = next((ending for ending in string_endings if ending in low), None)
+    if string_end:
+        pattern = f"({re.escape(needle)}.*?{re.escape(string_end)})"
+        match = re.search(pattern, low)
+        if match:
+            # Return the matched text from the original string to preserve readable casing.
+            return full_string[match.start(1):match.end(1)]
+
+    # Fallback: take from the contrast token up to _rec when present.
+    if needle in low:
+        start = low.find(needle)
+        rec_pos = low.find("_rec", start)
+        if rec_pos > start:
+            return full_string[start:rec_pos]
+        return full_string[start:start + len(str_to_check)]
+
     logger.warning(f"ProtocolName couldn't be derived properly from {full_string}")
     return str_to_check
+
+
+def _loraks_part_from_filename(low):
+    """Infer BIDS part from filename only."""
+    if re.search(r"(^|[_-])part[-_]phase($|[_\.])", low) or re.search(r"(^|[_-])phase($|[_\.])", low):
+        return "phase"
+    if re.search(r"(^|[_-])part[-_]mag($|[_\.])", low) or re.search(r"(^|[_-])mag($|[_\.])", low):
+        return "mag"
+    if re.search(r"(^|[_-])ph($|[_\.])", low):
+        return "phase"
+    return "mag"
+
+
+def _loraks_echo_from_filename(low):
+    """Infer echo number from filename only and return a zero-padded BIDS-style value."""
+    match = re.search(r"(?:^|[_-])echo[-_]?([0-9]+)(?:$|[_\.])", low)
+    if match:
+        return f"{int(match.group(1)):02d}"
+    return None
 
 
 def _handle_loraks_recording(recording):
     global session_has_loraks
     session_has_loraks = True
 
-    fname = recording.currentFile(True)
+    fname = _recording_filename(recording)
     low = fname.casefold()
-    if "rec-loraksrsos" in low:
-        recon_method = "loraksRsos"
-    else:
-        recon_method = "loraks"
-    recording.custom["ReconMethod"] = recon_method
 
-    units = _get_attr(recording, "Units")
-    if units == "rad" and ("phase" in low or "ph" in low):
-        recording.custom["part"] = "phase"
+    if "loraksrsos" in low or "loraks_rsos" in low or "loraks-rsos" in low:
+        recording.custom["ReconMethod"] = "loraksRsos"
     else:
-        recording.custom["part"] = "mag"
+        recording.custom["ReconMethod"] = "loraks"
 
-    echo_number = re.findall(r"echo-\d+", low)
-    if echo_number:
-        recording.custom["EchoNumbers"] = f"{int(echo_number[0].split('-')[1]):02d}"
+    # Filename is authoritative for reconstructed LORAKS files.
+    recording.custom["part"] = _loraks_part_from_filename(low)
+
+    echo_number = _loraks_echo_from_filename(low)
+    if echo_number is not None:
+        # Keep both names because existing bidsmap templates in this project
+        # have used both variants across plugin generations.
+        recording.custom["EchoNumber"] = echo_number
+        recording.custom["EchoNumbers"] = echo_number
     else:
-        logger.error(f"No echo number found in filename: {fname}")
+        logger.error(f"No echo number found in LORAKS filename: {fname}")
 
     should_include_smaps = include_smaps is True or (include_smaps == "auto" and smap_ident.casefold() in low)
     if should_include_smaps and smap_ident.casefold() in low:
@@ -498,6 +549,8 @@ def _handle_loraks_recording(recording):
             if contrast_fname.casefold() in low:
                 recording.setAttribute("ProtocolName", _loraks_get_series_id(contrast_fname, recording))
                 break
+        else:
+            logger.warning(f"Could not infer LORAKS contrast from filename: {fname}")
 
 
 
@@ -543,6 +596,61 @@ def _dataset_root_id_info_dir():
     return _dataset_root_from_bids_dir(bids_dir) / "id_info"
 
 
+def _clean_subject_id(value):
+    """Return a zero-padded numeric subject label without the sub- prefix."""
+    value = str(value).replace("sub-", "", 1)
+    if value.isdigit():
+        return f"{int(value):03d}"
+    return value
+
+
+def _canonical_session_csv_name(csv_name):
+    """
+    Canonicalise per-subject session mapping filenames.
+
+    The durable id_info convention is:
+        sub-004_sessions.csv
+
+    Older/intermediate files may be named:
+        004_sessions.csv
+
+    Those legacy names are still readable, but final writes are redirected to
+    the canonical prefixed name to avoid parallel/stale mapping files.
+    """
+    name = Path(str(csv_name)).name
+    match = re.match(r"^(?:sub-)?(\d+)_sessions\.csv$", name)
+    if match:
+        return f"sub-{int(match.group(1)):03d}_sessions.csv"
+    return name
+
+
+def _session_csv_candidates(clean_sub):
+    """
+    Return session-map candidates in priority order.
+
+    Prefer the canonical prefixed name, but keep the old non-prefixed name as a
+    read fallback for backwards compatibility with previously generated maps.
+    """
+    clean_sub = _clean_subject_id(clean_sub)
+    return [f"sub-{clean_sub}_sessions.csv", f"{clean_sub}_sessions.csv"]
+
+
+def _mapping_file_candidates(csv_name):
+    """Return possible mapping filenames for a requested mapping CSV."""
+    names = [Path(str(csv_name)).name]
+    canonical = _canonical_session_csv_name(csv_name)
+    if canonical not in names:
+        names.append(canonical)
+
+    match = re.match(r"^sub-(\d+)_sessions\.csv$", canonical)
+    if match:
+        legacy = f"{int(match.group(1)):03d}_sessions.csv"
+        if legacy not in names:
+            names.append(legacy)
+
+    return names
+
+
 
 def _read_temp_mapping(csv_name):
     """
@@ -554,13 +662,18 @@ def _read_temp_mapping(csv_name):
     2. canonical dataset map:
            <dataset_root>/id_info/<csv_name>
 
-    The fallback is important for reruns or mapper/bidsify calls where the
-    temporary map is missing but the canonical id_info table already exists.
+    For per-subject session maps, prefer the canonical prefixed name
+    (sub-004_sessions.csv) but also read legacy non-prefixed maps
+    (004_sessions.csv) as fallback.
     """
-    candidates = [
-        Path(temp_id_map_dir) / csv_name,
-        _dataset_root_id_info_dir() / csv_name,
-    ]
+    candidates = []
+    for name in _mapping_file_candidates(csv_name):
+        candidates.append(Path(temp_id_map_dir) / name)
+        candidates.append(_dataset_root_id_info_dir() / name)
+
+    # Deduplicate while preserving priority order.
+    seen = set()
+    candidates = [p for p in candidates if not (str(p) in seen or seen.add(str(p)))]
 
     for path in candidates:
         if path.exists():
@@ -646,7 +759,10 @@ def _copy_temp_id_maps_to_final():
         logger.warning(f"Temporary prepare mapping directory not found: {src_dir}")
         return
     for src_csv in sorted(src_dir.glob("*.csv")):
-        _merge_csv_files(src_csv, Path(final_id_map_dir) / src_csv.name)
+        dest_name = _canonical_session_csv_name(src_csv.name)
+        if dest_name != src_csv.name:
+            logger.info(f"Canonicalising session map name: {src_csv.name} -> {dest_name}")
+        _merge_csv_files(src_csv, Path(final_id_map_dir) / dest_name)
 
 
 def _default_session_columns():
@@ -1035,44 +1151,39 @@ def SessionEP(scan: BidsSession) -> int:
     global original_session_id, current_session_row, session_info_done
 
     # Session mapping filenames have existed in two conventions:
-    #   007_sessions.csv
-    #   sub-007_sessions.csv
-    # Try both.
-    clean_sub = str(scan.subject).replace("sub-", "")
+    #   sub-007_sessions.csv  [canonical]
+    #   007_sessions.csv      [legacy fallback]
+    # Always prefer/read/write the canonical prefixed form, but keep the legacy
+    # fallback to avoid breaking older temporary maps.
+    clean_sub = _clean_subject_id(scan.subject)
     current_ses = str(scan.session)
 
     if _is_bids_like_session(current_ses):
         # Already prepared/BIDS-like, e.g. ses-02 or 02.
         scan.session = _norm_session(current_ses)
-        original_session_id = _lookup_original_id(
-            f"{clean_sub}_sessions.csv",
-            original_col="sesID",
-            bids_col="bids_sesID",
-            bids_id=scan.session,
-        )
-        if original_session_id == "n/a":
+        original_session_id = "n/a"
+        for csv_name in _session_csv_candidates(clean_sub):
             original_session_id = _lookup_original_id(
-                f"sub-{clean_sub}_sessions.csv",
+                csv_name,
                 original_col="sesID",
                 bids_col="bids_sesID",
                 bids_id=scan.session,
             )
+            if original_session_id != "n/a":
+                break
         logger.info(f"Session already BIDS-like: {current_ses} -> {scan.session}; original={original_session_id}")
     else:
         # Raw/original session folder, e.g. 20260417. Force canonical BIDS session.
-        mapped = _lookup_bids_id(
-            f"{clean_sub}_sessions.csv",
-            original_col="sesID",
-            bids_col="bids_sesID",
-            original_id=current_ses,
-        )
-        if mapped == "n/a":
+        mapped = "n/a"
+        for csv_name in _session_csv_candidates(clean_sub):
             mapped = _lookup_bids_id(
-                f"sub-{clean_sub}_sessions.csv",
+                csv_name,
                 original_col="sesID",
                 bids_col="bids_sesID",
                 original_id=current_ses,
             )
+            if mapped != "n/a":
+                break
 
         if mapped != "n/a":
             original_session_id = current_ses
@@ -1124,6 +1235,8 @@ def SequenceEP(recording: object) -> int:
     recording.custom["IntendedFor"] = ""
     seq_index += 1
     rec_id = recording.recId()
+    if _is_missing(_get_attr(recording, "ProtocolName")):
+        recording.setAttribute("ProtocolName", rec_id)
     if 0 <= seq_index < len(seq_list):
         folder_rec_id = seq_list[seq_index]
         if folder_rec_id != rec_id:

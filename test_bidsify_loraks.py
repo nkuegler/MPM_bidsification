@@ -42,7 +42,7 @@ bidsme.prepare(str(SOURCE_PATH), str(PREPARED_PATH),
 bidsme.tools.info.reporterrors(logger)
 bidsme.tools.info.reseterrors(logger)
 
-PLUGIN_BIDS = WORKING_DIR / "plugins_bidsme" / "plugin_prepare_unified_patched_FIXED.py"
+PLUGIN_BIDS = WORKING_DIR / "plugins_bidsme" / "plugin_prepare_unified.py"
 # PLUGIN_BIDS = WORKING_DIR / "plugins_bidsme" / "liege_data_IronSleep" / "plugin_bidsify_loraks_liegeData_nk.py"
 
 bidsme.mapper(str(PREPARED_PATH), str(BIDSIFIED_PATH), plugin_file=str(PLUGIN_BIDS),
@@ -54,7 +54,7 @@ bidsme.tools.info.reporterrors(logger)
 bidsme.tools.info.reseterrors(logger)
 
 MAP_FILE = str(BIDSIFIED_PATH / "code" / "bidsme" / "bidsmap.yaml")
-PLUGIN_FILE_BIDS = str(WORKING_DIR / "plugins_bidsme" / "plugin_bidsify_auto_nk_rewritten_FIXED.py")
+PLUGIN_FILE_BIDS = str(WORKING_DIR / "plugins_bidsme" / "plugin_bidsify_auto_nk.py")
 # PLUGIN_FILE_BIDS = WORKING_DIR / "plugins_bidsme" / "liege_data_IronSleep" / "plugin_bidsify_loraks_liegeData_nk.py"
 
 import subprocess

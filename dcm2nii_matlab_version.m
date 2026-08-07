@@ -11,8 +11,7 @@ for a = 1:height(folders)
     if exist(outdir, 'dir') == 0
         mkdir(outdir)
     end
-
-    cmd = ['dcm2niix -o "', outdir, '" -ba y -b y -f "%p_%4s_%e" -z n "', curr_folder, '"'];
+    cmd = ['dcm2niix -o "', outdir, '" -ba y -b y -f %p_%4s/s%t-%e -z n "', curr_folder, '"'];
     if isempty(mydir(outdir))
     disp(cmd)
     system(cmd)

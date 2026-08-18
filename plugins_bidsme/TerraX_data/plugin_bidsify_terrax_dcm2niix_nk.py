@@ -478,7 +478,7 @@ def SequenceEP(recording: object) -> int:
                 recording.custom["ReceiveCoil"] = current_ReceiveCoil
 
 
-            smap_modality = helper.find_smap_modality(seq_list, seq_index)
+            smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction="forward")
             if smap_modality:
                 recording.custom["IntendedFor"] = smap_modality
                 if isinstance(head_coil_smap_counter, int) and \

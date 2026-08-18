@@ -16,30 +16,43 @@ import logging
 from contextlib import contextmanager
 
 
-def find_smap_modality(seq_list: list, current_index: int) -> str:
+def find_smap_modality(seq_list: list, current_index: int, search_direction: str = "forward") -> str:
     """
     Determines the modality of an SMAP sequence from a list of sequences.
-    Sensitivity maps (SMAP) are acquired right before the intended modality (T1w, PDw, MTw).
-    This function examines the elements in `seq_list` starting from the index 
-    immediately after `current_index` and checks for specific modality keywords 
-    ("t1w", "pdw", "mtw") in a case-insensitive manner. It returns the first 
+
+    Sensitivity maps (SMAP) may be acquired either immediately before or after the
+    intended modality (T1w, PDw, MTw). This function examines the elements in
+    `seq_list` in the requested direction and checks for specific modality keywords
+    ("t1w", "pdw", "mtw") in a case-insensitive manner. It returns the first
     matching modality found.
+
     Args:
         seq_list (list): A list of sequence names.
         current_index (int): The index of the current sequence in the list.
+        search_direction (str): "forward" to search after the current index,
+            or "backward" to search before it. Defaults to "forward".
+
     Returns:
-        str: The modality of the sequence ("T1w", "PDw", or "MTw") if found, 
+        str: The modality of the sequence ("T1w", "PDw", or "MTw") if found,
                 otherwise None.
     """
 
-    # Look at subsequent elements
-    for i in range(current_index + 1, len(seq_list)):
+    direction = search_direction.casefold()
+    if direction not in {"forward", "backward"}:
+        raise ValueError("search_direction must be either 'forward' or 'backward'")
+
+    if direction == "forward":
+        indices = range(current_index + 1, len(seq_list))
+    else:
+        indices = range(current_index - 1, -1, -1)
+
+    for i in indices:
         element = seq_list[i].casefold()  # Case-insensitive comparison
 
         # if the next element is also an smap, continue with the next element
         if "smap" in element:
             continue
-        
+
         # Check for modalities
         if "t1w" in element:
             return "T1w"
@@ -47,7 +60,7 @@ def find_smap_modality(seq_list: list, current_index: int) -> str:
             return "PDw"
         elif "mtw" in element:
             return "MTw"
-        
+
     return None
 
 

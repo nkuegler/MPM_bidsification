@@ -532,7 +532,7 @@ def RecordingEP(recording: object) -> int:
             else: 
                 if smap_ident.casefold() in recording.currentFile(True).casefold():
                     # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
-                    smap_modality = helper.find_smap_modality(files_list, file_index)
+                    smap_modality = helper.find_smap_modality(files_list, file_index, search_direction="forward")
                     if smap_modality:
                         recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
                         # find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)

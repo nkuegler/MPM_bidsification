@@ -12,6 +12,8 @@ import os
 import re
 import warnings
 import shutil
+import logging
+from contextlib import contextmanager
 
 
 def find_smap_modality(seq_list: list, current_index: int) -> str:
@@ -69,4 +71,17 @@ def argument_to_bool(argument: str) -> bool:
             return True
         else:
             return -1
-        
+
+@contextmanager
+def temporary_logging_level(new_level=logging.ERROR):
+    """
+    Temporarily increase logging level to ERROR to suppress warnings.
+    Otherwise "Could not parse" warnings are raised every time a getAttribute() query does not find a specific entry in the json file (e.g., query for hmriNIFTI parameter in a jsonNIFTI).
+    """
+    logger = logging.getLogger()
+    original_level = logger.getEffectiveLevel()
+    logger.setLevel(new_level)
+    try:
+        yield # makes the function a generator, allowing the code within the 'with' block to execute
+    finally:
+        logger.setLevel(original_level)

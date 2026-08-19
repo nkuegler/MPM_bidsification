@@ -340,9 +340,9 @@ def SequenceEP(recording: object) -> int:
         if rec_id.startswith(tuple(afi_prefixes)):
 
             with helper.temporary_logging_level(logging.ERROR):
-                DcmImportCheck = recording.getAttribute("CSASeriesHeaderInfo")
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
 
-            if DcmImportCheck is None: # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
 
                 ### for dcm2niix-converted data
                 pass # recording-specific TR definition performed in RecordingEP()
@@ -366,27 +366,25 @@ def SequenceEP(recording: object) -> int:
                         adFree = [adFree]
                 recording.custom["SpoilingRFPhaseIncrement"] = adFree[6] if len(adFree) > 6 else "n/a"
 
-            del DcmImportCheck
+            del dcm2niixCheck
 
         ### ------------------- LC slab parameters -------------------
         ### Purpose: extract information about the LC slab acquisition (tfl_multiMTC, mni_tfl_MTboost) from the SPM DICOM-imported data (not possible with dcm2niix-converted data)
 
         if rec_id.startswith(tuple(sequence_names["LC_slab"])): 
 
-            print(f"rec_id: {rec_id}")
             global tfl_multiMTC_MT_ON_counter
             global tfl_multiMTC_MT_OFF_counter
 
             with helper.temporary_logging_level(logging.ERROR):
-                DcmImportCheck = recording.getAttribute("CSASeriesHeaderInfo")
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
 
-            if DcmImportCheck is None: # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
 
                 ### for dcm2niix-converted data
                 mt_state = recording.getAttribute("MTState")
 
                 if mt_state is not None: # attribute must be available
-                    logger.info(f"MTState: {mt_state}")
 
                     if mt_state:
                         # counter for MT ON sequences
@@ -430,7 +428,7 @@ def SequenceEP(recording: object) -> int:
                     tfl_multiMTC_MT_OFF_counter += 1
                     recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
 
-            del DcmImportCheck
+            del dcm2niixCheck
 
         ### ------------------- MT preparation pulse parameters -------------------
         ### can be adapted to other sequences with MT preparation pulses, e.g. LC slab acquisition (tfl_multiMTC)
@@ -617,8 +615,8 @@ def SequenceEP(recording: object) -> int:
             # if these asusmptions are not met, the counters may not be incremented correctly
 
             with helper.temporary_logging_level(logging.ERROR):
-                DcmImportCheck = recording.getAttribute("CSASeriesHeaderInfo")
-            if DcmImportCheck is None: # check if the attribute exists.
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists.
                 ReceiveCoilName = recording.getAttribute("ReceiveCoilName") # in dcm2niix converted data
             else: 
                 # requires intermediate step as the query does not handle nested lists and dictionaries well
@@ -649,7 +647,7 @@ def SequenceEP(recording: object) -> int:
                 else:
                     body_coil_smap_counter += 1
 
-            del DcmImportCheck
+            del dcm2niixCheck
 
             ### ------------------- Sensitivity map intended for ------------------- 
             ### find_smap_modality() searches for a matching T1w/PDw/MTw sequence in the session and returns the corresponding modality.
@@ -781,9 +779,9 @@ def RecordingEP(recording: object) -> int:
         if rec_id.startswith(tuple(afi_prefixes)):
 
             with helper.temporary_logging_level(logging.ERROR):
-                DcmImportCheck = recording.getAttribute("CSASeriesHeaderInfo")
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
             
-            if DcmImportCheck is None: # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
 
                 ### for dcm2niix-converted data
                 ### AFIB1 repetition times
@@ -804,16 +802,16 @@ def RecordingEP(recording: object) -> int:
                 recording.custom["tr_index"] = \
                     recording.custom["alTR_sorted"].index(TR) + 1
 
-            del DcmImportCheck
+            del dcm2niixCheck
 
 
         ### ----------- Partial Fourier Logic & Parallel Acquisition Technique --------------
         ### adapted from https://gitlab.gwdg.de/cbs-neurophy/image-reconstruction/-/blob/main/core/MriDataMapVBVDImpl.m
 
         with helper.temporary_logging_level(logging.ERROR):
-            DcmImportCheck = recording.getAttribute("CSASeriesHeaderInfo")
+            dcm2niixCheck = recording.getAttribute("ConversionSoftware")
 
-        if DcmImportCheck is None: 
+        if dcm2niixCheck == "dcm2niix": 
             ### for dcm2niix-converted data
             pass # partial fourier and parallel acquisition technique information is already extracted in the dcm2niix conversion and stored in the json file -> can be directly accessed from the bidsmap
 
@@ -872,7 +870,7 @@ def RecordingEP(recording: object) -> int:
                 recording.custom["ParallelAcquisitionTechnique"] = "CAIPIRINHA"
             else:
                 recording.custom["ParallelAcquisitionTechnique"] = "n/a"
-
+        del dcm2niixCheck
 
         ### ------------------- Shim current consistency check -------------------
 
@@ -883,9 +881,9 @@ def RecordingEP(recording: object) -> int:
             
             if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
                 with helper.temporary_logging_level(logging.ERROR):
-                    DcmImportCheck = recording.getAttribute("CSASeriesHeaderInfo")
+                    dcm2niixCheck = recording.getAttribute("ConversionSoftware")
 
-                if DcmImportCheck is None: 
+                if dcm2niixCheck == "dcm2niix": 
                     ShimCurrentAttr = "ShimSetting"
                 else:
                     ShimCurrentAttr = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
@@ -900,7 +898,7 @@ def RecordingEP(recording: object) -> int:
                                     This renders the data useless!
                                     {session_shim_currents} vs. {shim_currents}""")
                         session_shim_current_warning_counter += 1
-                del DcmImportCheck
+                del dcm2niixCheck
 
 
 def FileEP(path: str, recording: object) -> int:

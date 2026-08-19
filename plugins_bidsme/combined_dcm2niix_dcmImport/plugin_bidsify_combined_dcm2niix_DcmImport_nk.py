@@ -646,8 +646,18 @@ def SequenceEP(recording: object) -> int:
             ### ------------------- Sensitivity map intended for ------------------- 
             ### find_smap_modality() searches for a matching T1w/PDw/MTw sequence in the session and returns the corresponding modality.
             ### In the Terra.X protocol, the sensitivity maps are acquired after the T1w/PDw/MTw sequences, so the search direction is reversed.
-            # TODO: not always backward (Prisma forward, Terra backward) 
-            smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction="backward")
+            # 
+            with helper.temporary_logging_level(logging.ERROR):
+                TerraCheck = recording.getAttribute("ManufacturersModelName")
+                PrismaCheck = recording.getAttribute("ManufacturerModelName") # no s
+
+            if TerraCheck and any(name.casefold() in TerraCheck.casefold() for name in ["Terra"]):
+                search_direction = "backward"
+            elif PrismaCheck and any(name.casefold() in PrismaCheck.casefold() for name in ["Prisma"]):
+                search_direction = "forward"
+            else:
+                logger.warning("{}: Unknown scanner model '{}', defaulting to backward search for sensitivity map intended for modality")
+            smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction=search_direction)
             if smap_modality:
                 recording.custom["IntendedFor"] = smap_modality
                 if isinstance(head_coil_smap_counter, int) and \

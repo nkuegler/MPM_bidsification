@@ -1320,7 +1320,7 @@ MRI:
           - ShimSetting: <ShimSetting>
       - provenance: 
           /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/018-smap_kp_mtflash3d_v1s_4p0/s20250221124014-1.nii
-        example: fmap/sub-001_ses-01_acq-headT1w_part-mag_RB1COR
+        example: fmap/sub-001_ses-01_acq-headT1w_run-01_part-mag_RB1COR
         checked: true
         model: fmap:RB1COR
         suffix: RB1COR
@@ -1328,7 +1328,7 @@ MRI:
           SeriesDescription: ['smap_kp_mtflash3d_v1s_4p0', 'rfsens_kp_mtflash3d_v1t3_8p0']
         bids: !!omap
           - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
-          - run: ~
+          - run: <<custom:smap_run>>
           - part: <<custom:part>>
         json: !!omap
           - NonlinearGradientCorrection: <NonlinearGradientCorrection>

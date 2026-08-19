@@ -281,6 +281,11 @@ def SessionEP(scan: BidsSession) -> int:
     global body_coil_smap_counter
     body_coil_smap_counter = None
 
+    global head_coil_smap_only_mag_counter
+    head_coil_smap_only_mag_counter = None
+    global head_coil_smap_only_ph_counter
+    head_coil_smap_only_ph_counter = None
+
     global anat_nm_run_counter
     anat_nm_run_counter = 0
 
@@ -602,10 +607,13 @@ def SequenceEP(recording: object) -> int:
             global fallback_smap_counter
             global head_coil_smap_counter
             global body_coil_smap_counter
+            global head_coil_smap_only_mag_counter
+            global head_coil_smap_only_ph_counter
+
             
             # assumptions: 
-            # - there are either only head/array sensitivity maps (Terra) or head and body sensitivity maps (Prisma)
-            # - rec_id contains "head", it does not contain "array"
+            # - there are either only head sensitivity maps (Terra) or head and body sensitivity maps (Prisma)
+            # - if there are magnitude and phase of sensitivity maps, magnitude is processed first, then phase. (Terra.X data: only head coil, but magnitude and phase)
             # if these asusmptions are not met, the counters may not be incremented correctly
 
             with helper.temporary_logging_level(logging.ERROR):
@@ -667,8 +675,11 @@ def SequenceEP(recording: object) -> int:
                     increase_value = 1 
                 elif isinstance(head_coil_smap_counter, int) and \
                         not body_coil_smap_counter:
-                    # increment the contrast-specific count if only head coil smaps are available
-                    increase_value = 1
+                    if "M" in image_type: # magnitude nii data is usually processed before phase
+                        # increment the contrast-specific count if only head coil smaps are available
+                        increase_value = 1
+                    if "P" in image_type:
+                        increase_value = 0 # same run for magnitude and phase. If there are only magnitude smaps, this option will not be used.
                 elif isinstance(body_coil_smap_counter, int) and \
                         not head_coil_smap_counter:
                     # increment the contrast-specific count if only body coil smaps are available

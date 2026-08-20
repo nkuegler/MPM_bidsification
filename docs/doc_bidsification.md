@@ -118,6 +118,7 @@ The scripts will access specified files in the `plugins_bidsme/` and the `supple
 
     + **You can skip this step if you received a bidsmap tailored to your data (such as the various examples provided in `supplementary/bidsmaps/`). Just move the bidsmap to the default location and name or adjust the bidsmap path in the Bidsification notebook.**
     + In the `bidsify_IronSleep.ipynb`, run the cell containing the `bidsme.mapper` command (4. Section in the notebook).
+    + See also: [Bidsmap structure overview](doc_bidsmap_structure.md)
     + This function creates the `bidsmap.yaml` file. This structured file defines the actual names of the bidsified data and specifies which metadata of the sidecar JSON files in the `temp/` directory will be transferred to the sidecar JSON files of the bidsified data. The mapping information is stored as key-value pairs in human-readable, widely supported YAML files.
         + By default, the file is created in `BIDSIFIED_PATH/code/bidsme/bidsmap.yaml` or, if already present, scanned and extended. 
     + The creation of the mapping file is an iterative process. Each time the `bidsme.mapper` command is run, it will successively analyze the data in the `temp/` directory. Once it comes across a file with unknown attributes (*e.g.*, `ProtocolName`), it will stop and raise an error. This error can be resolved by adding a new element to the mapping file with this specific `ProtocolName` or `SeriesDescription` in the attribute section. In many cases, *Bidsme* will extend the mapping file with template entries, showing you which fields need to be specified. If not, you can specify manually which template to use by adding a "blank" element, specify only the `model` and `suffix` fields, and add `template: true`. If you now run the `bidsme.mapper` command again, the blank element will be populated with empty fields from the template.
@@ -238,6 +239,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 ***Deprecated: this list may not up-to-date. It should be removed or updated.***
 
 + `docs/` – directory containing detailed documentation of different things (still worked on)
+    + [doc_bidsmap_structure.md](doc_bidsmap_structure.md) – structure of bidsmap entries, placeholders, and metadata value sources
 + `plugins_bidsme/` – different plugins for different use cases and data sets (find more information about the plugins in the `docs/` directory or directly in the code)
     + `*_prepare*` – used for preparation step
     + `*_bidsify*` – used for bidsification step

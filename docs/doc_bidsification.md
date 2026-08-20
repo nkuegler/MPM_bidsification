@@ -313,8 +313,6 @@ conda env update -f environment.yml # to update the environment
 + write each step as function instead of code in the Jupyter Notebook → can be called from the CLI or from a python script for deployment, also possible to call it from the Jupyter notebook for debugging/testing
 + Include a resources directory for the IronSleep data → move the important files to the bids/code/ directory instead of the repository → also describe this in Step 5
 + Github repo for IronSleep directory (only include code) and alinadata directory (only include code) → version control
-+ document plugins and write put this on github as documentation → link to it from confluence
-+ document the different bidsmap entries also on github → include in step 7
 + describe transformation of data in the bidsmap (see `action_value` function in `bidsme/Modules/common.py` or described in the Jupyter notebook in section 4)
 + LORAKS-reconstructed bidsification → `bidsme.mapper` with `logger.setLevel("ERROR")` → may fix the issue
 + create an updated flow chart similar to the one below

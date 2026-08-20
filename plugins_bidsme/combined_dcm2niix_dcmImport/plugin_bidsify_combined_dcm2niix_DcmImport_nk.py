@@ -654,15 +654,16 @@ def SequenceEP(recording: object) -> int:
             ### In the Terra.X protocol, the sensitivity maps are acquired after the T1w/PDw/MTw sequences, so the search direction is reversed.
             # 
             with helper.temporary_logging_level(logging.ERROR):
-                TerraCheck = recording.getAttribute("ManufacturersModelName")
-                PrismaCheck = recording.getAttribute("ManufacturerModelName") # no s
+                dcm2niix_scanner = recording.getAttribute("ManufacturersModelName")
+                dcmimport_scanner = recording.getAttribute("ManufacturerModelName") # no s
 
-            if TerraCheck and any(name.casefold() in TerraCheck.casefold() for name in ["Terra"]):
+            if dcm2niix_scanner and any(name.casefold() in dcm2niix_scanner.casefold() for name in ["Terra"]):
                 search_direction = "backward"
-            elif PrismaCheck and any(name.casefold() in PrismaCheck.casefold() for name in ["Prisma"]):
+            elif dcmimport_scanner and any(name.casefold() in dcmimport_scanner.casefold() for name in ["Prisma"]):
                 search_direction = "forward"
             else:
-                logger.warning("{}: Unknown scanner model '{}', defaulting to backward search for sensitivity map intended for modality")
+                logger.warning(f"Scanner model in dcm2niix json ({dcm2niix_scanner}) should contain 'Terra' and dcmimport json ({dcmimport_scanner}) should contain 'Prisma'. Defaulting to backward search for sensitivity map intended for modality")
+                search_direction = "backward"
             smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction=search_direction)
             if smap_modality:
                 recording.custom["IntendedFor"] = smap_modality

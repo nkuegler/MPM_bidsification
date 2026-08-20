@@ -645,7 +645,7 @@ MRI:
               - "bids:TravelingHeads:<<session>>/anat/<<subject>>_<<session>>_acq-semc_echo-*_MESE.nii"
       - provenance: 
           /data/pt_02262/data/TH_bids/temp/sub-002/ses-05/MRI/004-smaps_kp_mtflash3d_v1s_array/s2023-07-03_14-01-141218-00001-00022-1.nii
-        example: fmap/sub-002_ses-05_acq-arrayT1w_part-mag_RB1COR
+        example: fmap/sub-002_ses-05_acq-arrayT1w_run-1_part-mag_RB1COR
         checked: true
         model: fmap:RB1COR
         suffix: RB1COR
@@ -816,7 +816,7 @@ MRI:
           - MagneticFieldStrength: <MagneticFieldStrength>
       - provenance: 
           /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/022-t1w_kp_mtflash3d_v1s_0p6/s20250221124014-1.nii
-        example: anat/sub-001_ses-01_acq-T1w_echo-01_flip-2_mt-off_part-mag_MPM
+        example: anat/sub-001_ses-01_acq-T1w_run-1_echo-01_flip-2_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -857,7 +857,7 @@ MRI:
           - ShimSetting: <ShimSetting>
       - provenance: 
           /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/030-pdw_kp_mtflash3d_v1s_0p6/s20250221124014-1.nii
-        example: anat/sub-001_ses-01_acq-PDw_echo-01_flip-1_mt-off_part-mag_MPM
+        example: anat/sub-001_ses-01_acq-PDw_run-1_echo-01_flip-1_mt-off_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -898,7 +898,7 @@ MRI:
           - ShimSetting: <ShimSetting>
       - provenance: 
           /data/pt_03068/data/in_vivo/temp/sub-001/ses-01/MRI/038-mtw_kp_mtflash3d_v1s_0p6/s20250221124014-1.nii
-        example: anat/sub-001_ses-01_acq-MTw_echo-01_flip-1_mt-on_part-mag_MPM
+        example: anat/sub-001_ses-01_acq-MTw_run-1_echo-01_flip-1_mt-on_part-mag_MPM
         checked: true
         model: anat:MPM
         suffix: MPM
@@ -937,7 +937,7 @@ MRI:
           - MagneticFieldStrength: <MagneticFieldStrength>
           - ShimSetting: <ShimSetting>
       - provenance: ~
-        example: anat/sub-003_ses-01_acq-ernst_echo-01_part-mag_MEGRE
+        example: anat/sub-003_ses-01_acq-ernst_run-1_echo-01_part-mag_MEGRE
         checked: true
         model: anat:MEGRE
         suffix: MEGRE
@@ -1415,7 +1415,7 @@ MRI:
           - SliceTiming: <SliceTiming>
       - provenance: 
           /data/pt_02262/data/TH_bids/temp/sub-006/ses-01/MRI/015-DWI_IronSleep_PartA/s20230703140118-1.json
-        example: dwi/sub-003_ses-01_acq-PartA_run-001_dwi
+        example: dwi/sub-003_ses-01_acq-PartA_dwi
         checked: true
         model: dwi:dwi
         suffix: dwi
@@ -1444,7 +1444,7 @@ MRI:
           - SliceTiming: <SliceTiming>
       - provenance: 
           /data/pt_02262/data/TH_bids/temp/sub-006/ses-01/MRI/015-DWI_IronSleep_PartB/s20230703140118-1.json
-        example: dwi/sub-003_ses-01_acq-PartB_run-001_dwi
+        example: dwi/sub-003_ses-01_acq-PartB_dwi
         checked: true
         model: dwi:dwi
         suffix: dwi

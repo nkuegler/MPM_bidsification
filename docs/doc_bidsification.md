@@ -302,6 +302,7 @@ conda env update -f environment.yml # to update the environment
 ## ToDos
 
 + consistency of shim currents must be reviewed (warnings do not occur correctly in some cases, also check if it works for 3T data, what if there are multiple runs of one sequence) -> check different cases and adjust!
++ careful when using dcm2niix for 3T data!! -> Currently, it is not possible to extract the repetition times of the AFI images from dcm2niix-converted data. Therefore, the repetition times are hard-coded in the plugins. I use the repetition times of the 7T protocol, but these are different at 3T. **This needs to be adjusted in the plugins if you use dcm2niix for 3T data!**
 + plugin_prepare_nk -> comment out the part about finding and copying the bvec and bval files (only works if there is only one bvac and one bval file + seems to be implemented in Bidsme now)
 + adjust all paths to Pathlib instead of OS or other path libraries, so that the application will also run on windows machines
 + see code block in chapter Bidsification of LORAKS-reconstructed data: "must be commented out" → could rather be handled by passing a specific plugin_opt
@@ -314,10 +315,12 @@ conda env update -f environment.yml # to update the environment
 + LORAKS-reconstructed bidsification → `bidsme.mapper` with `logger.setLevel("ERROR")` → may fix the issue
 + create an updated flow chart similar to the one below
 + after running the command, create file that documents paths to input directories (or even input files)
++ many of the string comparisons in the plugins are case-sensitive → make the comparisons case-insensitive but keep the actually extracted file name parts identical to the original ones
 + shim current consistency check does not work properly if the .nii data is not organized in sequence directories in the `source/` directory (reason: `session_shim_current_relevant_sequences_counter` is increased in `SequenceEP` in the prepare plugin -> then only copied in the bidsified plugin -> should be refined in the bidsify plugin (sessions.tsv created in the prepare plugin should be only preliminary)) 
     + whole `subN_sessions_dict` should be written in a helper function and then called in both prepare and bidsify plugin
     + for now, I fixed it by making sure that the Niftis are already ordered correctly in the `source/` directory (manually copied them from `temp/` to `source/`)
 + Check what happens if only LORAKS data is bidsified. Will this raise errors if the LORAKS BIDS directory cannot access a BIDS directory created from online-reconstructed data? Other issues?
++ create config file which for plugins which specifies all variable file-specific strings (e.g., "smaps" or "smap")
 
 <br>
 <br>

@@ -93,6 +93,7 @@ The scripts will access specified files in the `plugins_bidsme/` and the `supple
     + This function successively steps through the different sessions of the different subjects present in the `source/` directory, copies the data and organizes it in a specific temporary folder structure in the `temp/` directory. This is just a preparation and **not** the actual bidsification yet.
     + You have to specify in the `bidsme.prepare` command, where *Bidsme* can find the NIfTI files of the sequences. You have the option to exclude data from this step which will also exclude it from the bidsification in the following steps. However, make sure that you don't miss important data (*e.g.*, If you manually specify your specific sequence names, you may ignore important data when your protocol changes later but you forget to adjust those names).
     + You can pass a custom plugin to the command to apply custom modifications (*e.g.*, `plugin_prepare_nk.py` in the `plugins_bidsme/` directory). 
+        + See also: [Plugin usage overview](doc_plugin_usage.md)
         + This plugin adjusts subject and session names according to the previously created `.csv` files in the `id_info/` directory (forces a specific naming onto the subjects/sessions). If there are no "ID-files" or not even an `id_info/` directory, the subjects and sessions are numbered with increasing integers (subjects: 3-digits, sessions: 2-digits) and the mapping from their original IDs to the BIDS-conform IDs is documented in newly created `.csv` files in the `id_info/` directory.
         + You have the option to introduce specific features by utilizing plugins, such as defining specific variables based on the recordings metadata which can later be used during the bidsification for custom modifications of the file names and sidecar json values.
     + The "participants" template (`participants.json`) passed to Bidsme's preparation command defines the structure of the `participants.tsv` file. 
@@ -239,6 +240,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 ***Deprecated: this list may not up-to-date. It should be removed or updated.***
 
 + `docs/` – directory containing detailed documentation of different things (still worked on)
+    + [doc_plugin_usage.md](doc_plugin_usage.md) – high-level callback flow and object interface used by prepare/bidsify plugins
     + [doc_bidsmap_structure.md](doc_bidsmap_structure.md) – structure of bidsmap entries, placeholders, and metadata value sources
 + `plugins_bidsme/` – different plugins for different use cases and data sets (find more information about the plugins in the `docs/` directory or directly in the code)
     + `*_prepare*` – used for preparation step

@@ -116,10 +116,10 @@ The scripts will access specified files in the `plugins_bidsme/` and the `supple
 
 + **Step 7: `bidsme.mapper`**
 
+    + **You can skip this step if you received a bidsmap tailored to your data (such as the various examples provided in `supplementary/bidsmaps/`). Just move the bidsmap to the default location and name or adjust the bidsmap path in the Bidsification notebook.**
     + In the `bidsify_IronSleep.ipynb`, run the cell containing the `bidsme.mapper` command (4. Section in the notebook).
     + This function creates the `bidsmap.yaml` file. This structured file defines the actual names of the bidsified data and specifies which metadata of the sidecar JSON files in the `temp/` directory will be transferred to the sidecar JSON files of the bidsified data. The mapping information is stored as key-value pairs in human-readable, widely supported YAML files.
         + By default, the file is created in `BIDSIFIED_PATH/code/bidsme/bidsmap.yaml` or, if already present, scanned and extended. 
-    + **You can skip this step if you received a bidsmap tailored to your data (such as the various examples provided in `supplementary/bidsmaps/`). Just move the bidsmap to the default location and name or adjust the bidsmap path in the Bidsification notebook.**
     + The creation of the mapping file is an iterative process. Each time the `bidsme.mapper` command is run, it will successively analyze the data in the `temp/` directory. Once it comes across a file with unknown attributes (*e.g.*, `ProtocolName`), it will stop and raise an error. This error can be resolved by adding a new element to the mapping file with this specific `ProtocolName` or `SeriesDescription` in the attribute section. In many cases, *Bidsme* will extend the mapping file with template entries, showing you which fields need to be specified. If not, you can specify manually which template to use by adding a "blank" element, specify only the `model` and `suffix` fields, and add `template: true`. If you now run the `bidsme.mapper` command again, the blank element will be populated with empty fields from the template.
         + Read the error message **carefully** as it often provides good instructions on how to resolve the error(s) or warning(s).
         + You can find more information on how to create a proper Bidsmap in the [documentation in the Bidsme Github repository](https://github.com/CyclotronResearchCentre/bidsme/blob/dev/doc/creating_map.md) (or alternatively in the [Jupyter Notebooks of the bidsme tutorial](https://github.com/CyclotronResearchCentre/bidsme_tutorial)).
@@ -128,7 +128,7 @@ The scripts will access specified files in the `plugins_bidsme/` and the `supple
 
     + **I recommend to open the created `bidsmap.yaml` in a code editor (*e.g.*, VS Code) and iteratively re-run the cell and adjust the mapping file.**
         + Repeat this process until the command doesn't raise any warnings or errors.
-        + This process can be very tedious and many features are not well documented. Feel free to reach out if you need help ([kuegler@cbs.mpg.de](mailto:kuegler@cbs.mpg.de?subject=Help%20with%20MPM_bidsification) or Minerva messenger user: kuegler).
+        + ***This process can be very tedious and many features are not well documented.*** Feel free to reach out if you need help ([kuegler@cbs.mpg.de](mailto:kuegler@cbs.mpg.de?subject=Help%20with%20MPM_bidsification) or Minerva messenger user: kuegler).
     + The good thing is that the `bidsmap.yaml` has to be **created only once** including all the different `ProtocolNames` and/or `SeriesDescriptions`. If every session follows the same protocol, you specify the Bidsmap for one session and, thereafter, use it to bidsify your whole data set.
     + The custom plugin `plugin_bidsify_nk.py` allows to custimize the bidsification process, *e.g.* by creating custom variables that can be used within the `bidsmap.yaml`. Plugins are available in the `plugins_bidsme/` directory in the **MPM_bidsification** repository.    
     + The `plugin_opt` argument is used to pass variables to the plugins. Please check your selected plugin for the available `plugin_opt` options, such as:
@@ -168,7 +168,7 @@ The scripts will access specified files in the `plugins_bidsme/` and the `supple
         + Be careful when you use this flag, as the variable type is not always correctly recognized by the Python script when calling the `bidsme bidsify` command from the CLI. <br>
         (*e.g.*, `False` was recognized as string instead of boolean, which causes conditional statements to consider the variable as `True`.)
         + A fix was implemented for arguments with boolean values but it may not cover all possible cases. 
-        + Alternatively, you can use the function directly within Python to ensure correct variable types are passed to the plugin.
+        + *Alternatively, you can use the function directly within Python to ensure correct variable types are passed to the plugin.*
 
 
 ### Additional functionalities in the repository
@@ -190,7 +190,7 @@ if not os.path.exists(corresponding_bids_data_path):
 > *Disclaimer: There is no guarantee that the bidsification will work properly when you adjust the folder structure.*
 
 
-As mentioned before, the Bidsification of the LORAKS-reconstructed data should be performed AFTER the Bidsification of the DICOM-imported data. If there is no bidsified DICOM data, the LORAKS bidsification should still work but there won't be any information on shim current consistency available. This case was also not thoroughly tested, so there may be a few bugs.
+As mentioned before, the Bidsification of the LORAKS-reconstructed data should be performed AFTER the Bidsification of the DICOM-imported data. If there is no bidsified DICOM data, the LORAKS bidsification should still work but there won't be any information on shim current consistency available. This case was also not thoroughly tested. You may encounter a few bugs.
 
 
 > <span style="color:red">**Very important note:**</span><br>
@@ -284,7 +284,7 @@ The second branch in the **MPM_bidsification** repository is used to bidsify the
 
 ## Issues 
 
-- If there is an issue with Bidsme, which requires code changes within the software itself (e.g., issue with Terra.X data after the software upgrade)
+- If there is an issue with Bidsme, which requires code changes within the software itself (e.g., [issue with Terra.X data after the software upgrade](https://github.com/CyclotronResearchCentre/bidsme/issues/20))
 - clone the repository and install the local (properly adjusted) directory with pip
 ````
 pip install -e /path/to/your/package

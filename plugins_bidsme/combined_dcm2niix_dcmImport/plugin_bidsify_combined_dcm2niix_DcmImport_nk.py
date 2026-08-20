@@ -55,6 +55,7 @@ sequence_names = {          # must be in lists
     "T1w": ["t1w_kp_mtflash3d"],
     "PDw": ["pdw_kp_mtflash3d"],
     "MTw": ["mtw_kp_mtflash3d"],
+    "ernst": ["ernst_kp_mtflash3d"],
     "AFI_sTx": ["kp_afib1_v1g", "kp_afib1_v1g_4mm_PA", "kp_afib1_v1f_4mm_PA"], # also possible to replace this with [kp_afib1_v1g, kp_afib1_v1f]
     "AFI_pTx": ["kp_afib1_v1h1_4mm_PA"],
     "LC_slab": ["tfl_multiMTC", "mni_tfl_MTboost"],
@@ -258,6 +259,11 @@ def SessionEP(scan: BidsSession) -> int:
     MTw_mag_run_counter = 0
     global MTw_ph_run_counter
     MTw_ph_run_counter = 0
+
+    global ernst_mag_run_counter
+    ernst_mag_run_counter = 0
+    global ernst_ph_run_counter
+    ernst_ph_run_counter = 0
 
     global MP2RAGE_run_counter
     MP2RAGE_run_counter = 0
@@ -534,6 +540,8 @@ def SequenceEP(recording: object) -> int:
         global PDw_ph_run_counter
         global MTw_mag_run_counter
         global MTw_ph_run_counter
+        global ernst_mag_run_counter
+        global ernst_ph_run_counter
         global MP2RAGE_run_counter
         global AFI_stx_run_counter
         global AFI_ptx_run_counter
@@ -560,6 +568,13 @@ def SequenceEP(recording: object) -> int:
             if "P" in image_type:
                 MTw_ph_run_counter += 1
                 recording.custom["MTw_run_counter"] = MTw_ph_run_counter
+        elif rec_id.startswith(tuple(sequence_names["ernst"])):
+            if "M" in image_type:
+                ernst_mag_run_counter += 1
+                recording.custom["ernst_run_counter"] = ernst_mag_run_counter
+            if "P" in image_type:
+                ernst_ph_run_counter += 1
+                recording.custom["ernst_run_counter"] = ernst_ph_run_counter
         elif rec_id.startswith(tuple(sequence_names["AFI_sTx"])):
             AFI_stx_run_counter += 1
             recording.custom["AFI_stx_run_counter"] = AFI_stx_run_counter

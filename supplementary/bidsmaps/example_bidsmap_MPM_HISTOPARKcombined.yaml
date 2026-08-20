@@ -690,7 +690,7 @@ MRI:
         model: __unknown__
         suffix: ''
         attributes:
-          ProtocolName: ['localizer', 'localizer_3D', 'ThreeDream_5mm_40deg']
+          ProtocolName: ['localizer', 'localizer_3D', 'tse_localizer_p2', 'ThreeDream_5mm_40deg', 'IGNORE_ThreeDream_5mm_40deg', 'IGNORE_kp_afib1_v1h', 'IGNORE_gre_fm_3p0_standard']
         bids: !!omap []
         json: !!omap []
       - provenance: ~
@@ -702,7 +702,7 @@ MRI:
             'pdw_kp_mtflash3d_v1s_0p6_ND', 'mtw_kp_mtflash3d_v1s_0p6_ND', 'smap_kp_mtflash3d_v1s_4p0_ND',
             'ernst_kp_mtflash3d_v1s_0p5_sag_ND', 'QSM_VIBE_0.6iso_9echoes_P3_2_UP_ND',
             'anat-nm_acq-MTboost_sag_0_55mm_ND', 'semc_js_a_ND', 'QuinPilot', 'mni_tfl_MTboost_0p4_MT_OFF_ND',
-            'mni_tfl_MTboost_0p4_MT_ON_ND']
+            'mni_tfl_MTboost_0p4_MT_ON_ND', 'MPR sag 0.6mm Range', 'MPR cor 0.6mm Range', '222111']
         bids: !!omap []
         json: !!omap []
     anat:
@@ -868,7 +868,7 @@ MRI:
         bids: !!omap
           - acq: PDw
           - rec: ~
-          - run: ~
+          - run: <<custom:PDw_run_counter>>
           - echo: <format02d:EchoNumber>
           - flip: '1'
           - mt: off
@@ -908,7 +908,7 @@ MRI:
         bids: !!omap
           - acq: MTw
           - rec: ~
-          - run: ~
+          - run: <<custom:MTw_run_counter>>
           - echo: <format02d:EchoNumber>
           - flip: '1'
           - mt: on
@@ -946,7 +946,7 @@ MRI:
         bids: !!omap
           - acq: ernst
           - rec: ~
-          - run: ~
+          - run: <<custom:ernst_run_counter>>
           - echo: <format02d:EchoNumber>
           - part: <<custom:part>>
         json: !!omap

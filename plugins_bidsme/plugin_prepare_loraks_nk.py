@@ -55,21 +55,24 @@ base_dir = ""
 sessions_tsv_template = None
 subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
-data_avail_in_dir = False
 corresponding_bids_data_path = ""
-available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
-smap_ident = "smaps_kp_mtflash3d"
+available_contrasts_loraks_orig = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+smap_ident_options = ["smaps_kp_mtflash3d", "rfsens_kp_mtflash3d"]
+smap_ident = None
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
     return path[:-1] if path.endswith('/') else path
 
-# list of sequences in order of acquisition in current session
-files_list = list()
+# initialize list to store sequences in order of acquisition in current session
+seq_list = list()
 
 # The index of current sequence, corresponds to order in the sequence list
-file_index = -1
+seq_index = -1
 
+# toggle to check if smap_ident was added to available_contrasts_loraks (only once at the beginning of the session)
+smap_ident_added = False # reset in SessionEndEP
+available_contrasts_loraks = []
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -152,7 +155,9 @@ def InitEP(source: str, destination: str,
         os.makedirs(id_files_dir)
 
     global corresponding_bids_data_path
-    corresponding_bids_data_path = os.path.abspath(os.path.join(nifti_dir, '..', 'bids')) # works for: source dir is on the same level as bids dir
+    corresponding_bids_data_path = kwargs.get("bids_data_path", None)
+    if not corresponding_bids_data_path:
+        raise exceptions.InitEPError(f"No bids_data_path specified in plugin options")
     if not os.path.exists(corresponding_bids_data_path):
         raise exceptions.InitEPError(f"Corresponding BIDS directory not found at {corresponding_bids_data_path}")
 
@@ -161,18 +166,10 @@ def InitEP(source: str, destination: str,
     include_smaps = helper.argument_to_bool(include_smaps)
     if include_smaps == -1:
         raise exceptions.InitEPError(f"Invalid value for 'include_smaps' in plugin options")
+    # used in SequenceEP to determine whether to look for sensitivity maps in the sequence list and assign series_id and series_no accordingly
 
     print("options passed to plugin:")
     print(f"- include_smaps: {include_smaps}")
-
-    global available_contrasts_loraks
-    global smap_ident
-    if include_smaps:
-        new_list = []
-        for item in available_contrasts_loraks:
-            new_list.append(smap_ident)
-            new_list.append(item)
-        available_contrasts_loraks = new_list
     
     global sessions_tsv_template
     sessions_tsv_template = kwargs.get("sessions_tsv_template", None) # get the value from the options passed to the plugin, default is None
@@ -353,8 +350,8 @@ def SessionEP(scan: BidsSession) -> int:
             subN_sessions_dict['original_session_id'][-1] = current_sessionID
     # more population of the dictionary in SequenceEP to access a recording object
 
-    global file_index
-    file_index = -1
+    global seq_index
+    seq_index = -1
 
 def SequenceEP(recording: object) -> int:
     """
@@ -401,18 +398,44 @@ def SequenceEP(recording: object) -> int:
         return None  # No match found
 
 
-    global files_list
+    global seq_list
 
     # create a list of all files in the directory -> strip that list by all elements that do not contain ".nii" (or ".nii.gz")
     current_dir = os.path.dirname(recording.currentFile(False))
-    files_list = [f for f in os.listdir(current_dir) if os.path.isfile(os.path.join(current_dir, f)) and '.nii' in f]
-    files_list = sorted(files_list)
-    # print(f"NIfTI files in {current_dir}: {files_list}")
+    seq_list = [f for f in os.listdir(current_dir) if os.path.isfile(os.path.join(current_dir, f)) and '.nii' in f]
+    seq_list = sorted(seq_list)
+    # print(f"NIfTI files in {current_dir}: {seq_list}")
 
 
-    ### flag to ensure that there are files in the session directory
-    global data_avail_in_dir
-    data_avail_in_dir = True
+    ### ---------- determine the sensitivity map identifier to use for this session ----------
+    if include_smaps:
+        global smap_ident
+        matching_smap_idents = [
+            option for option in smap_ident_options
+            if any(option.casefold() in sequence.casefold() for sequence in seq_list)
+        ]
+        smap_ident = matching_smap_idents[0] if matching_smap_idents else None
+        if len(matching_smap_idents) > 1:
+            logger.warning(
+                f"Multiple sensitivity-map identifiers found in {current_dir}: "
+                f"{matching_smap_idents}. Using '{smap_ident}'."
+            )
+
+        global available_contrasts_loraks
+        global smap_ident_added
+        if smap_ident:
+            if not smap_ident_added:
+                available_contrasts_loraks = []
+                for item in available_contrasts_loraks_orig:
+                    available_contrasts_loraks.append(smap_ident)
+                    available_contrasts_loraks.append(item)
+                smap_ident_added = True
+        else: # if no sensitivity maps are present in the session, use the original list of contrasts
+            logger.warning(
+                f"No sensitivity-map identifier found in {current_dir}. "
+                f"Expected one of: {smap_ident_options}. Sensitivity maps will not be included."
+            )
+            available_contrasts_loraks = available_contrasts_loraks_orig.copy()
 
     ### populating the sub-<label>_sessions.tsv file
     ### performing this in SequenceEP to access the recording object
@@ -502,12 +525,12 @@ def RecordingEP(recording: object) -> int:
         
         return series_id
 
-    global file_index
+    global seq_index
     global available_contrasts_loraks
 
     if recording.Module() == "MRI":
-        file_index += 1
-        # print(f"{file_index}: {recording.currentFile(True)}")
+        seq_index += 1
+        # print(f"{seq_index}: {recording.currentFile(True)}")
 
 
         ## evaluate whether _loraks or _loraksRsos is present in the filename
@@ -523,32 +546,39 @@ def RecordingEP(recording: object) -> int:
             return 0
         
         if recon_method:
-            if not include_smaps:
+            if include_smaps and smap_ident and \
+                    smap_ident.casefold() in recording.currentFile(True).casefold():
+                
+                # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
+                with helper.temporary_logging_level(logging.ERROR):
+                    loraksReco_scanner = recording.getAttribute("ManufacturersModelName")
+    
+                if loraksReco_scanner and any(name.casefold() in loraksReco_scanner.casefold() for name in ["Terra"]):
+                    search_direction = "backward"
+                elif loraksReco_scanner and any(name.casefold() in loraksReco_scanner.casefold() for name in ["Prisma"]):
+                    search_direction = "forward"
+                else:
+                    logger.warning(f"Scanner model should contain 'Terra' or 'Prisma'. Defaulting to backward search for sensitivity map intended for modality")
+                    search_direction = "backward"
+
+                smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction=search_direction)
+
+                if smap_modality:
+                    recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
+                    # find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)
+                    smap_modal_idx = next((i for i, elem in enumerate(available_contrasts_loraks) if smap_modality.casefold() in elem.casefold()), None)
+                    # use (smap_modal_idx - 1) as index of the smap
+                    recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[smap_modal_idx-1] + rsos_factor) # smap always right before corresponding contrast
+
+                else:
+                    logger.warning("{}: Unable to determine modality of sensitivity map"
+                            .format(recording.recIdentity()))
+
+            else:
                 for ind, contrast_fname in enumerate(available_contrasts_loraks):
                     if contrast_fname.casefold() in recording.currentFile(True).casefold():
                         recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
                         recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
-
-            else: 
-                if smap_ident.casefold() in recording.currentFile(True).casefold():
-                    # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
-                    smap_modality = helper.find_smap_modality(files_list, file_index, search_direction="forward")
-                    if smap_modality:
-                        recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
-                        # find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)
-                        smap_modal_idx = next((i for i, elem in enumerate(available_contrasts_loraks) if smap_modality.casefold() in elem.casefold()), None)
-                        # use (smap_modal_idx - 1) as index of the smap
-                        recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[smap_modal_idx-1] + rsos_factor) # smap always right before corresponding contrast
-
-                    else:
-                        logger.warning("{}: Unable to determine modality of sensitivity map"
-                                .format(recording.recIdentity()))
-                
-                else:
-                    for ind, contrast_fname in enumerate(available_contrasts_loraks):
-                        if contrast_fname.casefold() in recording.currentFile(True).casefold():
-                            recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
-                            recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
                 
                 # print(f"series_id: {recording.series_id}")
                 # print(f"series_no: {recording.series_no}")
@@ -655,8 +685,13 @@ def SessionEndEP(scan: BidsSession) -> int:
     global ses_dict_populated_for_this_ses
     ses_dict_populated_for_this_ses = False
 
-    ## reset data availability flag
-    data_avail_in_dir = False
+    ## reset session-specific variables for the next session
+    global smap_ident_added
+    smap_ident_added = False
+    global smap_ident
+    smap_ident = None
+    global available_contrasts_loraks
+    available_contrasts_loraks = []
 
 
 def SubjectEndEP(scan: BidsSession) -> int:

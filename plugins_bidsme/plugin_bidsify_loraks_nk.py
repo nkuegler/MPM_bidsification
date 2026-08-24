@@ -47,8 +47,9 @@ prep_dir = ""
 bids_dir = ""
 dry_run = False
 corresponding_bids_data_path = ""
-available_contrasts_loraks = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
-smap_ident = "smaps_kp_mtflash3d"
+available_contrasts_loraks_orig = ["t1w_kp_mtflash3d", "pdw_kp_mtflash3d", "mtw_kp_mtflash3d", "ernst_kp_mtflash3d"] # "kp_afib1" # AFI B1 not possible due to uncertainty about the correct repetition time
+smap_ident_options = ["smaps_kp_mtflash3d", "rfsens_kp_mtflash3d"]
+smap_ident = None
 shim_incons_filename = "WARNING_INCONS_SHIMCURR.txt"
 shim_noinfo_filename = "WARNING_NOINFO_SHIMCURR.txt"
 
@@ -57,6 +58,8 @@ seq_list = list()
 
 # The index of current sequence, corresponds to order in the sequence list
 seq_index = -1
+
+available_contrasts_loraks = []
 
 
 """
@@ -126,7 +129,10 @@ def InitEP(source: str, destination: str,
     dry_run = dry
 
     global corresponding_bids_data_path
-    corresponding_bids_data_path = os.path.abspath(os.path.join(bids_dir, '..', '..')) # works for: bids_dir/derivatives/LORAKS
+    corresponding_bids_data_path = kwargs.get("bids_data_path", None)
+    if not corresponding_bids_data_path:
+        raise exceptions.InitEPError(f"No bids_data_path specified in plugin options")
+ 
 
 
     global bidsmap_step
@@ -140,19 +146,11 @@ def InitEP(source: str, destination: str,
     include_smaps = helper.argument_to_bool(include_smaps)
     if include_smaps == -1:
         raise exceptions.InitEPError(f"Invalid value for 'include_smaps' in plugin options")
+    # used in SequenceEP to determine whether to look for sensitivity maps in the sequence list and assign series_id and series_no accordingly
 
     print("options passed to plugin:")
     print(f"- bidsmap_step: {bidsmap_step}, {type(bidsmap_step)}")
     print(f"- include_smaps: {include_smaps}, {type(include_smaps)}")
-
-    global available_contrasts_loraks
-    global smap_ident
-    if include_smaps:
-        new_list = []
-        for item in available_contrasts_loraks:
-            new_list.append(smap_ident)
-            new_list.append(item)
-        available_contrasts_loraks = new_list
 
     return 0
 
@@ -226,6 +224,34 @@ def SessionEP(scan: BidsSession) -> int:
     seq_index = -1
     # print(f"files in {session_dir}: {seq_list}")
 
+
+    ### ---------- determine the sensitivity map identifier to use for this session ----------
+    if include_smaps:
+        global smap_ident
+        matching_smap_idents = [
+            option for option in smap_ident_options
+            if any(option.casefold() in sequence.casefold() for sequence in seq_list)
+        ]
+        smap_ident = matching_smap_idents[0] if matching_smap_idents else None
+        if len(matching_smap_idents) > 1:
+            logger.warning(
+                f"Multiple sensitivity-map identifiers found in {session_dir}: "
+                f"{matching_smap_idents}. Using '{smap_ident}'."
+            )
+
+        global available_contrasts_loraks
+        if smap_ident:
+            available_contrasts_loraks = []
+            for item in available_contrasts_loraks_orig:
+                available_contrasts_loraks.append(smap_ident)
+                available_contrasts_loraks.append(item)
+        else: # if no sensitivity maps are present in the session, use the original list of contrasts
+            logger.warning(
+                f"No sensitivity-map identifier found in {session_dir}. "
+                f"Expected one of: {smap_ident_options}. Sensitivity maps will not be included."
+            )
+            available_contrasts_loraks = available_contrasts_loraks_orig.copy()
+
     return 0
 
 def SequenceEP(recording: object) -> int:
@@ -273,36 +299,27 @@ def SequenceEP(recording: object) -> int:
 
     if recording.Module() == "MRI":
         ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
-        if rec_id.startswith(smap_ident):
-            # receive_coil = recording.getAttribute("ReceiveCoilName")
-            # if receive_coil:
-            #     if "head" in receive_coil.casefold():
-            #         recording.custom["ReceiveCoil"] = "head"
-            #     elif "body" in receive_coil.casefold():
-            #         recording.custom["ReceiveCoil"] = "body"
-            #     else:
-            #         recording.custom["ReceiveCoil"] = ""
-            # else:
-            #     recording.custom["ReceiveCoil"] = ""
+        if smap_ident and rec_id.startswith(smap_ident):
 
-            ## sensitivity map with body or head coil
-            if "_32CH".casefold() in rec_id.casefold() or "_array".casefold() in rec_id.casefold():
-                recording.custom["ReceiveCoil"] = "head"
-            elif "_BC".casefold() in rec_id.casefold() or "_body".casefold() in rec_id.casefold():
-                recording.custom["ReceiveCoil"] = "body"
-            else:
-                recording.custom["ReceiveCoil"] = ""
-        
-            # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
-            smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction="forward")
-            if smap_modality:
-                # print(f"smap_modality: {smap_modality}")
-                recording.custom["IntendedFor"] = smap_modality
-            else:
-                logger.warning("{}: Unable to determine modality of sensitivity map"
-                        .format(recording.recIdentity()))
-                recording.custom["IntendedFor"] = "invalid"
+            # determine the contrast which the sensitivity map was acquired for by looking at the neighboring sequences
+            with helper.temporary_logging_level(logging.ERROR):
+                loraksReco_scanner = recording.getAttribute("ManufacturersModelName")
 
+            ### ---- determine receive coil type ------
+            if loraksReco_scanner and any(name.casefold() in loraksReco_scanner.casefold() for name in ["Terra"]):
+                # receive coil type
+                recording.custom["ReceiveCoil"] = "head" # Terra does not have a body coil
+            elif loraksReco_scanner and any(name.casefold() in loraksReco_scanner.casefold() for name in ["Prisma"]):
+                ## receive coil type (head or body)
+                if "_32CH".casefold() in rec_id.casefold() or "_array".casefold() in rec_id.casefold():
+                    recording.custom["ReceiveCoil"] = "head"
+                elif "_BC".casefold() in rec_id.casefold() or "_body".casefold() in rec_id.casefold():
+                    recording.custom["ReceiveCoil"] = "body"
+                else:
+                    recording.custom["ReceiveCoil"] = ""  
+            else:
+                logger.warning(f"Scanner model should contain 'Terra' or 'Prisma'. Receive coil type cannot be determined. Setting ReceiveCoil to 'unknown'.")
+                recording.custom["ReceiveCoil"] = "unknown"
 
 
     return 0
@@ -347,7 +364,8 @@ def RecordingEP(recording: object) -> int:
             "_32Ch",     # sensitivity maps (head coil) in IronSleep Prisma data
             "_array",    # sensitivity maps (head coil) in IronSleep Prisma data
             "_BC",       # sensitivity maps (Body coil) in IronSleep Prisma data
-            "_body"      # sensitivity maps (body coil) in IronSleep Prisma data
+            "_body",     # sensitivity maps (body coil) in IronSleep Prisma data
+            "_8p0"       # sensitivity maps ("rfsens", head coil) in HISTOPARK Terra data
         ]
         
         string_end = next((ending for ending in string_endings if ending in full_string), None)
@@ -410,13 +428,18 @@ def RecordingEP(recording: object) -> int:
             
             ### recording.series_id and recording.series_no code probably works 
             ### but is not used in bidsification step at the moment
-            if include_smaps and \
+            if include_smaps and smap_ident and \
                     smap_ident.casefold() in recording.currentFile(True).casefold():
                 
-                ### determine the contrast which the sensitivity map was acquired for by looking at the following sequences
+                ### ---- determine which acquisition the sensitivity map was acquired for by looking at the neighboring sequences ------
+
+                # Sensitivity maps were properly ordered during preparation step. Thus, the search direction will always be "forward" for any scanner model (smaps first, then corresponding MPM sequence).
                 smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction="forward")
+
                 if smap_modality:
                     # print(f"smap_modality: {smap_modality}")
+                    recording.custom["IntendedFor"] = smap_modality
+                    
                     # recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
                     ### find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)
                     # smap_modal_idx = next((i for i, elem in enumerate(available_contrasts_loraks) if smap_modality.casefold() in elem.casefold()), None)
@@ -427,6 +450,7 @@ def RecordingEP(recording: object) -> int:
                 else:
                     logger.warning("{}: Unable to determine modality of sensitivity map"
                             .format(recording.recIdentity()))
+                    recording.custom["IntendedFor"] = "invalid"
 
             else:
                 for ind, contrast_fname in enumerate(available_contrasts_loraks):
@@ -438,8 +462,6 @@ def RecordingEP(recording: object) -> int:
 
             #print(f"series_id: {recording.series_id}")
             #print(f"series_no: {recording.series_no}")
-
-                
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -533,7 +555,13 @@ def SessionEndEP(scan: BidsSession) -> int:
         if os.path.isfile(shim_noinfo_file):
             shutil.copy(shim_noinfo_file, os.path.join(bids_dir, scan.subject, scan.session, shim_noinfo_filename))
             logger.info(f"Copying {shim_noinfo_filename} from correponding session in the bidsified dataset")
-        
+
+
+    # reset session-specific variables for the next session
+    global smap_ident
+    smap_ident = None
+    global available_contrasts_loraks
+    available_contrasts_loraks = []
 
 def SubjectEndEP(scan: BidsSession) -> int:
     """

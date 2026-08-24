@@ -1,4 +1,4 @@
-__bids__: 1.10.1
+__bids__: 1.11.1
 MRI:
   jsonNIFTI:
     anat:
@@ -89,7 +89,7 @@ MRI:
         suffix: MPM
         attributes:
           ProtocolName: ['mtw_kp_mtflash3d_v1s_0p6', 'mtw_kp_mtflash3d_v1sx_0p6',
-            'mtw_kp_mtflash3d_v1s_0p8', 'mtw_kp_mtflash3d_v1s_caipi']
+            'mtw_kp_mtflash3d_v1s_0p8', 'mtw_kp_mtflash3d_v1s_caipi', 'mtw_kp_mtflash3d_v1t3_0p6']
         bids: !!omap
           - task: ~
           - acq: MTw
@@ -162,7 +162,8 @@ MRI:
         model: fmap:RB1COR
         suffix: RB1COR
         attributes:
-          ProtocolName: ['smaps_kp_mtflash3d_v1s_32Ch', 'smaps_kp_mtflash3d_v1s_BC', 'smaps_kp_mtflash3d_v1s_array', 'smaps_kp_mtflash3d_v1s_body']
+          ProtocolName: ['smaps_kp_mtflash3d_v1s_32Ch', 'smaps_kp_mtflash3d_v1s_BC',
+            'smaps_kp_mtflash3d_v1s_array', 'smaps_kp_mtflash3d_v1s_body', 'rfsens_kp_mtflash3d_v1t3_8p0']
         bids: !!omap
           - acq: <<custom:ReceiveCoil>><<custom:IntendedFor>>
           - rec: <<custom:ReconMethod>>

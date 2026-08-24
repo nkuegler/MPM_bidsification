@@ -138,6 +138,7 @@ The scripts will access specified files in the `plugins_bidsme/` and the `supple
         + `bidsmap_step` - used to determine if `plugin_bidsify_*.py` is used for the bidsmap creation or for the actual bidsification of the data
             + The option `bidsmap_step == True` should be used in the `bidsme.mapper` step to avoid certain code blocks from running which would raise warnings during the creation of the bidsmap. Warnings stop the execution of `bidsme.mapper` but not that of actual bidsification step.
         + `include_smaps` - to include sensitivity maps in the LORAKS-reconstructed data 
+        + `bids_data_path` - only relevant for plugins handling LORAKS-reconstructed data; specify the path to the bidsified DICOM data
     + ```
       PLUGIN_BIDS = "/path/to/plugin_bidsify.py"
       bidsme.mapper(PREPARED_PATH, BIDSIFIED_PATH, plugin_file=PLUGIN_BIDS,
@@ -191,6 +192,8 @@ if not os.path.exists(corresponding_bids_data_path):
 ```
 > *Disclaimer: There is no guarantee that the bidsification will work properly when you adjust the folder structure.*
 
+> Hints:
+> Specify plugin_opt `bids_data_path` to pass the path to the bidsified DICOM data to the plugin and specify the identifiers of the sensitivty maps within the plugin.
 
 As mentioned before, the Bidsification of the LORAKS-reconstructed data should be performed AFTER the Bidsification of the DICOM-imported data. If there is no bidsified DICOM data, the LORAKS bidsification should still work but there won't be any information on shim current consistency available. This case was also not thoroughly tested. You may encounter a few bugs.
 

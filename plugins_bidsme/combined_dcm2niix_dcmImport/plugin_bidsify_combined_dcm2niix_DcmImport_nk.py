@@ -24,6 +24,7 @@
 
 
 # List of personalized, plugin-related errors
+from unittest import case
 from bidsme.plugins import exceptions
 from bidsme.bidsMeta import BidsSession
 import pandas as pd
@@ -32,6 +33,12 @@ import os
 import re
 import warnings
 import shutil
+import sys
+
+# Get the absolute path of the parent directory of this script and add it to the system path to include helper functions as module
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 import plugin_helper_functions as helper
 
 # Will integrate plugin into logging
@@ -42,6 +49,29 @@ logger = logging.getLogger(__name__)
 # code_path = os.path.dirname(__file__)
 # base_path = os.path.join(code_path, "..")
 
+
+# TODO: define start of different sequence names, which are overwritten by new names, which can be passed to the plugin
+sequence_names = {          # must be in lists
+    "T1w": ["t1w_kp_mtflash3d"],
+    "PDw": ["pdw_kp_mtflash3d"],
+    "MTw": ["mtw_kp_mtflash3d"],
+    "ernst": ["ernst_kp_mtflash3d"],
+    "AFI_sTx": ["kp_afib1_v1g", "kp_afib1_v1g_4mm_PA", "kp_afib1_v1f_4mm_PA"], # also possible to replace this with [kp_afib1_v1g, kp_afib1_v1f]
+    "AFI_pTx": ["kp_afib1_v1h1_4mm_PA"],
+    "LC_slab": ["tfl_multiMTC", "mni_tfl_MTboost"],
+    "MP2RAGE": ["t1_mp2rage_sag", "t1_mp2rage_sag_p3"],
+    "MPRAGE": ["MPRAGE_ADNI"],
+    "sensitivity_maps": ["smaps_kp_mtflash3d", "sens_maps_kp_mtflash3d", "smap_kp_mtflash3d","rfsens_kp_mtflash3d"],
+    "nm-sensitive": ["anat-nm"],
+    "deprecatedSEMC": ["JS_mod_semc"],
+}
+
+afi_prefixes = (
+    sequence_names["AFI_pTx"] +
+    sequence_names["AFI_sTx"]
+)
+
+
 # global variables
 prep_dir = ""
 bids_dir = ""
@@ -49,11 +79,13 @@ dry_run = False
 tfl_multiMTC_MT_ON_counter = 0
 tfl_multiMTC_MT_OFF_counter = 0
 
-shim_current_relevant_recIDs = ["t1w_kp_mtflash3d", 
-                                "pdw_kp_mtflash3d", 
-                                "mtw_kp_mtflash3d", 
-                                "kp_afib1_v1f", 
-                                "kp_afib1_v1g"]
+shim_current_relevant_recIDs = (
+    sequence_names["T1w"] +
+    sequence_names["PDw"] +
+    sequence_names["MTw"] +
+    sequence_names["AFI_sTx"] +
+    sequence_names["AFI_pTx"]
+)
 session_shim_currents = None
 session_shim_current_warning_counter = 0
 session_shim_current_relevant_sequences_counter = 0
@@ -63,7 +95,6 @@ seq_list = list()
 
 # The index of current sequence, corresponds to order in the sequence list
 seq_index = -1
-
 
 """
 Additional exceptions must derive from corresponding exception class
@@ -229,8 +260,16 @@ def SessionEP(scan: BidsSession) -> int:
     global MTw_ph_run_counter
     MTw_ph_run_counter = 0
 
+    global ernst_mag_run_counter
+    ernst_mag_run_counter = 0
+    global ernst_ph_run_counter
+    ernst_ph_run_counter = 0
+
     global MP2RAGE_run_counter
     MP2RAGE_run_counter = 0
+
+    global AFI_stx_run_counter
+    AFI_stx_run_counter = 0
 
     global AFI_ptx_run_counter
     AFI_ptx_run_counter = 0
@@ -247,6 +286,14 @@ def SessionEP(scan: BidsSession) -> int:
     head_coil_smap_counter = None
     global body_coil_smap_counter
     body_coil_smap_counter = None
+
+    global head_coil_smap_only_mag_counter
+    head_coil_smap_only_mag_counter = None
+    global head_coil_smap_only_ph_counter
+    head_coil_smap_only_ph_counter = None
+
+    global anat_nm_run_counter
+    anat_nm_run_counter = 0
 
     return 0
 
@@ -293,68 +340,140 @@ def SequenceEP(recording: object) -> int:
     ### adapted from Nikita Beliy's plugin
     if recording.Module() == "MRI":
 
-        ### AFIB1 repetition times
-        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
-                rec_id.startswith("kp_afib1_v1g_4mm_PA") or \
-                rec_id.startswith("kp_afib1_v1g"):
-            # Getting repetition times
-            alTR = "CSASeriesHeaderInfo/MrPhoenixProtocol/alTR"
-            alTR = recording.getAttribute(alTR)
-            recording.custom["alTR"] = alTR
-            recording.custom["alTR_sorted"] = sorted(alTR)
-        
-        ### AFIB1 SpoilingRFPhaseIncrement
-        if rec_id.startswith("kp_afib1_"):
-            adFree = "CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree"
-            adFree = recording.getAttribute(adFree)
-            # Ensure adFree is a list; if not, convert it to a list
-            if not isinstance(adFree, list):
-                try:
-                    adFree = list(adFree)
-                except TypeError:
-                    adFree = [adFree]
-            recording.custom["SpoilingRFPhaseIncrement"] = adFree[6] if len(adFree) > 6 else "n/a"
+        ### ------------------- AFI parameters -------------------
+        ### Purpose: extract AFI repetition times and SpoilingRFPhaseIncrement for AFIB1 sequences directly from the SPM DICOM-imported data (not possible with dcm2niix-converted data)
+
+        if rec_id.startswith(tuple(afi_prefixes)):
+
+            with helper.temporary_logging_level(logging.ERROR):
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
+
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
+
+                ### for dcm2niix-converted data
+                pass # recording-specific TR definition performed in RecordingEP()
+
+            else:
+                ### for SPM DICOM-imported data
+                ### AFIB1 repetition times
+                alTR = "CSASeriesHeaderInfo/MrPhoenixProtocol/alTR"
+                alTR = recording.getAttribute(alTR)
+                recording.custom["alTR"] = alTR
+                recording.custom["alTR_sorted"] = sorted(alTR)
+                
+                ### AFIB1 SpoilingRFPhaseIncrement
+                adFree = "CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree"
+                adFree = recording.getAttribute(adFree)
+                # Ensure adFree is a list; if not, convert it to a list
+                if not isinstance(adFree, list):
+                    try:
+                        adFree = list(adFree)
+                    except TypeError:
+                        adFree = [adFree]
+                recording.custom["SpoilingRFPhaseIncrement"] = adFree[6] if len(adFree) > 6 else "n/a"
+
+            del dcm2niixCheck
+
+        ### ------------------- LC slab parameters -------------------
+        ### Purpose: extract information about the LC slab acquisition (tfl_multiMTC, mni_tfl_MTboost) from the SPM DICOM-imported data (not possible with dcm2niix-converted data)
+
+        if rec_id.startswith(tuple(sequence_names["LC_slab"])): 
+
+            global tfl_multiMTC_MT_ON_counter
+            global tfl_multiMTC_MT_OFF_counter
+
+            with helper.temporary_logging_level(logging.ERROR):
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
+
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
+
+                ### for dcm2niix-converted data
+                mt_state = recording.getAttribute("MTState")
+
+                if mt_state is not None: # attribute must be available
+
+                    if mt_state:
+                        # counter for MT ON sequences
+                        tfl_multiMTC_MT_ON_counter += 1
+                        recording.custom["tfl_multiMTC_MT_ON_counter"] = tfl_multiMTC_MT_ON_counter
+
+                        mtc_amplitude = "n/a" # cannot be extracted from dcm2niix-converted json
+                        recording.custom["mtc_amplitude"] = mtc_amplitude
+                        recording.custom["mtc_amplitude_int"] = None # integer value of volts
+                    else: 
+                        # counter for MT OFF sequences
+                        tfl_multiMTC_MT_OFF_counter += 1
+                        recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
 
 
-        ### tfl_multiMTC
-        if rec_id.startswith("tfl_multiMTC"): 
+            else: 
+                ### for SPM DICOM-imported data
 
-            if "mt_on" in rec_id.casefold() or "mton" in rec_id.casefold():
-                global tfl_multiMTC_MT_ON_counter
-                tfl_multiMTC_MT_ON_counter += 1
-                recording.custom["tfl_multiMTC_MT_ON_counter"] = tfl_multiMTC_MT_ON_counter
+                if recording.getattribute("CSASeriesHeaderInfo/MrPhoenixProtocol/sPrepPulses/ucMTC"): # check if the attribute exists. If there is no MT preparation pulse, ucMT does not exist (None). 
 
-                # Extract voltage of the MT pulse
-                rf_pulses = recording.getAttribute("CSASeriesHeaderInfo/MrPhoenixProtocol/sTXSPEC/aRFPULSE")
-                # Find the sMTC_RF pulse and extract flAmplitude
-                mtc_amplitude = None
-                for pulse in rf_pulses:
-                    if pulse.get('tName') == 'sMTC_RF' or pulse.get('tName') == 'SRFExcit':
-                        mtc_amplitude = pulse.get('flAmplitude')    
-                        break
-                if not mtc_amplitude:
-                    mtc_amplitude = 0
-                recording.custom["mtc_amplitude"] = round(mtc_amplitude, 3)
-                recording.custom["mtc_amplitude_int"] = f"{int(mtc_amplitude)}V" # integer value of volts
-            
-            if "mt_off" in rec_id.casefold() or "mtoff" in rec_id.casefold():
-                global tfl_multiMTC_MT_OFF_counter
-                tfl_multiMTC_MT_OFF_counter += 1
-                recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
+                    # counter for MT ON sequences
+                    tfl_multiMTC_MT_ON_counter += 1
+                    recording.custom["tfl_multiMTC_MT_ON_counter"] = tfl_multiMTC_MT_ON_counter
 
+                    # Extract voltage of the MT pulse
+                    rf_pulses = recording.getAttribute("CSASeriesHeaderInfo/MrPhoenixProtocol/sTXSPEC/aRFPULSE")
+                    # Find the sMTC_RF or sSRFMTC pulse and extract flAmplitude
+                    # careful: this field also exists in all MPM measurements, but the MT preparation pulse is only scheduled in MT sequences (MTw and multiMTC). 
+                    mtc_amplitude = None
+                    for pulse in rf_pulses:
+                        if pulse.get('tName') in {'sMTC_RF', 'sSRFMTC', 'SRFExcit'}:
+                            mtc_amplitude = pulse.get('flAmplitude')    
+                            break
+                    if not mtc_amplitude:
+                        mtc_amplitude = 0
+                    recording.custom["mtc_amplitude"] = round(mtc_amplitude, 3)
+                    recording.custom["mtc_amplitude_int"] = f"{int(mtc_amplitude)}V" # integer value of volts
+
+                else: 
+                    # counter for MT OFF sequences
+                    tfl_multiMTC_MT_OFF_counter += 1
+                    recording.custom["tfl_multiMTC_MT_OFF_counter"] = tfl_multiMTC_MT_OFF_counter
+
+            del dcm2niixCheck
+
+        ### ------------------- MT preparation pulse parameters -------------------
+        ### can be adapted to other sequences with MT preparation pulses, e.g. LC slab acquisition (tfl_multiMTC)
+
+        if rec_id.startswith(tuple((sequence_names["MTw"] + sequence_names["LC_slab"]))):
+            with helper.temporary_logging_level(logging.ERROR):
+                DcmImportCheck = recording.getAttribute("CSASeriesHeaderInfo")
+            if DcmImportCheck is not None: # check if the attribute exists. The following information is only avalable in SPM DICOM import json files.
+
+                ### MTpulse: sWipMemBlock/adFree[0] = flip angle, sWipMemBlock/adFree[1] = Offset in Hz, sWipMemBlock/alFree[0] = pulse duration in us, rf spoiling increment (level1; level2) = sWipMemBlock/adFree[2]; sWipMemBlock/adFree[3] (in degrees)
+
+                MTpulseInfo_adFree = recording.getAttribute("CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/adFree") # MT pulse details, floating point values
+                MTpulseInfo_alFree = recording.getAttribute("CSASeriesHeaderInfo/MrPhoenixProtocol/sWipMemBlock/alFree") # MT pulse details, integer values
+
+                recording.custom["MTpulse_FlipAngle"] = MTpulseInfo_adFree[0] # in degrees
+                recording.custom["MTpulse_Offset"] = MTpulseInfo_adFree[1] # in Hz
+                recording.custom["RFspoiling_increment_lvl1"] = MTpulseInfo_adFree[2] # in degrees
+                recording.custom["RFspoiling_increment_lvl2"] = MTpulseInfo_adFree[3] # in degrees
+                recording.custom["MTpulse_Duration"] = MTpulseInfo_alFree[0] # in us
+                
+            del DcmImportCheck
+
+        ### ------------------- Deprecated MESE sequence -------------------
         ### only for a specific old MESE sequence protocol name 'JS_mod_semc'
         global deprecatedSEMC_run_counter
-        if rec_id.startswith("JS_mod_semc"):
+        if rec_id.startswith(tuple(sequence_names["deprecatedSEMC"])):
             deprecatedSEMC_run_counter += 1
             recording.custom["deprecatedSEMC_run_counter"] = deprecatedSEMC_run_counter
 
 
-        image_type = recording.getAttribute("ImageType")
+        ### ------------------- Nonlinear Gradient Correction status -------------------
+        image_type = recording.getAttribute("ImageTypeText") # in dcm2niix converted data
+        if image_type is None:
+            image_type = recording.getAttribute("ImageType") # in SPM DICOM import data
         # print(f"image_type type: {type(image_type)}")
         # print(f"image_type: {image_type}")
 
         if isinstance(image_type, list):
-            # conversion_type = dcm2niix, ImageType stored as list
+            # conversion_type = dcm2niix, ImageType already stored as list
             sDistortionCorrFilter = np.nan
         elif isinstance(image_type, str):
             # conversion_type= SPM DICOM import, ImageType stored as string like "ORIGINAL\\PRIMARY\\M\\ND"
@@ -367,45 +486,53 @@ def SequenceEP(recording: object) -> int:
             logger.warning(f"Unexpected ImageType format: {image_type}")
             image_type = []
 
+        match image_type:
+            case _ if any(_ in image_type for _ in ["DIS3D", "3D"]):
+                DistCorrType = "3D"
+            case _ if any(_ in image_type for _ in ["DIS2D", "2D"]):
+                DistCorrType = "2D"
+            case _:
+                DistCorrType = None
+
 
         if "ND" in image_type:
-            if "MPRAGE_ADNI".casefold() in rec_id.casefold():
+            recording.custom["acq_suffix"] = "-ND"
+            if any(name.casefold() in rec_id.casefold() 
+                   for name in sequence_names["MPRAGE"]):
                 ### additional check for MPRAGE_ADNI sequence as this deviates from the usual convention, but only in the ND version
-                recording.custom["acq_suffix"] = "-ND" # only used for Terra.X
                 recording.custom["NonlinearGradientCorrection"] = False
                 recording.custom["NonlinearGradientCorrectionType"] = "none"
             else:
-                recording.custom["acq_suffix"] = "-ND" # only used for Terra.X
-                if sDistortionCorrFilter == 1 or np.isnan(sDistortionCorrFilter):
+                if not DistCorrType and sDistortionCorrFilter in [1, np.nan]:
                     recording.custom["NonlinearGradientCorrection"] = False
                     recording.custom["NonlinearGradientCorrectionType"] = "none"
                 else:
-                    logger.warning("{}: ImageType 'ND' and sDistortionCorrFilter value '{}' do not match"
-                                .format(recording.recIdentity(), sDistortionCorrFilter))
+                    logger.warning("{}: ImageType 'ND', DistCorrType '{}', and sDistortionCorrFilter value '{}' do not match"
+                            .format(recording.recIdentity(), DistCorrType, sDistortionCorrFilter))
                     recording.custom["NonlinearGradientCorrection"] = "n/a"
                     recording.custom["NonlinearGradientCorrectionType"] = "n/a"
         else:
-            recording.custom["acq_suffix"] = "" # only used for Terra.X
+            recording.custom["acq_suffix"] = "" 
             # check for 3D first as in 3D correction both "2D" and "3D" may be found in image_type
-            if (sDistortionCorrFilter == 4 or np.isnan(sDistortionCorrFilter)) \
-                    and ("3D" in image_type or "DIS3D" in image_type):
+            if (sDistortionCorrFilter in [4, np.nan] and DistCorrType == "3D") \
+                    or (sDistortionCorrFilter in [2, np.nan] and DistCorrType == "2D"):
                 recording.custom["NonlinearGradientCorrection"] = True
-                recording.custom["NonlinearGradientCorrectionType"] = "3D"
-            elif (sDistortionCorrFilter == 2 or np.isnan(sDistortionCorrFilter)) \
-                    and ("2D" in image_type or "DIS2D" in image_type):
-                recording.custom["NonlinearGradientCorrection"] = True
-                recording.custom["NonlinearGradientCorrectionType"] = "2D"
+                recording.custom["NonlinearGradientCorrectionType"] = DistCorrType
             else:
-                logger.warning("{}: ImageType '{}' and sDistortionCorrFilter value '{}' do not match"
-                               .format(recording.recIdentity(), image_type, sDistortionCorrFilter))
+                logger.warning("{}: ImageType '{}', DistCorrType '{}', and sDistortionCorrFilter value '{}' do not match"
+                            .format(recording.recIdentity(), image_type, DistCorrType, sDistortionCorrFilter))
                 recording.custom["NonlinearGradientCorrection"] = "n/a"
                 recording.custom["NonlinearGradientCorrectionType"] = "n/a"
 
+
+        ### ------------------- Magnitude/Phase part of the image -------------------
         if "M" in image_type:
-            recording.custom["part"] = "mag"
+            recording.custom["part"] = "mag"     # in SPM DICOM import, also "ComplexImageComponent" available
         if "P" in image_type:
             recording.custom["part"] = "phase"
 
+
+        ### ------------------- Run counters for various sequences -------------------
         ### 3T data T1w, PDw, MTw run counter
         global T1w_mag_run_counter
         global T1w_ph_run_counter
@@ -413,84 +540,146 @@ def SequenceEP(recording: object) -> int:
         global PDw_ph_run_counter
         global MTw_mag_run_counter
         global MTw_ph_run_counter
+        global ernst_mag_run_counter
+        global ernst_ph_run_counter
         global MP2RAGE_run_counter
+        global AFI_stx_run_counter
         global AFI_ptx_run_counter
+        global anat_nm_run_counter
 
-        if rec_id.startswith("t1w_kp_mtflash3d"):
+        if rec_id.startswith(tuple(sequence_names["T1w"])):
             if "M" in image_type:
                 T1w_mag_run_counter += 1
                 recording.custom["T1w_run_counter"] = T1w_mag_run_counter
             if "P" in image_type:
                 T1w_ph_run_counter += 1
                 recording.custom["T1w_run_counter"] = T1w_ph_run_counter
-        elif rec_id.startswith("pdw_kp_mtflash3d"):
+        elif rec_id.startswith(tuple(sequence_names["PDw"])):
             if "M" in image_type:
                 PDw_mag_run_counter += 1
                 recording.custom["PDw_run_counter"] = PDw_mag_run_counter
             if "P" in image_type:
                 PDw_ph_run_counter += 1
                 recording.custom["PDw_run_counter"] = PDw_ph_run_counter
-        elif rec_id.startswith("mtw_kp_mtflash3d"):
+        elif rec_id.startswith(tuple(sequence_names["MTw"])):
             if "M" in image_type:
                 MTw_mag_run_counter += 1
                 recording.custom["MTw_run_counter"] = MTw_mag_run_counter
             if "P" in image_type:
                 MTw_ph_run_counter += 1
                 recording.custom["MTw_run_counter"] = MTw_ph_run_counter
-        elif rec_id.startswith("kp_afib1_v1g_4mm_PA") or rec_id.startswith("kp_afib1_v1f_4mm_PA"):
+        elif rec_id.startswith(tuple(sequence_names["ernst"])):
+            if "M" in image_type:
+                ernst_mag_run_counter += 1
+                recording.custom["ernst_run_counter"] = ernst_mag_run_counter
+            if "P" in image_type:
+                ernst_ph_run_counter += 1
+                recording.custom["ernst_run_counter"] = ernst_ph_run_counter
+        elif rec_id.startswith(tuple(sequence_names["AFI_sTx"])):
+            AFI_stx_run_counter += 1
+            recording.custom["AFI_stx_run_counter"] = AFI_stx_run_counter
+        elif rec_id.startswith(tuple(sequence_names["AFI_pTx"])):
             AFI_ptx_run_counter += 1
             recording.custom["AFI_ptx_run_counter"] = AFI_ptx_run_counter
-        elif rec_id.startswith("t1_mp2rage_sag"):
+        elif rec_id.startswith(tuple(sequence_names["MP2RAGE"])):
             MP2RAGE_run_counter += 1
             recording.custom["MP2RAGE_run_counter"] = MP2RAGE_run_counter
+        elif rec_id.startswith(tuple(sequence_names["nm-sensitive"])):  # special case
+            anat_nm_run_counter += 1
+            recording.custom["anat_nm_run_counter"] = anat_nm_run_counter
+        else:
+            pass
 
+        ### ------------------- Counter for shim current relevant sequences -------------------
         ### count how many shim current relevant sequences are in the session
         if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
             global session_shim_current_relevant_sequences_counter
             session_shim_current_relevant_sequences_counter += 1
 
 
+        # ### ------------------- MP2RAGE naming information -------------------
+        # ### t1_mp2rage_sag_p3
+        # if rec_id.startswith(sequence_names["MP2RAGE"]):
+        #     if "INV1".casefold() in rec_id.casefold():
+        #         recording.custom["inversion_number"] = "1"
+        #     if "INV2".casefold() in rec_id.casefold():
+        #         recording.custom["inversion_number"] = "2"
+        #     # differentiate between two UNI T1 images
+        #     if "UNI_Images".casefold() in rec_id.casefold():
+        #         recording.custom["UniT1_descr"] = "IMG"
+        #     if "UNI-DEN".casefold() in rec_id.casefold():
+        #         recording.custom["UniT1_descr"] = "DEN"
+
+
+        ### ------------------- Extract information for sensitivity maps -------------------
         ### for sensitivity maps (RB1COR): check receive coil and which acquisition it is intended for
-        if rec_id.startswith("smaps_kp_mtflash3d") or rec_id.startswith("sens_maps_kp_mtflash3d"):
-            # receive_coil = recording.getAttribute("ReceiveCoilName")
+        if rec_id.startswith(tuple(sequence_names["sensitivity_maps"])):
             global smap_T1w_counter
             global smap_PDw_counter
             global smap_MTw_counter
             global fallback_smap_counter
             global head_coil_smap_counter
             global body_coil_smap_counter
+            global head_coil_smap_only_mag_counter
+            global head_coil_smap_only_ph_counter
+
             
             # assumptions: 
-            # - there are either only head/array sensitivity maps (Terra) or head and body sensitivity maps (Prisma)
-            # - rec_id contains "head", it does not contain "array"
+            # - there are either only head sensitivity maps (Terra) or head and body sensitivity maps (Prisma)
+            # - if there are magnitude and phase of sensitivity maps, magnitude is processed first, then phase. (Terra.X data: only head coil, but magnitude and phase)
             # if these asusmptions are not met, the counters may not be incremented correctly
-            if "head" in rec_id.casefold() or "32ch" in rec_id.casefold():
+
+            with helper.temporary_logging_level(logging.ERROR):
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists.
+                ReceiveCoilName = recording.getAttribute("ReceiveCoilName") # in dcm2niix converted data
+            else: 
+                # requires intermediate step as the query does not handle nested lists and dictionaries well
+                ReceiveCoilNameList = recording.getAttribute("CSASeriesHeaderInfo/MrPhoenixProtocol/sCoilSelectMeas/aRxCoilSelectData") 
+                ReceiveCoilName = ReceiveCoilNameList[0]["asList"][0]["sCoilElementID"]["tCoilID"] # in SPM DICOM import 
+
+            if any(name.casefold() in ReceiveCoilName.casefold() for name in ["head", "32ch"]):
                 current_ReceiveCoil = "head"
-                if not head_coil_smap_counter:
-                    head_coil_smap_counter = 1
-                else:
-                    head_coil_smap_counter += 1
-                recording.custom["ReceiveCoil"] = current_ReceiveCoil
-            elif "array" in rec_id.casefold():
-                current_ReceiveCoil = "array"
-                if not head_coil_smap_counter:
-                    head_coil_smap_counter = 1
-                else:
-                    head_coil_smap_counter += 1
-                recording.custom["ReceiveCoil"] = current_ReceiveCoil                
-            elif "body" in rec_id.casefold() or "bc" in rec_id.casefold():
+            # elif any(name.casefold() in ReceiveCoilName.casefold() for name in ["array"]):
+            #     current_ReceiveCoil = "array"       ## potentially deprecated
+            elif any(name.casefold() in ReceiveCoilName.casefold() for name in ["body", "bc"]):
                 current_ReceiveCoil = "body"
+            else:
+                current_ReceiveCoil = "unknown"
+                logger.warning("{}: Unknown receive coil name '{}'"
+                        .format(recording.recIdentity(), ReceiveCoilName))
+
+            recording.custom["ReceiveCoil"] = current_ReceiveCoil
+            
+            if current_ReceiveCoil in ["head", "array"]:
+                if not head_coil_smap_counter:
+                    head_coil_smap_counter = 1
+                else:
+                    head_coil_smap_counter += 1
+            elif current_ReceiveCoil == "body":
                 if not body_coil_smap_counter:
                     body_coil_smap_counter = 1
                 else:
                     body_coil_smap_counter += 1
-                recording.custom["ReceiveCoil"] = current_ReceiveCoil
+
+            del dcm2niixCheck
+
+            ### ------------------- Sensitivity map intended for ------------------- 
+            ### find_smap_modality() searches for a matching T1w/PDw/MTw sequence in the session and returns the corresponding modality.
+            ### In the Terra.X protocol, the sensitivity maps are acquired after the T1w/PDw/MTw sequences, so the search direction is reversed.
+            # 
+            with helper.temporary_logging_level(logging.ERROR):
+                dcm2niix_scanner = recording.getAttribute("ManufacturersModelName")
+                dcmimport_scanner = recording.getAttribute("ManufacturerModelName") # no s
+
+            if dcm2niix_scanner and any(name.casefold() in dcm2niix_scanner.casefold() for name in ["Terra"]):
+                search_direction = "backward"
+            elif dcmimport_scanner and any(name.casefold() in dcmimport_scanner.casefold() for name in ["Prisma"]):
+                search_direction = "forward"
             else:
-                current_ReceiveCoil = "unknown"
-                recording.custom["ReceiveCoil"] = current_ReceiveCoil
-
-
-            smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction="forward")
+                logger.warning(f"Scanner model in dcm2niix json ({dcm2niix_scanner}) should contain 'Terra' and dcmimport json ({dcmimport_scanner}) should contain 'Prisma'. Defaulting to backward search for sensitivity map intended for modality")
+                search_direction = "backward"
+            smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction=search_direction)
             if smap_modality:
                 recording.custom["IntendedFor"] = smap_modality
                 if isinstance(head_coil_smap_counter, int) and \
@@ -500,8 +689,11 @@ def SequenceEP(recording: object) -> int:
                     increase_value = 1 
                 elif isinstance(head_coil_smap_counter, int) and \
                         not body_coil_smap_counter:
-                    # increment the contrast-specific count if only head coil smaps are available
-                    increase_value = 1
+                    if "M" in image_type: # magnitude nii data is usually processed before phase
+                        # increment the contrast-specific count if only head coil smaps are available
+                        increase_value = 1
+                    if "P" in image_type:
+                        increase_value = 0 # same run for magnitude and phase. If there are only magnitude smaps, this option will not be used.
                 elif isinstance(body_coil_smap_counter, int) and \
                         not head_coil_smap_counter:
                     # increment the contrast-specific count if only body coil smaps are available
@@ -515,7 +707,7 @@ def SequenceEP(recording: object) -> int:
                     if not smap_T1w_counter:
                         smap_T1w_counter = 1
                     else:
-                        smap_T1w_counter += increase_value  
+                        smap_T1w_counter += increase_value
                     recording.custom["smap_run"] = smap_T1w_counter
                 elif smap_modality == "PDw":
                     if not smap_PDw_counter:
@@ -534,7 +726,7 @@ def SequenceEP(recording: object) -> int:
 
             else:
                 if bidsmap_step:
-                    print(f"WARNING: {recording.recIdentity()}: Unable to determine modality of sensitivity map")
+                    logger.info(f"WARNING: {recording.recIdentity()}: Unable to determine modality of sensitivity map")
                 else:
                     logger.warning("{}: Unable to determine modality of sensitivity map"
                             .format(recording.recIdentity()))
@@ -544,6 +736,31 @@ def SequenceEP(recording: object) -> int:
                 else:
                     fallback_smap_counter += 1 
                 recording.custom["smap_run"] = fallback_smap_counter
+
+
+        ### ------------------- Special sequences for B1 mapping --------------------
+        ### differernt B1 maps (specific to data from Paris)
+        ### Using the rec_id to extract information IS NOT RECOMMENDED! Can only be used to account for very specific cases.
+
+        if rec_id.casefold().startswith("b1map_"):
+            if rec_id.casefold().startswith("b1map_3DREAM".casefold()):
+                if "RefVolt".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "3DREAMrefVolt"
+                elif "relB1".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "3DREAMrelB1"
+                else:
+                    recording.custom["B1acq"] = "3DREAM"
+            
+            if rec_id.casefold().startswith("b1map_product".casefold()):
+                recording.custom["B1acq"] = "product"
+            
+            if rec_id.casefold().startswith("b1map_neurospin".casefold()):
+                if "CP".casefold() in rec_id.casefold() and "mode".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "neurospin_CPmode"
+                elif "VR".casefold() in rec_id.casefold():
+                    recording.custom["B1acq"] = "neurospin_VR"
+                else: 
+                    recording.custom["B1acq"] = "neurospin"
 
 
 def RecordingEP(recording: object) -> int:
@@ -570,33 +787,54 @@ def RecordingEP(recording: object) -> int:
     Error.RecordingEPerror
         code 150
     """
-    ### adapted from Nikita Beliy's plugin
+
+    ### ------------------- AFI repetition times -------------------
+
     rec_id = recording.recId()
     if recording.Module() == "MRI":
-        if rec_id.startswith("kp_afib1_v1f_4mm_PA") or \
-                rec_id.startswith("kp_afib1_v1g_4mm_PA") or \
-                rec_id.startswith("kp_afib1_v1g"):
-            index = recording.getAttribute("EchoNumbers")
+        if rec_id.startswith(tuple(afi_prefixes)):
 
-            TR = recording.custom["alTR"][index - 1]
-            # Need to be sure about units!
-            recording.custom["RepetitionTime"] = round(TR * 1e-6, 10)
+            with helper.temporary_logging_level(logging.ERROR):
+                dcm2niixCheck = recording.getAttribute("ConversionSoftware")
+            
+            if dcm2niixCheck == "dcm2niix": # check if the attribute exists. If it doesn't exists, the query will follow dcm2niix convention. Otherwise it will fall back to SPM DICOM import convention.
 
-            recording.custom["index"] = index
-            recording.custom["tr_index"] = \
-                recording.custom["alTR_sorted"].index(TR) + 1
+                ### for dcm2niix-converted data
+                ### AFIB1 repetition times
+                tr_index = recording.getAttribute("EchoNumber")
+                recording.custom["tr_index"] = tr_index
+                tr_list = [0.025,0.125] # in s
+                recording.custom["RepetitionTime"] = tr_list[tr_index - 1]
+                
+            else:
+                ### for SPM DICOM-imported data
+                index = recording.getAttribute("EchoNumbers")
+
+                TR = recording.custom["alTR"][index - 1]
+                # Need to be sure about units!
+                recording.custom["RepetitionTime"] = round(TR * 1e-6, 10)
+
+                recording.custom["index"] = index
+                recording.custom["tr_index"] = \
+                    recording.custom["alTR_sorted"].index(TR) + 1
+
+            del dcm2niixCheck
 
 
-        ### Partial Fourier logic 
+        ### ----------- Partial Fourier Logic & Parallel Acquisition Technique --------------
         ### adapted from https://gitlab.gwdg.de/cbs-neurophy/image-reconstruction/-/blob/main/core/MriDataMapVBVDImpl.m
 
-        original_level = logging.getLogger().getEffectiveLevel()
-        
-        try:
-            # Temporarily increase logging level to ERROR to suppress warnings
-            # otherwise "Could not parse" warnings are raised every time a jsonNIFTI file is processed
-            logging.getLogger().setLevel(logging.ERROR)
+        with helper.temporary_logging_level(logging.ERROR):
+            dcm2niixCheck = recording.getAttribute("ConversionSoftware")
 
+        if dcm2niixCheck == "dcm2niix": 
+            ### for dcm2niix-converted data
+            pass # partial fourier and parallel acquisition technique information is already extracted in the dcm2niix conversion and stored in the json file -> can be directly accessed from the bidsmap
+
+        else:
+            ### for SPM DICOM-imported data
+
+            ## Partial Fourier
             ucPhasePartialFourier = "CSASeriesHeaderInfo/MrPhoenixProtocol/sKSpace/ucPhasePartialFourier"
             ucPhasePartialFourier = recording.getAttribute(ucPhasePartialFourier)
             if ucPhasePartialFourier == 1: # 4/8
@@ -623,7 +861,7 @@ def RecordingEP(recording: object) -> int:
                 slicePartialFourier = 0.875
             else:
                 slicePartialFourier = 1
-        
+
 
             recording.custom["PartialFourier"] = slicePartialFourier * phasePartialFourier
 
@@ -638,7 +876,7 @@ def RecordingEP(recording: object) -> int:
                 recording.custom["PartialFourierDirection"] = ""
 
 
-            ### Parallel Acquisition Technique
+            ## Parallel Acquisition Technique
             ucPATMode = "CSASeriesHeaderInfo/MrPhoenixProtocol/sPat/ucPATMode"
             ucPATMode = recording.getAttribute(ucPATMode)
 
@@ -648,22 +886,24 @@ def RecordingEP(recording: object) -> int:
                 recording.custom["ParallelAcquisitionTechnique"] = "CAIPIRINHA"
             else:
                 recording.custom["ParallelAcquisitionTechnique"] = "n/a"
-        
-        
-        finally:
-            # Restore original logging level
-            logging.getLogger().setLevel(original_level)
+        del dcm2niixCheck
 
-
+        ### ------------------- Shim current consistency check -------------------
 
         if not bidsmap_step:
-            ### check that the shim currents are the same for all T1w, PDw, MTw, and (pTx) AFI scans
+            ### check that the shim currents are the same for all T1w, PDw, MTw, and AFI scans
             global session_shim_currents
             global session_shim_current_warning_counter
             
             if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
-                alShimCurrent = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
-                shim_currents = recording.getAttribute(alShimCurrent)
+                with helper.temporary_logging_level(logging.ERROR):
+                    dcm2niixCheck = recording.getAttribute("ConversionSoftware")
+
+                if dcm2niixCheck == "dcm2niix": 
+                    ShimCurrentAttr = "ShimSetting"
+                else:
+                    ShimCurrentAttr = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
+                shim_currents = recording.getAttribute(ShimCurrentAttr)
                 if session_shim_currents is None:
                     session_shim_currents = shim_currents
                 else:
@@ -674,6 +914,7 @@ def RecordingEP(recording: object) -> int:
                                     This renders the data useless!
                                     {session_shim_currents} vs. {shim_currents}""")
                         session_shim_current_warning_counter += 1
+                del dcm2niixCheck
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -758,7 +999,7 @@ def SessionEndEP(scan: BidsSession) -> int:
 
 
     if not bidsmap_step:
-        ## warn if shim currents are inconsistent + delete the bidsified data or create warning file for the corresponding session
+        ## warn if shim currents are inconsistent + create warning file for the corresponding session
         global session_shim_current_warning_counter
         global session_shim_current_relevant_sequences_counter
 
@@ -796,7 +1037,7 @@ def SessionEndEP(scan: BidsSession) -> int:
                 inconsistency_file = os.path.join(session_path, "WARNING_INCONS_SHIMCURR.txt")
                 with open(inconsistency_file, "w") as f:
                     f.write(f"""WARNING: 
-                            Shim currents are inconsistent for T1w, PDw, MTw, and (pTx) AFI in {scan.subject} {scan.session}. 
+                            Shim currents are inconsistent for T1w, PDw, MTw, and AFI in {scan.subject} {scan.session}. 
                             This may render the data unusable!
 
                             """)

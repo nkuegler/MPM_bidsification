@@ -293,7 +293,7 @@ def SequenceEP(recording: object) -> int:
                 recording.custom["ReceiveCoil"] = ""
         
             # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
-            smap_modality = helper.find_smap_modality(seq_list, seq_index)
+            smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction="forward")
             if smap_modality:
                 # print(f"smap_modality: {smap_modality}")
                 recording.custom["IntendedFor"] = smap_modality
@@ -402,7 +402,7 @@ def RecordingEP(recording: object) -> int:
                     smap_ident.casefold() in recording.currentFile(True).casefold():
                 
                 ### determine the contrast which the sensitivity map was acquired for by looking at the following sequences
-                smap_modality = helper.find_smap_modality(seq_list, seq_index)
+                smap_modality = helper.find_smap_modality(seq_list, seq_index, search_direction="forward")
                 if smap_modality:
                     # print(f"smap_modality: {smap_modality}")
                     # recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"

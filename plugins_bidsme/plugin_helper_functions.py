@@ -12,32 +12,62 @@ import os
 import re
 import warnings
 import shutil
+import logging
+from contextlib import contextmanager
 
 
-def find_smap_modality(seq_list: list, current_index: int) -> str:
-    """
-    Determines the modality of an SMAP sequence from a list of sequences.
-    Sensitivity maps (SMAP) are acquired right before the intended modality (T1w, PDw, MTw).
-    This function examines the elements in `seq_list` starting from the index 
-    immediately after `current_index` and checks for specific modality keywords 
-    ("t1w", "pdw", "mtw") in a case-insensitive manner. It returns the first 
-    matching modality found.
+def find_smap_modality(seq_list: list, current_index: int, search_direction: str = "forward") -> str:
+    """Infer the target MPM modality of a sensitivity-map sequence.
+
+    The function scans neighboring sequence names and returns the first
+    matching contrast label used for sensitivity-map linkage logic.
+    Search is case-insensitive and entries containing "smap" are skipped.
+
     Args:
-        seq_list (list): A list of sequence names.
-        current_index (int): The index of the current sequence in the list.
+        seq_list (list[str]):
+            Ordered list of sequence identifiers (typically one session).
+        current_index (int):
+            Index of the current sensitivity-map sequence in ``seq_list``.
+        search_direction (str, optional):
+            Direction of search from ``current_index``.
+
+            Options:
+                - "forward": scan entries after the current index.
+                - "backward": scan entries before the current index.
+
+            Default: "forward".
+
     Returns:
-        str: The modality of the sequence ("T1w", "PDw", or "MTw") if found, 
-                otherwise None.
+        str | None:
+            "T1w", "PDw", or "MTw" when a matching sequence is found;
+            otherwise ``None``.
+
+    Raises:
+        ValueError:
+            If ``search_direction`` is neither "forward" nor "backward".
+
+    Example:
+        >>> modality = find_smap_modality(seq_list, seq_index, "backward")
+        >>> if modality is None:
+        ...     print("No target modality found")
     """
 
-    # Look at subsequent elements
-    for i in range(current_index + 1, len(seq_list)):
+    direction = search_direction.casefold()
+    if direction not in {"forward", "backward"}:
+        raise ValueError("search_direction must be either 'forward' or 'backward'")
+
+    if direction == "forward":
+        indices = range(current_index + 1, len(seq_list))
+    else:
+        indices = range(current_index - 1, -1, -1)
+
+    for i in indices:
         element = seq_list[i].casefold()  # Case-insensitive comparison
 
         # if the next element is also an smap, continue with the next element
         if "smap" in element:
             continue
-        
+
         # Check for modalities
         if "t1w" in element:
             return "T1w"
@@ -45,19 +75,34 @@ def find_smap_modality(seq_list: list, current_index: int) -> str:
             return "PDw"
         elif "mtw" in element:
             return "MTw"
-        
+
     return None
 
 
 def argument_to_bool(argument: str) -> bool:
-    """
-    Converts an argument (string or int) to a boolean value. Raises exception if the argument is not "True", "False", "true", "false", "1", "0", 1, or 0.
-    If argument is already of type bool, it is returned as is.
+    """Convert flexible plugin-option values to a boolean.
+
+    This helper normalizes values typically passed through CLI/plugin options.
 
     Args:
-        argument (str or int): The argument to convert.
-    Returns:"
-        bool: The boolean value corresponding to the argument.
+        argument (str | int | bool):
+            Input value to normalize.
+
+            Accepted values:
+                - ``True`` / ``False`` (bool)
+                - "true" / "false" (case-insensitive str)
+                - ``1`` / ``0`` (int)
+                - "1" / "0" (str)
+
+    Returns:
+        bool | int:
+            - ``True`` or ``False`` for valid inputs.
+            - ``-1`` for invalid/unrecognized values.
+
+    Example:
+        >>> bidsmap_step = argument_to_bool("false")
+        >>> if bidsmap_step == -1:
+        ...     raise ValueError("Invalid value for bidsmap_step")
     """
     if isinstance(argument, bool):
         return argument
@@ -69,4 +114,31 @@ def argument_to_bool(argument: str) -> bool:
             return True
         else:
             return -1
-        
+
+@contextmanager
+def temporary_logging_level(new_level=logging.ERROR):
+    """Temporarily override the root logger level inside a ``with`` block.
+
+    Useful when probing optional metadata keys where warnings are expected.
+    After the context exits, the original logging level is restored.
+
+    Args:
+        new_level (int, optional):
+            Temporary logging level to apply for the duration of the context.
+            Default: ``logging.ERROR``.
+
+    Yields:
+        None:
+            Control is yielded to the wrapped code block.
+
+    Example:
+        >>> with temporary_logging_level(logging.ERROR):
+        ...     value = recording.getAttribute("ConversionSoftware")
+    """
+    logger = logging.getLogger()
+    original_level = logger.getEffectiveLevel()
+    logger.setLevel(new_level)
+    try:
+        yield # makes the function a generator, allowing the code within the 'with' block to execute
+    finally:
+        logger.setLevel(original_level)

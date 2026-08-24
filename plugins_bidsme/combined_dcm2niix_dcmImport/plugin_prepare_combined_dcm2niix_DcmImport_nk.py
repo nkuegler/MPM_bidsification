@@ -35,13 +35,6 @@ import json
 from datetime import datetime
 import shutil
 from pathlib import Path
-import sys
-
-# Get the absolute path of the parent directory of this script and add it to the system path to include helper functions as module
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
-import plugin_helper_functions as helper
 
 # Will integrate plugin into logging
 import logging
@@ -49,7 +42,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 plugin_path = os.path.dirname(__file__)
-resources_path = os.path.dirname(plugin_path)
+repo_path = os.path.dirname(plugin_path)
 
 # global variables
 nifti_dir = ""
@@ -58,24 +51,23 @@ dry_run = False
 id_files_dir_name = f"id_info"
 id_files_dir = ""
 base_dir = ""
-sessions_tsv_template = None
+sessions_tsv_template = None 
 subN_sessions_dict = {}
 ses_dict_populated_for_this_ses = False
 data_avail_in_dir = False
-corresponding_bids_data_path = ""
-### for new Liege data (already pseudo-bidsified)
-available_contrasts_loraks = ["t1w","pdw","mtw"]
-smap_ident = "smap"
+
+shim_current_relevant_recIDs = ["t1w_kp_mtflash3d", 
+                                "pdw_kp_mtflash3d", 
+                                "mtw_kp_mtflash3d", 
+                                "kp_afib1_v1f", 
+                                "kp_afib1_v1g",]
+session_shim_currents = None
+session_shim_current_warning_counter = 0
+session_shim_current_relevant_sequences_counter = 0
 
 def remove_trailing_slash(path):
     ## making sure that there is no trailing slash
     return path[:-1] if path.endswith('/') else path
-
-# list of sequences in order of acquisition in current session
-files_list = list()
-
-# The index of current sequence, corresponds to order in the sequence list
-file_index = -1
 
 
 """
@@ -158,29 +150,6 @@ def InitEP(source: str, destination: str,
     if not os.path.exists(id_files_dir):
         os.makedirs(id_files_dir)
 
-    global corresponding_bids_data_path
-    corresponding_bids_data_path = os.path.abspath(os.path.join(nifti_dir, '..', 'bids')) # works for: source dir is on the same level as bids dir
-    if not os.path.exists(corresponding_bids_data_path):
-        raise exceptions.InitEPError(f"Corresponding BIDS directory not found at {corresponding_bids_data_path}")
-
-    global include_smaps
-    include_smaps = kwargs.get("include_smaps", False)
-    include_smaps = helper.argument_to_bool(include_smaps)
-    if include_smaps == -1:
-        raise exceptions.InitEPError(f"Invalid value for 'include_smaps' in plugin options")
-
-    print("options passed to plugin:")
-    print(f"- include_smaps: {include_smaps}")
-
-    global available_contrasts_loraks
-    global smap_ident
-    if include_smaps:
-        new_list = []
-        for item in available_contrasts_loraks:
-            new_list.append(smap_ident)
-            new_list.append(item)
-        available_contrasts_loraks = new_list
-    
     global sessions_tsv_template
     sessions_tsv_template = kwargs.get("sessions_tsv_template", None) # get the value from the options passed to the plugin, default is None
     sessions_tsv_template = str(Path(sessions_tsv_template))
@@ -360,8 +329,6 @@ def SessionEP(scan: BidsSession) -> int:
             subN_sessions_dict['original_session_id'][-1] = current_sessionID
     # more population of the dictionary in SequenceEP to access a recording object
 
-    global file_index
-    file_index = -1
 
 def SequenceEP(recording: object) -> int:
     """
@@ -408,18 +375,16 @@ def SequenceEP(recording: object) -> int:
         return None  # No match found
 
 
-    global files_list
-
-    # create a list of all files in the directory -> strip that list by all elements that do not contain ".nii" (or ".nii.gz")
-    current_dir = os.path.dirname(recording.currentFile(False))
-    files_list = [f for f in os.listdir(current_dir) if os.path.isfile(os.path.join(current_dir, f)) and '.nii' in f]
-    files_list = sorted(files_list)
-    # print(f"NIfTI files in {current_dir}: {files_list}")
-
-
     ### flag to ensure that there are files in the session directory
     global data_avail_in_dir
     data_avail_in_dir = True
+
+    ### count how many shim current relevant sequences are in the session
+    rec_id = recording.recId()
+    if recording.Module() == "MRI":
+        if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
+            global session_shim_current_relevant_sequences_counter
+            session_shim_current_relevant_sequences_counter += 1
 
     ### populating the sub-<label>_sessions.tsv file
     ### performing this in SequenceEP to access the recording object
@@ -438,6 +403,10 @@ def SequenceEP(recording: object) -> int:
             scan_institution = recording.getAttribute("InstitutionName")
             if scan_institution:
                 subN_sessions_dict['scanning_institution'][-1] = scan_institution
+            else: 
+                scan_department = recording.getAttribute("InstitutionalDepartmentName")
+                if scan_department == "Department":
+                    subN_sessions_dict['scanning_institution'][-1] = "(Pecs)"
 
         if 'manufacturer' in column_ses_dict:
             manufacturer = recording.getAttribute("Manufacturer")
@@ -487,78 +456,37 @@ def RecordingEP(recording: object) -> int:
         code 150
     """
 
-    def get_series_id(str_to_check, recording):
-        # case-insensitive check, but preserves the original casing in the returned series_id
-        filename = recording.currentFile(True)
-        # Find the start position using case-insensitive search
-        lower_filename = filename.casefold()
-        lower_str = str_to_check.casefold()
-        start_pos = lower_filename.find(lower_str)
-        
-        if start_pos == -1:
-            # Fallback if not found (shouldn't happen in normal flow)
-            recording_id_rest = filename.split(str_to_check)[1].split("_rec")[0]
-            series_id = f"{str_to_check}{recording_id_rest}"
-        else:
-            # Extract the original-cased version from the filename
-            original_cased_str = filename[start_pos:start_pos + len(str_to_check)]
-            # Get the rest of the ID after the matched string
-            remaining = filename[start_pos + len(str_to_check):]
-            recording_id_rest = remaining.split("_rec")[0]
-            series_id = f"{original_cased_str}{recording_id_rest}"
-        
-        return series_id
-
-    global file_index
-    global available_contrasts_loraks
-
+    rec_id = recording.recId()
     if recording.Module() == "MRI":
-        file_index += 1
-        # print(f"{file_index}: {recording.currentFile(True)}")
 
+        ### check that the shim currents are the same for all T1w, PDw, MTw, and (pTx) AFI scans
+        global session_shim_currents
+        global session_shim_current_warning_counter
 
-        ## evaluate whether _loraks or _loraksRsos is present in the filename
-        recon_method = ""
+        if rec_id.startswith(tuple(shim_current_relevant_recIDs)):  # startswith() checks against each element of the tuple
+            ShimCurrAttr_SPMdcmImport = "CSASeriesHeaderInfo/MrPhoenixProtocol/sGRADSPEC/alShimCurrent"
+            ShimCurrAttr_dcm2niix = "ShimSetting"
 
-        if "rec-loraksRsos".casefold() in recording.currentFile(True).casefold():
-            recon_method = "loraksRsos"
-            rsos_factor = 1
-        elif "rec-loraks".casefold() in recording.currentFile(True).casefold():
-            recon_method = "loraks"
-            rsos_factor = 0
-        else:
-            return 0
-        
-        if recon_method:
-            if not include_smaps:
-                for ind, contrast_fname in enumerate(available_contrasts_loraks):
-                    if contrast_fname.casefold() in recording.currentFile(True).casefold():
-                        recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
-                        recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
+            shim_currents = recording.getAttribute(ShimCurrAttr_dcm2niix)
+            if shim_currents is None:
+                logger.info(f"dcm2niix did not work. Trying SPM DICOM import notation.")
+                shim_currents = recording.getAttribute(ShimCurrAttr_SPMdcmImport)
+                if shim_currents is None:
+                    logger.warning(f"No shim current information found in {recording.currentFile(False)}. Tried dcm2niix and SPM Dicom import notations Shim current consistency check may not be reliable.")
+                    shim_currents = None
+                else: 
+                    logger.info("✓")
 
-            else: 
-                if smap_ident.casefold() in recording.currentFile(True).casefold():
-                    # determine the contrast which the sensitivity map was acquired for by looking at the following sequences
-                    smap_modality = helper.find_smap_modality(files_list, file_index, search_direction="forward")
-                    if smap_modality:
-                        recording.series_id = f"{get_series_id(smap_ident, recording)}_{smap_modality}_{recon_method}"
-                        # find the index of the according contrast in the available_contrast_array (generator returns only the first element containing the string!)
-                        smap_modal_idx = next((i for i, elem in enumerate(available_contrasts_loraks) if smap_modality.casefold() in elem.casefold()), None)
-                        # use (smap_modal_idx - 1) as index of the smap
-                        recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[smap_modal_idx-1] + rsos_factor) # smap always right before corresponding contrast
+            if session_shim_currents is None:
+                session_shim_currents = shim_currents
+            else:
+                if session_shim_currents != shim_currents:
+                    logger.warning(f"""Shim currents vary in 
+                                  {recording.currentFile(False)} 
+                                  from the rest of the session. 
+                                  The data may be unusable.""")
+                    session_shim_current_warning_counter += 1
 
-                    else:
-                        logger.warning("{}: Unable to determine modality of sensitivity map"
-                                .format(recording.recIdentity()))
-                
-                else:
-                    for ind, contrast_fname in enumerate(available_contrasts_loraks):
-                        if contrast_fname.casefold() in recording.currentFile(True).casefold():
-                            recording.series_id = f"{get_series_id(contrast_fname, recording)}_{recon_method}"
-                            recording.series_no = int(np.arange(1, len(available_contrasts_loraks*2), 2)[ind] + rsos_factor) # first element in list = 1, second = 3, third = 5
-                
-                # print(f"series_id: {recording.series_id}")
-                # print(f"series_no: {recording.series_no}")
 
 
 def FileEP(path: str, recording: object) -> int:
@@ -636,27 +564,110 @@ def SessionEndEP(scan: BidsSession) -> int:
         code 180
     """
 
-    ## copy shim current inconsistency information from sessions.tsv in the bidsified data set to the one in the LORAKS directory 
-    global subN_sessions_dict
+    # other option to copy bvec and bval files is to define it in FileEP and use 
+    # the recording and path objects to determine the according directories 
 
-    sessions_tsv_bids = os.path.join(corresponding_bids_data_path, scan.subject, f"{scan.subject}_sessions.tsv")
-    if os.path.isfile(sessions_tsv_bids):
-        df = pd.read_csv(sessions_tsv_bids, sep='\t')
-        target_row = df[df['session_id'] == scan.session]
-        shim_curr_cons = target_row['shim_curr_cons'].values[0]
+    if dry_run:
+        # Skip if in dry run mode
+        return
+
+    # # Run the find command to search for bvec and bval files in the source directory of the current subject and session
+    # # only works if there is a single bval and bvec file in the directory
+    # bval_file_source = os.popen(f"find {scan.in_path} -name '*.bval'").read().strip()
+    # bvec_file_source = os.popen(f"find {scan.in_path} -name '*.bvec'").read().strip()
+    
+    # if bval_file_source and bvec_file_source:
+
+    #     # Extract the filenames without their extensions
+    #     bval_filename, _ = os.path.splitext(os.path.basename(bval_file_source))
+    #     bvec_filename, _ = os.path.splitext(os.path.basename(bvec_file_source))
         
-        if shim_curr_cons == 'consistent':
-            logger.info(f"No shim current inconsistencies present in this session!")
-        elif shim_curr_cons == 'inconsistent':
-            logger.warning(f"Shim currents are INCONSISTENT in this {scan.session} of {scan.subject}! The data may be unusable.")
-        else:
-            logger.warning(f"""NO INFORMATION on shim current consistency available for {scan.session} of {scan.subject}.
-                           Please check the manually!""")
-            shim_curr_cons = 'n/a'
+    #     if bval_filename == bvec_filename:
+    #         bval_path_source = os.path.dirname(bval_file_source)
+    #         print(f"Found matching bval and bvec files in {bval_path_source}")
 
+    #         # Extract the file's parent folder from the full path
+    #         bval_folder_source = os.path.basename(bval_path_source)
+
+    #         # Use regular expression to find the 4-digit number at the end of the folder name
+    #         match = re.search(r'(\d{4})$', bval_folder_source)
+    #         if match:
+    #             sequence_number_4digit = match.group(1) # 4-digit number (as in source data)
+    #             sequence_number_3digit = sequence_number_4digit[1:] # 3-digit number (as in prepared data)
+
+    #         # Run the find command to search for the according files in the prepared data
+    #         files_avail_prepared = os.popen(f"find {prep_dir}/{scan.subject}/{scan.session} -name '*{bval_filename}*'").read().strip()
+            
+    #         # The output will have multiple lines. 
+    #         # Split the output into lines and search for the first line that contains the three-digit number
+    #         output_paths = files_avail_prepared.split('\n')
+    #         correct_path = None
+    #         for p in output_paths:
+    #             if p:  # Check if path is not empty
+    #                 # Get just the filename and its parent directory
+    #                 path_parts = p.split(os.sep)
+    #                 if len(path_parts) >= 2:
+    #                     dir_and_file = os.path.join(path_parts[-2], path_parts[-1])
+    #                     if sequence_number_3digit in path_parts[-2]:  # sequence number must be present in the sequence name
+    #                         correct_path = p
+    #                         break
+
+    #         if correct_path:
+    #             bval_path_prepared = os.path.dirname(correct_path)
+
+    #             print(f"Copying bval and bvec files to {bval_path_prepared}")
+    #             shutil.copy(bval_file_source, bval_path_prepared)
+    #             shutil.copy(bvec_file_source, bval_path_prepared)
+    #         else:
+    #             logger.warning(f"No matching line found containing the sequence number {sequence_number_3digit}. Please copy the bvec and bval files manually.")
+
+    #     else:
+    #         logger.warning("The bval and bvec files do not have the same name. Please check manually.")
+
+    # else:
+    #     print(f"No bval or bvec files found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
+    
+
+    ### populating the sub-<label>_sessions.tsv file with shim current information
+    global data_avail_in_dir
+    
+    if data_avail_in_dir:
+        global session_shim_current_warning_counter
+        global session_shim_current_relevant_sequences_counter
+        global subN_sessions_dict
         column_ses_dict = list(subN_sessions_dict.keys())
-        if 'shim_curr_cons' in column_ses_dict:
-            subN_sessions_dict['shim_curr_cons'][-1] = shim_curr_cons
+        
+        logger.info(f"Number of sequences relevant for shim current consistency check: {session_shim_current_relevant_sequences_counter}")
+
+        if session_shim_current_relevant_sequences_counter in (0, 1): 
+            if 'shim_curr_cons' in column_ses_dict:
+                logger.warning(f"No information about shim current consistency available in {scan.session} of {scan.subject}.")
+                subN_sessions_dict['shim_curr_cons'][-1] = 'n/a' # 0 or 1 relevant sequences do not provide any information about consistent shim currents
+        else:
+            if session_shim_current_warning_counter == 0:
+                logger.info("No shim current inconsistencies present in this session!")
+                if 'shim_curr_cons' in column_ses_dict:
+                    subN_sessions_dict['shim_curr_cons'][-1] = 'consistent'
+            else:
+                logger.warning(f"Shim currents are INCONSISTENT in this {scan.session} of {scan.subject}! The data may be unusable.")
+                if 'shim_curr_cons' in column_ses_dict:
+                    subN_sessions_dict['shim_curr_cons'][-1] = 'inconsistent'
+
+    else:
+        logger.warning(f"No NIfTI data found in the directories of subject '{current_subjectID}' session '{current_sessionID}'.")
+    
+    logger.info("--------------")
+
+
+    ## reset shim currents for next session
+    global session_shim_currents
+    session_shim_currents = None
+
+    ## reset the warning counter for shim currents
+    session_shim_current_warning_counter = 0
+
+    ## reset the counter for relevant sequences
+    session_shim_current_relevant_sequences_counter = 0
 
     ## allow the next session to populate the dictionary
     global ses_dict_populated_for_this_ses

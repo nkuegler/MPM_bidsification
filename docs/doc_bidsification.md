@@ -72,6 +72,8 @@ The scripts will access specified files in the `plugins_bidsme/` and the `supple
       getserver -l	# show a list of available compute servers
       ssh maki 		# connect to maki, manati, or any other compute server
       ```
+    > You can open the repository as project in your IDE (e.g., VS Code/Codium) directly on the interactive compute server. If you want to use a Jupyter server, please follow the [instructions provided by IT](https://cbswiki.cbs.mpg.de/bin/view/EDV/FuerUser/SoftwareJupyter.html) (untested). 
+    > Local processing is also possible but very slow.
 
 + **Step 4:**
     + Activate the virtual environment containing *Bidsme* and all the necessary dependencies.

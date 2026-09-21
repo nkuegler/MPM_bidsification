@@ -31,7 +31,7 @@ hMRI_dcmConv_excl="noddi"
 
 ### converting DICOMs to Niftis using hMRI toolbox (excluding data in folders containing the exclusion string)
 
-matlab -nodesktop -nosplash -r "call_dicom_conversion('$input_dir','$output_dir','$hMRI_dcmConv_excl')"
+matlab -nodesktop -nosplash -r "cd('../DICOM-to-NIfTI'); call_dicom_conversion('$input_dir','$output_dir','$hMRI_dcmConv_excl')"
 echo ">>> hMRI DICOM Import done!"
 
 ### converting "excluded" data using dcm2niix

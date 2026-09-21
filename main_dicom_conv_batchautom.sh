@@ -65,7 +65,7 @@ for i in $(seq 1 $number_of_paths); do
     ### converting "excluded" data using dcm2niix
     echo ">>> starting dcm2niix conversion"
     dirs_txt_fname=excl_dirs_$(date +"%Y%m%d_%H%M%S").txt
-    find $curr_path_to_dcm -type d -iname "*$hMRI_dcmConv_excl*" > $tmp_dir/$dirs_txt_fname
+    find $curr_path_to_dcm \( -type d -o -xtype d \) -iname "*$hMRI_dcmConv_excl*" > $tmp_dir/$dirs_txt_fname
 
 
     if [[ ! -s $tmp_dir/$dirs_txt_fname ]]; then

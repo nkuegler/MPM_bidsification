@@ -3,6 +3,11 @@
 # $1: input_dir
 # $2: output_dir
 
+# change directory to directory of this script to allow it being called from anywhere
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR
+
+
 function adjust_path {
     # pass a string (path) as argument
     # check if the last character in the string is a '/'
@@ -26,12 +31,23 @@ if [[ ! -d $tmp_dir ]]; then
     mkdir $tmp_dir
 fi
 
+SPM_DICOM_BASENAME="DICOM-to-NIfTI" # if parent directory of call_dicom_conversion.m ever changes
+parent_dir="$(dirname "${SCRIPT_DIR}")"
+SPM_DICOM_DIR="$parent_dir/$SPM_DICOM_BASENAME"
+# check if SPM_DICOM_DIR is in DICOM-to-NIfTI
+if [[ ! -d "$SPM_DICOM_DIR" ]]; then
+    echo "Error: directory '$SPM_DICOM_BASENAME' does not exist, or is not within $parent_dir/"
+    exit 1
+else
+    echo "directory found $SPM_DICOM_DIR"
+fi
+
 ### defining data to be converted using dcm2niix instead of hMRI Dicom Convert (recommendation: diffusion data)
 hMRI_dcmConv_excl="noddi"
 
 ### converting DICOMs to Niftis using hMRI toolbox (excluding data in folders containing the exclusion string)
 
-matlab -nodesktop -nosplash -r "cd('../DICOM-to-NIfTI'); call_dicom_conversion('$input_dir','$output_dir','$hMRI_dcmConv_excl')"
+matlab -nodesktop -nosplash -sd"$SPM_DICOM_DIR" -r "call_dicom_conversion('$input_dir','$output_dir','$hMRI_dcmConv_excl')"
 echo ">>> hMRI DICOM Import done!"
 
 ### converting "excluded" data using dcm2niix

@@ -66,8 +66,9 @@ The conversion is performed by running the shell script `main_dicom_conv_batchau
 
 + **Step 3:**
     + Access the `settings.py` file and adjust the parameters to your specific needs.
-        + Specify path pairs for as many sessions as you want, starting at 1. 
-        + The number of specified sessions MUST coincide with the `number_of_paths` variable.
+      + Update the `spm12_path` and `hMRI_toolbox_path` variables to your correct paths
+      + Specify path pairs for as many sessions as you want, starting at 1. 
+      + The number of specified sessions MUST coincide with the `number_of_paths` variable.
     ``` 
     number_of_paths=2  # maximum number of directories that need to be converted
     path_to_dcm1="path/to/dcm"  # specify input folder (DICOM data)
@@ -77,17 +78,6 @@ The conversion is performed by running the shell script `main_dicom_conv_batchau
     ```
 
 + **Step 4:**
-    + Access the Matlab file `call_dicom_conversion.m` and adjust the paths where SPM, hMRI-toolbox, and the dicom_import functions are stored.
-    ```
-    addpath('/data/u_kuegler_software/git/spm12')
-    addpath('/data/u_kuegler_software/git/hMRI-toolbox')
-    addpath('/data/u_kuegler_software/git/MPM_bidsification/DICOM-to-NIfTI/spm_dicom_import')
-    ```
-
-    + This function is called by the main script and runs the DICOM import in MATLAB.
-        + It uses the MATLAB environment version `24.2` but other versions may also work. This is specified in `main_dicom_conv_batchautom.sh` when calling the `call_dicom_conversion` function. 
-
-+ **Step 5:**
     + Run the conversion from the CLI by navigating to the `DICOM-to-NIfTI` directory within the **MPM_bidsification** repository and calling the `main_dicom_conv_batchautom.sh` script.
     ```
     cd path/to/MPM_bidsification/DICOM-to-NIfTI
@@ -107,13 +97,12 @@ To convert **all** DICOM data using dcm2niix, you can specify a string that is p
   + `settings.py` – specify paths and parameters for DICOM-to-NIfTI conversion using `main_dicom_conv_batchautom.sh`
   + `main_dicom_conv_batchautom.sh` – call the DICOM-to-NIfTI conversion for a batch of files (inherits the paths to each file and to the output directory from the `settings.py`)
   + `call_dicom_conversion.m` – script that sets the paths in the MATLAB instance and calls the DICOM Import script
-+ `utils/` - Additional helper scripts and depreciated scripts
-  + `nii_dtibatch.m` *(not relevant for the bidsification)* – script to check the `.bvec` and `.bval` files created by *dcm2niix* from diffusion data (found in the [dcm2niix documentation](https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage#Diffusion_Tensor_Imaging), [link to the script on Github](https://github.com/rordenlab/spmScripts/blob/master/nii_dtibatch.m))
-  + `main_dicom_conv.sh` *(deprecated)* – call the DICOM-to-NIfTI conversion for a single file (paths as arguments)
++ `utils/` - Additional helper scripts and depreciated scripts, the DICOM-to-NIfTI relevant scripts are:
+    + `nii_dtibatch.m` *(not relevant for the bidsification)* – script to check the `.bvec` and `.bval` files created by *dcm2niix* from diffusion data (found in the [dcm2niix documentation](https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage#Diffusion_Tensor_Imaging), [link to the script on Github](https://github.com/rordenlab/spmScripts/blob/master/nii_dtibatch.m))
+    + `main_dicom_conv.sh` *(deprecated)* – call the DICOM-to-NIfTI conversion for a single file (paths as arguments)
 
 ## ToDos
 + This implementation is preliminary but it works and it is not needed a lot. However, the plan is to recreate the main script in python and to refine the settings/config file to be more self explanatory.
-+ Paths in `call_dicom_conversion.m` should be adjusted in the config file, not in the script
 + implement a toggle to either use DICOM Import/dcm2niix OR just dcm2niix
 + directory structure needs to be specified manually --> write a short script to automatically create the top-level directories (bids, source, temp, id_files)
 + DICOM-to-NIfTI conversion may fail if DICOM files are not properly organized. The easiest way to solve this is to run Enrico's `split.pl` script to organize the DICOM files into subdirectories according to their SeriesNumber, SeriesDescription, and PatientName.

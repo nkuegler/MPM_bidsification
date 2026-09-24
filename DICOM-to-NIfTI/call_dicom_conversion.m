@@ -1,4 +1,4 @@
-function call_dicom_conversion(input_dir, output_dir, excl_str)
+function call_dicom_conversion(input_dir, output_dir, excl_str, spm_path, hmri_toolbox_path, dicom_import_path)
     %% function calling Ilona Lipps function to convert DICOMs to Niftis 
     %% using the hMRI toolbox DICOM import
 
@@ -18,9 +18,9 @@ function call_dicom_conversion(input_dir, output_dir, excl_str)
     %    convert_dicoms_to_nifti(current_dir_str,output_dir, 0);
     % end
 
-    addpath('/data/u_kuegler_software/git/spm12')
-    addpath('/data/u_kuegler_software/git/hMRI-toolbox_IronSleep')
-    addpath('/data/u_kuegler_software/git/MPM_bidsification/spm_dicom_import')
+    addpath(spm_path)
+    addpath(hmri_toolbox_path)
+    addpath(dicom_import_path)
 
     disp("Retrieving DICOMs from " + input_dir)
 

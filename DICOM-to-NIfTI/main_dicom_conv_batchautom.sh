@@ -22,6 +22,14 @@ function adjust_path {
     echo $path_string
 }
 
+SPM_DICOM_BASENAME="spm_dicom_import" # if parent directory of call_dicom_conversion.m ever changes
+SPM_DICOM_DIR="$SCRIPT_DIR/$SPM_DICOM_BASENAME"
+# check if call_dicom_conversion.m is in DICOM-to-NIfTI
+if [[ ! -d "$SPM_DICOM_DIR" ]]; then
+    parent_dir="$(basename "${SCRIPT_DIR}")"
+    echo "Error: directory '$SPM_DICOM_BASENAME' does not exist, or is not within $parent_dir/"
+    exit 1
+fi
 
 # variable name where the last path for dcm and nii are stored
 last_dcm_path_name="path_to_dcm${number_of_paths}"
@@ -59,7 +67,7 @@ for i in $(seq 1 $number_of_paths); do
     fi
 
     ### converting DICOMs to Niftis using hMRI toolbox (excluding data in folders containing the exclusion string)
-    MATLAB -v 24.2 matlab -nodesktop -nosplash -r "call_dicom_conversion('$curr_path_to_dcm','$curr_path_to_nii','$hMRI_dcmConv_excl');exit"
+    MATLAB -v 24.2 matlab -nodesktop -nosplash -r "call_dicom_conversion('$curr_path_to_dcm','$curr_path_to_nii','$hMRI_dcmConv_excl','$spm12_path','$hMRI_toolbox_path','$SPM_DICOM_DIR');exit"
     echo ">>> hMRI DICOM Import done!"
 
     ### converting "excluded" data using dcm2niix

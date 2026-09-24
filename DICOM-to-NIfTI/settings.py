@@ -1,6 +1,10 @@
 # ATTENTION: This file is used within Python AND Bash. Thus, no spaces around = allowed!
 
 
+############### paths and binaries required for DICOM-to-NIfTI process ###############
+spm12_path='/data/u_kuegler_software/git/spm12'
+hMRI_toolbox_path='/data/u_kuegler_software/git/hMRI-toolbox_IronSleep'
+
 ############### Conversion from Dicoms to Nifti using hMRI Dicom Import and dcm2niix ###############
 
 # defining the path to the dicom data and the path to the nifti data

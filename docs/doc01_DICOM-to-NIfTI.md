@@ -43,7 +43,7 @@ Conversion is also skipped for DICOM data of sequences that have the series numb
 
 ### How to run the DICOM-to-NIfTI conversion
 
-All scripts required for DICOM-to-NIfTI conversion are found in the `DICOM-to-NIfTI` Directory.
+All scripts required for DICOM-to-NIfTI conversion are located in the `DICOM-to-NIfTI` Directory.
 
 The conversion is performed by running the shell script `main_dicom_conv_batchautom.sh`, which accesses the `settings.py` file and performs the conversion according to the specified parameters.
 

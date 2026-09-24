@@ -97,8 +97,7 @@ To convert **all** DICOM data using dcm2niix, you can specify a string that is p
   + `settings.py` – specify paths and parameters for DICOM-to-NIfTI conversion using `main_dicom_conv_batchautom.sh`
   + `main_dicom_conv_batchautom.sh` – call the DICOM-to-NIfTI conversion for a batch of files (inherits the paths to each file and to the output directory from the `settings.py`)
   + `call_dicom_conversion.m` – script that sets the paths in the MATLAB instance and calls the DICOM Import script
-+ `utils/` - Additional helper scripts and depreciated scripts, the DICOM-to-NIfTI relevant scripts are:
-    + `nii_dtibatch.m` *(not relevant for the bidsification)* – script to check the `.bvec` and `.bval` files created by *dcm2niix* from diffusion data (found in the [dcm2niix documentation](https://www.nitrc.org/plugins/mwiki/index.php/dcm2nii:MainPage#Diffusion_Tensor_Imaging), [link to the script on Github](https://github.com/rordenlab/spmScripts/blob/master/nii_dtibatch.m))
++ `utils/` - Additional helper scripts and depreciated scripts, the DICOM-to-NIfTI relevant script is:
     + `main_dicom_conv.sh` *(deprecated)* – call the DICOM-to-NIfTI conversion for a single file (paths as arguments)
 
 ## ToDos
